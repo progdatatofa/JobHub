@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ profile.user.first_name }} {{ profile.user.last_name }} | JobHub
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-9">
+
+        <div class="card detail-card shadow-sm overflow-hidden">
+
+            <div class="bg-primary text-white p-4">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-3 text-center">
+
+                        {% if profile.profile_image %}
+
+                            <img
+                                src="{{ profile.profile_image.url }}"
+                                alt="{{ profile.user.first_name }} profile image"
+                                class="profile-image"
+                            >
+
+                        {% else %}
+
+                            <div class="default-avatar">
+                                <i class="bi bi-person"></i>
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-9 text-center text-md-start mt-3 mt-md-0">
+
+                        <h1 class="fw-bold">
+
+                            {{ profile.user.first_name }}
+                            {{ profile.user.last_name }}
+
+                        </h1>
+
+                        <p class="mb-1">
+                            @{{ profile.user.username }}
+                        </p>
+
+                        {% if profile.location %}
+
+                            <p class="mb-0">
+
+                                <i class="bi bi-geo-alt-fill"></i>
+                                {{ profile.location }}
+
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-4 p-md-5">
+
+                <h4 class="section-title mb-3">
+                    About
+                </h4>
+
+                <p class="text-muted">
+                    {{ profile.bio|default:"No bio provided." }}
+                </p>
+
+
+                <hr class="my-4">
+
+
+                <h4 class="section-title mb-3">
+                    Professional Information
+                </h4>
+
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted">
+                                Username
+                            </small>
+
+                            <div class="fw-semibold">
+                                {{ profile.user.username }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted">
+                                Date Joined
+                            </small>
+
+                            <div class="fw-semibold">
+                                {{ profile.created_at|date:"F j, Y" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted">
+                                Email
+                            </small>
+
+                            <div class="fw-semibold text-break">
+                                {{ profile.user.email }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted">
+                                Phone Number
+                            </small>
+
+                            <div class="fw-semibold">
+                                {{ profile.phone_number|default:"Not provided" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4">
+
+
+                <h4 class="section-title mb-3">
+                    Skills
+                </h4>
+
+                {% if profile.skills %}
+
+                    <div class="bg-light rounded p-3">
+                        {{ profile.skills }}
+                    </div>
+
+                {% else %}
+
+                    <p class="text-muted">
+                        No skills provided.
+                    </p>
+
+                {% endif %}
+
+
+                <hr class="my-4">
+
+
+                <h4 class="section-title mb-3">
+                    Professional Links
+                </h4>
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    {% if profile.linkedin %}
+
+                        <a
+                            href="{{ profile.linkedin }}"
+                            target="_blank"
+                            class="btn btn-outline-primary"
+                        >
+                            <i class="bi bi-linkedin"></i>
+                            LinkedIn
+                        </a>
+
+                    {% endif %}
+
+
+                    {% if profile.github %}
+
+                        <a
+                            href="{{ profile.github }}"
+                            target="_blank"
+                            class="btn btn-outline-dark"
+                        >
+                            <i class="bi bi-github"></i>
+                            GitHub
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+
+                    <a
+                        href="{% url 'profile-list' %}"
+                        class="btn btn-secondary"
+                    >
+                        <i class="bi bi-arrow-left"></i>
+                        Back to Profiles
+                    </a>
+
+
+                    {% if user.is_authenticated and profile.user == user %}
+
+                        <a
+                            href="{% url 'profile-edit' %}"
+                            class="btn btn-primary"
+                        >
+                            <i class="bi bi-pencil-square"></i>
+                            Edit Profile
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

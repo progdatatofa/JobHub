@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Job{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+```
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Edit Job</h1>
+            <p class="text-muted">
+                Update the details of your job posting.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4 p-md-5">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-semibold">
+                            Job Title
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="title"
+                            name="title"
+                            value="{{ job.title }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="company" class="form-label fw-semibold">
+                            Company
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="company"
+                            name="company"
+                            value="{{ job.company }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">
+                            Job Description
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            id="description"
+                            name="description"
+                            rows="5"
+                            required
+                        >{{ job.description }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label fw-semibold">
+                            Location
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="location"
+                            name="location"
+                            value="{{ job.location }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="job_type" class="form-label fw-semibold">
+                            Job Type
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="job_type"
+                            name="job_type"
+                            required
+                        >
+                            <option value="Full-time"
+                                {% if job.job_type == "Full-time" %}selected{% endif %}>
+                                Full-time
+                            </option>
+
+                            <option value="Part-time"
+                                {% if job.job_type == "Part-time" %}selected{% endif %}>
+                                Part-time
+                            </option>
+
+                            <option value="Contract"
+                                {% if job.job_type == "Contract" %}selected{% endif %}>
+                                Contract
+                            </option>
+
+                            <option value="Internship"
+                                {% if job.job_type == "Internship" %}selected{% endif %}>
+                                Internship
+                            </option>
+
+                            <option value="Remote"
+                                {% if job.job_type == "Remote" %}selected{% endif %}>
+                                Remote
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="skills" class="form-label fw-semibold">
+                            Required Skills
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="skills"
+                            name="skills"
+                            value="{{ job.skills }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="salary" class="form-label fw-semibold">
+                            Salary
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="salary"
+                            name="salary"
+                            value="{{ job.salary }}"
+                            placeholder="e.g. ₦200,000 - ₦300,000"
+                        >
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="application_deadline" class="form-label fw-semibold">
+                            Application Deadline
+                        </label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="application_deadline"
+                            name="application_deadline"
+                            value="{{ job.deadline|date:'Y-m-d' }}"
+                        >
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <a
+                            href="{% url 'job-detail' job.id %}"
+                            class="btn btn-outline-secondary w-50"
+                        >
+                            <i class="bi bi-arrow-left"></i>
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-50"
+                        >
+                            <i class="bi bi-save"></i>
+                            Update Job
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+```
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for Job{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+```
+<div class="col-lg-8">
+
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+
+                <div class="mb-3">
+                    <i class="bi bi-send-check-fill text-primary fs-1"></i>
+                </div>
+                {% if error %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <h2 class="fw-bold mb-2">
+                    Apply for This Job
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Submit your application for
+                    <strong>{{ job.title }}</strong>
+                </p>
+
+            </div>
+
+
+            <!-- Job Information -->
+            <div class="bg-light rounded-3 p-4 mb-4">
+
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-briefcase me-2"></i>
+                    {{ job.title }}
+                </h5>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">
+                            Company
+                        </small>
+
+                        <span class="fw-semibold">
+                            {{ job.company }}
+                        </span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">
+                            Location
+                        </small>
+
+                        <span class="fw-semibold">
+                            {{ job.location }}
+                        </span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">
+                            Job Type
+                        </small>
+
+                        <span class="fw-semibold">
+                            {{ job.job_type }}
+                        </span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">
+                            Salary
+                        </small>
+
+                        <span class="fw-semibold">
+                            {{ job.salary|default:"Not specified" }}
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Application Form -->
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-4">
+
+                    <label
+                        for="cover_letter"
+                        class="form-label fw-semibold"
+                    >
+                        Cover Letter
+                    </label>
+
+                    <textarea
+                        id="cover_letter"
+                        name="cover_letter"
+                        class="form-control"
+                        rows="8"
+                        placeholder="Tell the employer why you are a good fit for this position..."
+                        required
+                    ></textarea>
+
+                    <div class="form-text">
+                        Introduce yourself, explain your relevant experience,
+                        and briefly describe why you are interested in this role.
+                    </div>
+
+                </div>
+
+
+                <!-- Actions -->
+                <div class="d-flex flex-column flex-sm-row gap-2">
+
+                    <a
+                        href="{% url 'job-detail' job.id %}"
+                        class="btn btn-outline-secondary"
+                    >
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back to Job
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary flex-grow-1"
+                    >
+                        <i class="bi bi-send me-1"></i>
+                        Submit Application
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endblock %}

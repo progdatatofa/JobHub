@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+```
+<!-- Page Header -->
+<div class="text-center mb-5">
+
+    <div class="mb-3">
+        <i class="bi bi-file-earmark-person-fill text-primary fs-1"></i>
+    </div>
+
+    <h1 class="fw-bold">
+        My Applications
+    </h1>
+
+    <p class="text-muted">
+        Track the jobs you have applied for and monitor your application status.
+    </p>
+
+</div>
+
+
+{% if applications %}
+
+    <div class="row g-4">
+
+        {% for application in applications %}
+
+            <div class="col-lg-6">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <!-- Job Header -->
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+
+                            <div>
+
+                                <h4 class="fw-bold mb-1">
+                                    {{ application.job.title }}
+                                </h4>
+
+                                <p class="text-primary fw-semibold mb-0">
+                                    <i class="bi bi-building me-1"></i>
+                                    {{ application.job.company }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- Status -->
+                            {% if application.status == "pending" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+
+                            {% elif application.status == "reviewed" %}
+
+                                <span class="badge bg-info text-dark">
+                                    Reviewed
+                                </span>
+
+                            {% elif application.status == "accepted" %}
+
+                                <span class="badge bg-success">
+                                    Accepted
+                                </span>
+
+                            {% elif application.status == "rejected" %}
+
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Job Information -->
+                        <div class="mb-3">
+
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                {{ application.job.location }}
+                            </p>
+
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-briefcase me-1"></i>
+                                {{ application.job.job_type }}
+                            </p>
+
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                Applied on {{ application.applied_at|date:"M d, Y" }}
+                            </p>
+
+                        </div>
+
+
+                        <hr>
+
+
+                        <!-- Cover Letter -->
+                        <div class="mb-4">
+
+                            <h6 class="fw-bold">
+                                <i class="bi bi-envelope-paper me-1"></i>
+                                Cover Letter
+                            </h6>
+
+                            <p class="text-muted mb-0">
+                                {{ application.cover_letter }}
+                            </p>
+
+                        </div>
+
+
+                        <!-- Action -->
+                        <a
+                            href="{% url 'job-detail' application.job.id %}"
+                            class="btn btn-outline-primary w-100"
+                        >
+                            <i class="bi bi-eye me-1"></i>
+                            View Job
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <!-- Empty State -->
+    <div class="text-center py-5">
+
+        <div class="mb-3">
+            <i class="bi bi-file-earmark-x text-muted fs-1"></i>
+        </div>
+
+        <h4 class="fw-bold">
+            No Applications Yet
+        </h4>
+
+        <p class="text-muted mb-4">
+            You haven't applied for any jobs yet.
+            Explore available opportunities and submit your first application.
+        </p>
+
+        <a
+            href="{% url 'all-jobs' %}"
+            class="btn btn-primary"
+        >
+            <i class="bi bi-search me-1"></i>
+            Browse Jobs
+        </a>
+
+    </div>
+
+{% endif %}
+```
+
+</div>
+
+{% endblock %}

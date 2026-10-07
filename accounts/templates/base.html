@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}JobHub{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+        body {
+            background-color: #f5f7fb;
+            color: #212529;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #0d6efd, #084298);
+            color: white;
+            border-radius: 20px;
+        }
+
+        .profile-card {
+            border: none;
+            border-radius: 16px;
+            transition: 0.25s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+        }
+
+        .profile-image {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .default-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+            color: #6c757d;
+            font-size: 42px;
+            margin: auto;
+        }
+
+        .skill-badge {
+            margin: 3px;
+        }
+
+        .form-card {
+            max-width: 650px;
+            margin: auto;
+            border: none;
+            border-radius: 18px;
+        }
+
+        .detail-card {
+            border: none;
+            border-radius: 18px;
+        }
+
+        .section-title {
+            font-weight: 700;
+        }
+
+        footer {
+            margin-top: 60px;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand" href="{% url 'profile-list' %}">
+            <i class="bi bi-briefcase-fill"></i>
+            JobHub
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#jobhubNavbar"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="jobhubNavbar">
+
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile-list' %}">
+                        <i class="bi bi-people"></i>
+                        Profiles
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'all-jobs' %}">
+                        <i class="bi bi-briefcase"></i>
+                        Jobs
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my-profile' %}">
+                            <i class="bi bi-person-circle"></i>
+                            My Profile
+                        </a>
+                    </li>
+
+                    <!-- Post a Job -->
+                    <li class="nav-item ms-lg-2">
+                        <a
+                            href="{% url 'create-job' %}"
+                            class="btn btn-light btn-sm"
+                        >
+                            <i class="bi bi-plus-circle"></i>
+                            Post a Job
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my-applications' %}">
+                            <i class="bi bi-file-earmark-person"></i>
+                            My Applications
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
+                    <li class="nav-item ms-lg-2">
+                        <form method="POST" action="{% url 'logout' %}">
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-light btn-sm"
+                            >
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                    
+
+                {% else %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-2">
+                        <a
+                            class="btn btn-light btn-sm"
+                            href="{% url 'register' %}"
+                        >
+                            Create Account
+                        </a>
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+
+<main class="container py-5">
+
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+
+<footer class="bg-dark text-white py-4">
+    <div class="container text-center">
+
+        <p class="mb-1">
+            <strong>JobHub</strong>
+        </p>
+
+        <small class="text-secondary">
+            Connect. Discover. Grow.
+        </small>
+
+    </div>
+</footer>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+</html>

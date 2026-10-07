@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Applications{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+
+        <div class="mb-3">
+            <i class="bi bi-people-fill text-primary fs-1"></i>
+        </div>
+
+        <h1 class="fw-bold">
+            Job Applications
+        </h1>
+
+        <p class="text-muted mb-2">
+            Applications received for
+            <strong>{{ job.title }}</strong>
+        </p>
+
+        <p class="text-primary fw-semibold">
+            <i class="bi bi-building me-1"></i>
+            {{ job.company }}
+        </p>
+
+    </div>
+
+
+    {% if applications %}
+
+        <div class="row g-4">
+
+            {% for application in applications %}
+
+                <div class="col-lg-6">
+
+                    <div class="card border-0 shadow-sm h-100">
+
+                        <div class="card-body p-4">
+
+                            <!-- Applicant Header -->
+                            <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+
+                                <div>
+
+                                    <h4 class="fw-bold mb-1">
+                                        {{ application.user.first_name }}
+                                        {{ application.user.last_name }}
+                                    </h4>
+
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-person me-1"></i>
+                                        @{{ application.user.username }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- Current Status -->
+                                {% if application.status == "pending" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% elif application.status == "reviewed" %}
+
+                                    <span class="badge bg-info text-dark">
+                                        Reviewed
+                                    </span>
+
+                                {% elif application.status == "accepted" %}
+
+                                    <span class="badge bg-success">
+                                        Accepted
+                                    </span>
+
+                                {% elif application.status == "rejected" %}
+
+                                    <span class="badge bg-danger">
+                                        Rejected
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- Applicant Information -->
+                            <div class="mb-4">
+
+                                <p class="text-muted mb-2">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    {{ application.user.email }}
+                                </p>
+
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-calendar-event me-2"></i>
+                                    Applied on
+                                    {{ application.applied_at|date:"M d, Y" }}
+                                </p>
+
+                            </div>
+
+
+                            <hr>
+
+
+                            <!-- Cover Letter -->
+                            <div class="mb-4">
+
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-envelope-paper me-1"></i>
+                                    Cover Letter
+                                </h6>
+
+                                <div class="bg-light rounded-3 p-3">
+
+                                    <p class="text-muted mb-0">
+                                        {{ application.cover_letter }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Update Status -->
+                            <div class="mb-4">
+
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-arrow-repeat me-1"></i>
+                                    Update Application Status
+                                </h6>
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'update-status' application.id %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <div class="row g-2">
+
+                                        <div class="col">
+
+                                            <select
+                                                name="status"
+                                                class="form-select"
+                                                required
+                                            >
+
+                                                <option
+                                                    value="pending"
+                                                    {% if application.status == "pending" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Pending
+                                                </option>
+
+                                                <option
+                                                    value="reviewed"
+                                                    {% if application.status == "reviewed" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Reviewed
+                                                </option>
+
+                                                <option
+                                                    value="accepted"
+                                                    {% if application.status == "accepted" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Accepted
+                                                </option>
+
+                                                <option
+                                                    value="rejected"
+                                                    {% if application.status == "rejected" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Rejected
+                                                </option>
+
+                                            </select>
+
+                                        </div>
+
+                                        <div class="col-auto">
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary"
+                                            >
+                                                <i class="bi bi-check2-circle me-1"></i>
+                                                Update
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+
+                            <!-- Applicant Profile -->
+                            <a
+                                href="{% url 'profile-detail' application.user.profile.id %}"
+                                class="btn btn-outline-primary w-100"
+                            >
+                                <i class="bi bi-person-circle me-1"></i>
+                                View Applicant Profile
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <!-- No Applications -->
+        <div class="text-center py-5">
+
+            <div class="mb-3">
+                <i class="bi bi-inbox text-muted fs-1"></i>
+            </div>
+
+            <h4 class="fw-bold">
+                No Applications Yet
+            </h4>
+
+            <p class="text-muted mb-4">
+                No one has applied for this job yet.
+            </p>
+
+            <a
+                href="{% url 'job-detail' job.id %}"
+                class="btn btn-primary"
+            >
+                <i class="bi bi-arrow-left me-1"></i>
+                Back to Job
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

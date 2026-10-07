@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | JobHub{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card form-card shadow-sm p-4 p-md-5">
+
+            <div class="text-center mb-4">
+
+                <div class="text-primary fs-1">
+                    <i class="bi bi-person-gear"></i>
+                </div>
+
+                <h2 class="fw-bold">
+                    Edit Your Profile
+                </h2>
+
+                <p class="text-muted">
+                    Keep your professional information up to date.
+                </p>
+
+            </div>
+
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                {% csrf_token %}
+
+
+                <h5 class="fw-bold mb-3">
+                    Personal Information
+                </h5>
+
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            First Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="first_name"
+                            value="{{ profile.user.first_name }}"
+                            class="form-control"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Last Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="last_name"
+                            value="{{ profile.user.last_name }}"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ profile.user.email }}"
+                        class="form-control"
+                    >
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        name="location"
+                        value="{{ profile.location }}"
+                        class="form-control"
+                        placeholder="e.g. Kano, Nigeria"
+                    >
+
+                </div>
+
+
+                <hr class="my-4">
+
+
+                <h5 class="fw-bold mb-3">
+                    Professional Information
+                </h5>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Bio
+                    </label>
+
+                    <textarea
+                        name="bio"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Tell people about yourself..."
+                    >{{ profile.bio }}</textarea>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Skills
+                    </label>
+
+                    <textarea
+                        name="skills"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Python, Django, Java, HTML, CSS..."
+                    >{{ profile.skills }}</textarea>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone_number"
+                        value="{{ profile.phone_number }}"
+                        class="form-control"
+                    >
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        LinkedIn
+                    </label>
+
+                    <input
+                        type="url"
+                        name="linkedin"
+                        value="{{ profile.linkedin }}"
+                        class="form-control"
+                        placeholder="https://linkedin.com/in/..."
+                    >
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        GitHub
+                    </label>
+
+                    <input
+                        type="url"
+                        name="github"
+                        value="{{ profile.github }}"
+                        class="form-control"
+                        placeholder="https://github.com/..."
+                    >
+
+                </div>
+
+
+                <hr class="my-4">
+
+
+                <h5 class="fw-bold mb-3">
+                    Profile Image
+                </h5>
+
+
+                {% if profile.profile_image %}
+
+                    <div class="text-center mb-3">
+
+                        <img
+                            src="{{ profile.profile_image.url }}"
+                            alt="Current profile image"
+                            class="profile-image"
+                        >
+
+                        <p class="text-muted mt-2">
+                            Current profile image
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="mb-4">
+
+                    <input
+                        type="file"
+                        name="profile_image"
+                        class="form-control"
+                        accept="image/*"
+                    >
+
+                </div>
+
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-lg"
+                    >
+                        <i class="bi bi-check-circle"></i>
+                        Save Changes
+                    </button>
+
+
+                    <a
+                        href="{% url 'my-profile' %}"
+                        class="btn btn-outline-secondary btn-lg"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
