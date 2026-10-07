@@ -1,68 +1,77 @@
 # JobHub
 
-JobHub is a Django-based job platform that connects job seekers with employers. Users can create professional profiles, post jobs, search and filter available jobs, submit applications, and manage application statuses.
+JobHub is a Django-based job marketplace platform that connects job seekers with employers. Users can create professional profiles, discover and filter job opportunities, submit applications, and manage the application process.
+
+The project was built to demonstrate practical backend development using **Python and Django**, including authentication, database relationships, authorization, validation, CRUD operations, search, filtering, pagination, and application workflow management.
 
 ## Features
 
-### Authentication & Profiles
+### Authentication & User Profiles
 
 * User registration and login
 * User logout
-* User profiles
+* User profile creation and management
 * Profile editing
 * Profile image upload
 * GitHub and LinkedIn profile links
 * Skills, bio, location, and contact information
+* Protected profile ownership and editing
 
 ### Job Management
 
 * Create job postings
 * Edit own job postings
 * Delete own job postings
-* View job details
+* View detailed job information
 * Application deadlines
 * Salary information
 * Job type and location
-* Job search and filtering
+* Job search
+* Job filtering
 * Pagination
+* Employer ownership protection
 
 ### Job Applications
 
 * Apply for jobs with a cover letter
 * View submitted applications
 * Prevent users from applying to their own jobs
-* Prevent applications after the deadline
+* Prevent applications after the application deadline
 * Prevent duplicate applications
 * Employers can view applications for their own jobs
-* Employers can update application status
-* Application statuses:
+* Employers can update application statuses
 
-  * Pending
-  * Reviewed
-  * Accepted
-  * Rejected
+Application statuses include:
+
+* Pending
+* Reviewed
+* Accepted
+* Rejected
 
 ### Security & Validation
 
-* Login-required access for protected features
-* User ownership checks
+* Authentication for protected features
+* User ownership authorization
 * CSRF protection
-* Form validation
+* Required-field validation
 * Protected job editing and deletion
 * Protected application management
+* Duplicate application prevention
+* Application deadline validation
+* Environment-based secret key management
 * Custom 403, 404, and 500 error pages
-* Secret key stored using environment variables
 
 ## Technologies
 
-* Python
-* Django
-* SQLite
-* HTML5
-* CSS3
-* Bootstrap 5
-* Bootstrap Icons
-* Git & GitHub
+* **Python**
+* **Django 6.1.1**
+* **SQLite**
+* **HTML5**
+* **CSS3**
+* **Bootstrap 5**
+* **Bootstrap Icons**
+* **Git**
+* **GitHub**
 
 ## Project Structure
 
@@ -71,10 +80,14 @@ JobHub/
 ├── accounts/
 │   ├── migrations/
 │   ├── templates/
+│   │   ├── accounts/
+│   │   └── base.html
+│   ├── admin.py
+│   ├── apps.py
 │   ├── models.py
-│   ├── views.py
+│   ├── tests.py
 │   ├── urls.py
-│   └── admin.py
+│   └── views.py
 │
 ├── config/
 │   ├── settings.py
@@ -82,26 +95,24 @@ JobHub/
 │   ├── asgi.py
 │   └── wsgi.py
 │
-├── profile/
 ├── manage.py
 ├── requirements.txt
 ├── .gitignore
-├── README.md
-└── .env
+└── README.md
 ```
 
-> `.env` contains sensitive environment variables and is excluded from Git using `.gitignore`.
+> User-uploaded profile images and environment files are excluded from Git using `.gitignore`.
 
 ## Local Setup
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/progdatatofa/JobHub.git
 cd JobHub
 ```
 
-### 2. Create a virtual environment
+### 2. Create a Virtual Environment
 
 ```bash
 python -m venv env
@@ -109,17 +120,17 @@ python -m venv env
 
 Activate it on Windows:
 
-```bash
+```powershell
 env\Scripts\activate
 ```
 
-### 3. Install dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Configure Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -129,19 +140,19 @@ SECRET_KEY=your-secret-key
 
 Never commit the `.env` file to GitHub.
 
-### 5. Apply migrations
+### 5. Apply Database Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Create an admin account
+### 6. Create an Administrator Account
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Start the development server
+### 7. Start the Development Server
 
 ```bash
 python manage.py runserver
@@ -165,21 +176,26 @@ Examples include:
 * Ownership verification before updating application statuses
 * CSRF protection on forms
 * Duplicate application prevention
-* Deadline validation
-* Environment-based secret management
+* Application deadline validation
+* Environment-based secret key management
+* Protected user profile management
+
+These controls ensure that users can only perform actions they are authorized to perform.
 
 ## Future Improvements
 
-Possible future features include:
+Planned or potential improvements include:
 
 * Email notifications
 * Employer dashboard
 * Saved jobs
-* CV upload
+* CV/resume upload
 * Advanced job filtering
 * Employer messaging
 * Application analytics
 * Notification system
+* Production database integration
+* Automated testing
 
 ## Author
 
@@ -188,8 +204,10 @@ Possible future features include:
 BSc Computer Science
 Bayero University Kano
 
-Interested in backend development with Python and Django.
+Backend Developer focused on **Python, Django, and web application development**.
+
+GitHub: https://github.com/progdatatofa
 
 ## License
 
-This project is currently intended as a portfolio and learning project.
+This project is currently maintained as a portfolio and learning project.
