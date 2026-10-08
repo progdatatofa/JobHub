@@ -2,4 +2,4 @@
 builder = "RAILPACK"
 
 [deploy]
-startCommand = "gunicorn config.wsgi:application"
+startCommand = "python manage.py collectstatic --noinput && gunicorn config.wsgi:application"
