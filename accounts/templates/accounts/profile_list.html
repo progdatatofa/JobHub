@@ -1,171 +1,727 @@
+
 {% extends 'base.html' %}
 
-{% block title %}Profiles | JobHub{% endblock %}
+{% block title %}Discover Professionals | JobHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-directory {
+        --directory-navy: #10213a;
+        --directory-blue: #2563eb;
+        --directory-muted: #64748b;
+        --directory-border: #e5eaf2;
+    }
+
+    .profile-directory .directory-hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        padding: clamp(28px, 5vw, 58px);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 85% 15%, rgba(96, 165, 250, .32), transparent 30%),
+            linear-gradient(125deg, #0f1f38 0%, #173d79 58%, #2563eb 100%);
+        color: white;
+        box-shadow: 0 22px 55px rgba(16, 33, 58, .16);
+    }
+
+    .profile-directory .directory-hero::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        width: 250px;
+        height: 250px;
+        right: -80px;
+        bottom: -130px;
+        border: 1px solid rgba(255, 255, 255, .2);
+        border-radius: 50%;
+        box-shadow:
+            0 0 0 25px rgba(255, 255, 255, .035),
+            0 0 0 55px rgba(255, 255, 255, .025);
+    }
+
+    .profile-directory .hero-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, .2);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, .09);
+        color: #e0ecff;
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .profile-directory .hero-heading {
+        max-width: 650px;
+        margin: 20px 0 14px;
+        font-size: clamp(2rem, 4vw, 3.35rem);
+        font-weight: 800;
+        line-height: 1.13;
+        letter-spacing: -1.6px;
+    }
+
+    .profile-directory .hero-description {
+        max-width: 550px;
+        color: #d5e2f8;
+        font-size: 1.05rem;
+    }
+
+    .profile-directory .hero-visual {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 180px;
+    }
+
+    .profile-directory .hero-icon-wrap {
+        display: grid;
+        place-items: center;
+        width: 150px;
+        height: 150px;
+        border: 1px solid rgba(255, 255, 255, .25);
+        border-radius: 35px;
+        background: rgba(255, 255, 255, .1);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, .12);
+        transform: rotate(-6deg);
+        animation: directory-float 5s ease-in-out infinite;
+    }
+
+    .profile-directory .hero-icon-wrap i {
+        font-size: 5rem;
+        color: white;
+    }
+
+    @keyframes directory-float {
+        0%, 100% { transform: translateY(0) rotate(-6deg); }
+        50% { transform: translateY(-9px) rotate(-3deg); }
+    }
+
+    .profile-directory .directory-stat {
+        height: 100%;
+        padding: 19px 20px;
+        border: 1px solid var(--directory-border);
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 6px 22px rgba(16, 33, 58, .035);
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .profile-directory .directory-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(16, 33, 58, .08);
+    }
+
+    .profile-directory .stat-icon {
+        display: grid;
+        place-items: center;
+        width: 43px;
+        height: 43px;
+        margin-bottom: 13px;
+        border-radius: 13px;
+        background: #eff5ff;
+        color: var(--directory-blue);
+        font-size: 1.25rem;
+    }
+
+    .profile-directory .stat-value {
+        color: var(--directory-navy);
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .profile-directory .stat-label {
+        margin-top: 5px;
+        color: var(--directory-muted);
+        font-size: .88rem;
+    }
+
+    .profile-directory .directory-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .profile-directory .directory-title {
+        margin-bottom: 5px;
+        color: var(--directory-navy);
+        font-size: clamp(1.45rem, 3vw, 1.9rem);
+        font-weight: 800;
+        letter-spacing: -.7px;
+    }
+
+    .profile-directory .directory-subtitle {
+        margin: 0;
+        color: var(--directory-muted);
+    }
+
+    .profile-directory .search-panel {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: min(100%, 420px);
+        padding: 5px 15px;
+        border: 1px solid #dfe6f0;
+        border-radius: 13px;
+        background: white;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .profile-directory .search-panel:focus-within {
+        border-color: #8bb4ff;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, .09);
+    }
+
+    .profile-directory .search-panel > i {
+        color: var(--directory-blue);
+        font-size: 1.1rem;
+    }
+
+    .profile-directory .search-panel input {
+        width: 100%;
+        min-width: 0;
+        padding: 10px 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: var(--directory-navy);
+    }
+
+    .profile-directory .search-panel input::placeholder {
+        color: #94a3b8;
+    }
+
+    .profile-directory .profile-grid {
+        align-items: stretch;
+    }
+
+    .profile-directory .profile-column {
+        display: flex;
+        animation: directory-appear .5s ease both;
+    }
+
+    .profile-directory .profile-column:nth-child(2) {
+        animation-delay: .05s;
+    }
+
+    .profile-directory .profile-column:nth-child(3) {
+        animation-delay: .1s;
+    }
+
+    .profile-directory .profile-column:nth-child(4) {
+        animation-delay: .15s;
+    }
+
+    @keyframes directory-appear {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-directory .professional-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--directory-border);
+        border-radius: 21px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(16, 33, 58, .045);
+        transition: transform .28s ease, box-shadow .28s ease,
+            border-color .28s ease;
+    }
+
+    .profile-directory .professional-card:hover {
+        transform: translateY(-7px);
+        border-color: #c9d9f7;
+        box-shadow: 0 20px 42px rgba(16, 33, 58, .105);
+    }
+
+    .profile-directory .card-accent {
+        height: 6px;
+        background: linear-gradient(90deg, #2563eb, #7c9cff, #bfdbfe);
+    }
+
+    .profile-directory .professional-card .card-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        padding: 27px 23px 23px;
+        text-align: center;
+    }
+
+    .profile-directory .avatar-frame {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 122px;
+        height: 122px;
+        margin-bottom: 17px;
+        border-radius: 50%;
+        background: #eff5ff;
+    }
+
+    .profile-directory .avatar-frame .profile-image {
+        width: 110px;
+        height: 110px;
+        object-fit: cover;
+        border: 4px solid white;
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(16, 33, 58, .12);
+        transition: transform .3s ease;
+    }
+
+    .profile-directory .professional-card:hover .profile-image {
+        transform: scale(1.035);
+    }
+
+    .profile-directory .avatar-frame .default-avatar {
+        width: 110px;
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        border: 4px solid white;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e8eefb, #dbeafe);
+        color: #5473a4;
+        font-size: 42px;
+    }
+
+    .profile-directory .professional-name {
+        margin-bottom: 4px;
+        color: var(--directory-navy);
+        font-size: 1.2rem;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-directory .professional-handle {
+        margin-bottom: 13px;
+        color: var(--directory-blue);
+        font-size: .9rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-directory .professional-location {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 13px;
+        color: var(--directory-muted);
+        font-size: .88rem;
+    }
+
+    .profile-directory .professional-bio {
+        display: -webkit-box;
+        min-height: 50px;
+        margin-bottom: 18px;
+        overflow: hidden;
+        color: #64748b;
+        font-size: .92rem;
+        line-height: 1.65;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+
+    .profile-directory .professional-bio.empty-bio {
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    .profile-directory .skill-summary {
+        width: 100%;
+        margin-top: auto;
+        margin-bottom: 20px;
+        padding: 10px 12px;
+        border-radius: 11px;
+        background: #f5f8ff;
+        color: #3c5b8b;
+        font-size: .84rem;
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-directory .skill-summary i {
+        margin-right: 6px;
+        color: var(--directory-blue);
+    }
+
+    .profile-directory .profile-action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 11px 15px;
+        border: 1px solid #cbdcff;
+        border-radius: 11px;
+        background: #f5f8ff;
+        color: var(--directory-blue);
+        font-weight: 700;
+        text-decoration: none;
+        transition: color .2s ease, background .2s ease,
+            border-color .2s ease, transform .2s ease;
+    }
+
+    .profile-directory .profile-action:hover {
+        transform: translateY(-1px);
+        border-color: var(--directory-blue);
+        background: var(--directory-blue);
+        color: white;
+    }
+
+    .profile-directory .profile-action i {
+        transition: transform .2s ease;
+    }
+
+    .profile-directory .profile-action:hover i {
+        transform: translateX(3px);
+    }
+
+    .profile-directory .empty-state {
+        padding: 55px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 20px;
+        background: white;
+        text-align: center;
+    }
+
+    .profile-directory .empty-state-icon {
+        display: grid;
+        place-items: center;
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 17px;
+        border-radius: 24px;
+        background: #eff5ff;
+        color: var(--directory-blue);
+        font-size: 2rem;
+    }
+
+    .profile-directory .empty-state h3 {
+        color: var(--directory-navy);
+        font-weight: 800;
+    }
+
+    .profile-directory .empty-state p {
+        color: var(--directory-muted);
+    }
+
+    .profile-directory .results-note {
+        color: var(--directory-muted);
+        font-size: .9rem;
+    }
+
+    @media (max-width: 767.98px) {
+        .profile-directory .hero-visual {
+            min-height: 115px;
+            justify-content: flex-start;
+            margin-top: 20px;
+        }
+
+        .profile-directory .hero-icon-wrap {
+            width: 95px;
+            height: 95px;
+            border-radius: 25px;
+        }
+
+        .profile-directory .hero-icon-wrap i {
+            font-size: 3.3rem;
+        }
+
+        .profile-directory .directory-toolbar {
+            align-items: stretch;
+        }
+
+        .profile-directory .search-panel {
+            width: 100%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .profile-directory *,
+        .profile-directory *::before,
+        .profile-directory *::after {
+            animation: none !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="profile-directory">
 
-<div class="hero-section p-4 p-md-5 mb-5">
-
-    <div class="row align-items-center">
-
-        <div class="col-md-8">
-
-            <h1 class="fw-bold">
-                Discover Professionals
-            </h1>
-
-            <p class="lead mb-0">
-                Explore talented people and discover their skills and experience.
-            </p>
-
-        </div>
-
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-
-            <i class="bi bi-people-fill display-1 opacity-75"></i>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-    <div>
-        <h2 class="section-title mb-1">
-            JobHub Profiles
-        </h2>
-
-        <p class="text-muted mb-0">
-            Meet professionals in the JobHub community.
-        </p>
-    </div>
-
-</div>
-
-
-<div class="row g-4">
-
-    {% for profile in profiles %}
-
-        <div class="col-md-6 col-lg-4">
-
-            <div class="card profile-card shadow-sm h-100">
-
-                <div class="card-body text-center p-4">
-
-                    {% if profile.profile_image %}
-
-                        <img
-                            src="{{ profile.profile_image.url }}"
-                            alt="{{ profile.user.first_name }} profile image"
-                            class="profile-image mb-3"
-                        >
-
-                    {% else %}
-
-                        <div class="default-avatar mb-3">
-                            <i class="bi bi-person"></i>
-                        </div>
-
-                    {% endif %}
-
-
-                    <h4 class="fw-bold mb-1">
-
-                        {{ profile.user.first_name }}
-                        {{ profile.user.last_name }}
-
-                    </h4>
-
-
-                    <p class="text-primary mb-2">
-
-                        @{{ profile.user.username }}
-
-                    </p>
-
-
-                    {% if profile.location %}
-
-                        <p class="text-muted">
-
-                            <i class="bi bi-geo-alt-fill"></i>
-                            {{ profile.location }}
-
-                        </p>
-
-                    {% endif %}
-
-
-                    {% if profile.bio %}
-
-                        <p class="text-muted">
-
-                            {{ profile.bio|truncatewords:18 }}
-
-                        </p>
-
-                    {% endif %}
-
-
-                    {% if profile.skills %}
-
-                        <div class="mb-3">
-
-                            {% for skill in profile.skills|slice:":80" %}
-
-                            {% endfor %}
-
-                            <span class="badge bg-primary skill-badge">
-                                Skills Available
-                            </span>
-
-                        </div>
-
-                    {% endif %}
-
-
-                    <a
-                        href="{% url 'profile-detail' profile.id %}"
-                        class="btn btn-outline-primary w-100"
-                    >
-
-                        <i class="bi bi-person-vcard"></i>
-                        View Profile
-
-                    </a>
-
+    <!-- Hero -->
+    <section class="directory-hero mb-4 mb-lg-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="hero-kicker">
+                    <i class="bi bi-stars"></i>
+                    The JobHub community
                 </div>
 
-            </div>
+                <h1 class="hero-heading">
+                    Meet the people behind the talent.
+                </h1>
 
-        </div>
+<p class="hero-rotating-line">
+    Your next step starts when you
+    <span id="rotatingHeroText" aria-live="polite">discover talent</span>
+    <span class="rotating-cursor" aria-hidden="true"></span>
+</p>
 
-    {% empty %}
 
-        <div class="col-12">
-
-            <div class="text-center py-5">
-
-                <i class="bi bi-people display-1 text-muted"></i>
-
-                <h4 class="mt-3">
-                    No Profiles Yet
-                </h4>
-
-                <p class="text-muted">
-                    No profile has been created yet.
+                <p class="hero-description mb-4">
+                    Discover professionals, explore their backgrounds,
+                    and connect with people who bring valuable skills
+                    and experience to the table.
                 </p>
 
+                <a href="{% url 'all-jobs' %}"
+                   class="btn btn-light rounded-3 px-4 py-3 fw-semibold">
+                    Explore opportunities
+                    <i class="bi bi-arrow-up-right ms-2"></i>
+                </a>
             </div>
+
+            <div class="col-md-4">
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="hero-icon-wrap">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="row g-3 mb-5" aria-label="Community overview">
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="directory-stat">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-value">{{ profiles|length }}</div>
+                <div class="stat-label">Professionals in the directory</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="directory-stat">
+                <div class="stat-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div class="stat-value">Discover</div>
+                <div class="stat-label">Search people by name, skills or location</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="directory-stat">
+                <div class="stat-icon">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <div class="stat-value">Opportunities</div>
+                <div class="stat-label">Explore jobs and professional connections</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Directory heading and live search -->
+    <section>
+        <div class="directory-toolbar">
+            <div>
+                <h2 class="directory-title">Discover professionals</h2>
+                <p class="directory-subtitle">
+                    Get to know the people in your community.
+                </p>
+            </div>
+
+            <label class="search-panel">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input
+                    type="search"
+                    id="profileSearch"
+                    placeholder="Search name, skill or location..."
+                    aria-label="Search profiles by name, skill or location"
+                    autocomplete="off"
+                >
+            </label>
+        </div>
+
+        <p class="results-note mb-3" id="profileResults" aria-live="polite">
+            Showing {{ profiles|length }} profile{{ profiles|length|pluralize }}
+        </p>
+
+        <div class="row g-4 profile-grid" id="profileGrid">
+
+            {% for profile in profiles %}
+                <div class="col-md-6 col-lg-4 profile-column"
+                     data-profile-card
+                     data-search="{{ profile.user.first_name }} {{ profile.user.last_name }} {{ profile.user.username }} {{ profile.location|default:'' }} {{ profile.bio|default:'' }} {{ profile.skills|default:'' }}">
+
+                    <article class="professional-card">
+
+                        <div class="card-accent"></div>
+
+                        <div class="card-body">
+
+                            <div class="avatar-frame">
+                                {% if profile.profile_image %}
+                                    <img
+                                        src="{{ profile.profile_image.url }}"
+                                        alt="{{ profile.user.first_name }} {{ profile.user.last_name }} profile image"
+                                        class="profile-image"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    <div class="default-avatar">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <h3 class="professional-name">
+                                {{ profile.user.first_name }}
+                                {{ profile.user.last_name }}
+                            </h3>
+
+                            <p class="professional-handle">
+                                @{{ profile.user.username }}
+                            </p>
+
+                            {% if profile.location %}
+                                <div class="professional-location">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>{{ profile.location }}</span>
+                                </div>
+                            {% endif %}
+
+                            {% if profile.bio %}
+                                <p class="professional-bio">
+                                    {{ profile.bio|truncatewords:24 }}
+                                </p>
+                            {% else %}
+                                <p class="professional-bio empty-bio">
+                                    This professional hasn't added a bio yet.
+                                </p>
+                            {% endif %}
+
+                            <div class="skill-summary">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                                {% if profile.skills %}
+                                    {{ profile.skills|truncatewords:12 }}
+                                {% else %}
+                                    Skills not listed yet
+                                {% endif %}
+                            </div>
+
+                            <a
+                                href="{% url 'profile-detail' profile.id %}"
+                                class="profile-action"
+                            >
+                                <i class="bi bi-person-vcard"></i>
+                                View full profile
+                                <i class="bi bi-arrow-right ms-auto"></i>
+                            </a>
+
+                        </div>
+                    </article>
+                </div>
+            {% empty %}
+                <div class="col-12" id="noProfiles">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3>No professionals yet</h3>
+                        <p class="mb-0">
+                            There are no profiles to display right now.
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
 
         </div>
 
-    {% endfor %}
-
+        <div class="empty-state mt-3 d-none" id="noSearchResults">
+            <div class="empty-state-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <h3>No matching profiles</h3>
+            <p>Try a different name, skill or location.</p>
+            <button type="button" class="btn btn-primary px-4"
+                    id="clearProfileSearch">
+                Clear search
+            </button>
+        </div>
+    </section>
 </div>
 
+<script>
+(function () {
+    const searchInput = document.getElementById("profileSearch");
+    const grid = document.getElementById("profileGrid");
+    const resultText = document.getElementById("profileResults");
+    const noResults = document.getElementById("noSearchResults");
+    const clearButton = document.getElementById("clearProfileSearch");
+
+    if (!searchInput || !grid || !resultText || !noResults) {
+        return;
+    }
+
+    const cards = Array.from(grid.querySelectorAll("[data-profile-card]"));
+    const total = cards.length;
+
+    function filterProfiles() {
+        const query = searchInput.value.trim().toLocaleLowerCase();
+        let visible = 0;
+
+        cards.forEach(function (card) {
+            const searchableText = (
+                card.dataset.search || ""
+            ).toLocaleLowerCase();
+
+            const matches = searchableText.includes(query);
+
+            card.classList.toggle("d-none", !matches);
+
+            if (matches) {
+                visible += 1;
+            }
+        });
+
+        resultText.textContent = query
+            ? `Showing ${visible} of ${total} profile${total === 1 ? "" : "s"}`
+            : `Showing ${total} profile${total === 1 ? "" : "s"}`;
+
+        noResults.classList.toggle(
+            "d-none",
+            visible !== 0 || total === 0
+        );
+    }
+
+    searchInput.addEventListener("input", filterProfiles);
+
+    if (clearButton) {
+        clearButton.addEventListener("click", function () {
+            searchInput.value = "";
+            filterProfiles();
+            searchInput.focus();
+        });
+    }
+})();
+</script>
 {% endblock %}
