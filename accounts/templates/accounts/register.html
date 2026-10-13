@@ -1,179 +1,828 @@
+```django
 {% extends 'base.html' %}
 
 {% block title %}Create Account | JobHub{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ==================================
+   JOBHUB PREMIUM REGISTRATION PAGE
+================================== */
+
+.register-page {
+    min-height: 76vh;
+    display: flex;
+    align-items: center;
+    padding: 35px 0;
+}
+
+.register-shell {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.88fr 1.12fr;
+    background: #fff;
+    border: 1px solid #e6ebf3;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(16, 33, 58, 0.10);
+    animation: registerAppear .6s ease both;
+}
+
+/* Welcome panel */
+
+.register-welcome {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 46px 40px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 90% 20%,
+            rgba(59, 130, 246, .25), transparent 34%),
+        linear-gradient(145deg, #10213a, #142e50 68%, #183d68);
+}
+
+.register-welcome::before,
+.register-welcome::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.register-welcome::before {
+    width: 350px;
+    height: 350px;
+    right: -180px;
+    top: 20%;
+}
+
+.register-welcome::after {
+    width: 250px;
+    height: 250px;
+    right: -130px;
+    top: 27%;
+}
+
+.register-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    color: #fff;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -.7px;
+    text-decoration: none;
+}
+
+.register-brand:hover {
+    color: #fff;
+}
+
+.register-brand-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: #2563eb;
+    border-radius: 13px;
+    font-size: 1.35rem;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, .3);
+}
+
+.register-welcome-content {
+    margin: 55px 0;
+}
+
+.register-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #bfdbfe;
+    font-size: .76rem;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+}
+
+.register-eyebrow::before {
+    content: "";
+    width: 24px;
+    height: 2px;
+    background: #60a5fa;
+    border-radius: 2px;
+}
+
+.register-welcome h1 {
+    color: #fff;
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.13;
+    letter-spacing: -1.8px;
+    margin: 0 0 22px;
+}
+
+.register-welcome h1 span {
+    color: #93c5fd;
+}
+
+.register-welcome-description {
+    color: #d2deed;
+    font-size: .98rem;
+    line-height: 1.9;
+    margin-bottom: 32px;
+}
+
+.register-benefits {
+    display: grid;
+    gap: 20px;
+}
+
+.register-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    color: #e7eef8;
+    font-size: .9rem;
+    line-height: 1.7;
+}
+
+.register-benefit-icon {
+    flex: 0 0 39px;
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    color: #bfdbfe;
+    background: rgba(255, 255, 255, .09);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 11px;
+    font-size: 1.05rem;
+}
+
+.register-welcome-footer {
+    color: #aebfd5;
+    font-size: .8rem;
+    line-height: 1.7;
+}
+
+/* Registration form */
+
+.register-form-panel {
+    padding: 45px 48px;
+    background: #fff;
+}
+
+.register-form-heading {
+    margin-bottom: 27px;
+}
+
+.register-form-heading h2 {
+    color: #10213a;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 0 10px;
+}
+
+.register-form-heading p {
+    color: #718096;
+    font-size: .93rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.register-form-label {
+    display: block;
+    color: #25364d;
+    font-size: .86rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.register-input-wrap {
+    position: relative;
+}
+
+.register-input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.register-input {
+    width: 100%;
+    min-height: 49px;
+    padding: 11px 15px 11px 43px;
+    color: #172b46;
+    background: #fbfcfe;
+    border: 1px solid #dfe6ef;
+    border-radius: 11px;
+    outline: none;
+    font-size: .91rem;
+    transition: border-color .2s ease, box-shadow .2s ease,
+                background .2s ease;
+}
+
+.register-input::placeholder {
+    color: #a0acbb;
+}
+
+.register-input:hover {
+    border-color: #bdcce0;
+}
+
+.register-input:focus {
+    background: #fff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, .11);
+}
+
+.register-password-input {
+    padding-right: 49px;
+}
+
+.register-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    width: 37px;
+    height: 37px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+    color: #64748b;
+    background: transparent;
+    cursor: pointer;
+}
+
+.register-password-toggle:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.register-errors {
+    padding: 15px 17px;
+    margin-bottom: 23px;
+    color: #b42318;
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    font-size: .88rem;
+    line-height: 1.7;
+}
+
+.register-errors-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.register-errors ul {
+    padding-left: 25px;
+    margin-bottom: 0;
+}
+
+.register-submit {
+    width: 100%;
+    min-height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    border: 0;
+    border-radius: 12px;
+    color: #fff;
+    background: linear-gradient(110deg, #2563eb, #1d4ed8);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, .19);
+    font-size: .96rem;
+    font-weight: 700;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.register-submit:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(37, 99, 235, .27);
+}
+
+.register-login {
+    margin-top: 25px;
+    color: #718096;
+    font-size: .9rem;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.register-login a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-login a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.register-security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 23px;
+    color: #94a3b8;
+    font-size: .77rem;
+    text-align: center;
+}
+
+.register-security-note i {
+    color: #16a34a;
+}
+
+@keyframes registerAppear {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .register-welcome {
+        padding: 36px 27px;
+    }
+
+    .register-form-panel {
+        padding: 38px 28px;
+    }
+
+    .register-welcome h1 {
+        font-size: 2.35rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .register-page {
+        min-height: auto;
+        padding: 22px 0 30px;
+    }
+
+    .register-shell {
+        grid-template-columns: 1fr;
+        max-width: 540px;
+        border-radius: 20px;
+    }
+
+    .register-welcome {
+        padding: 27px 25px 29px;
+    }
+
+    .register-welcome-content {
+        margin: 35px 0 27px;
+    }
+
+    .register-welcome h1 {
+        font-size: 2.25rem;
+        letter-spacing: -1.2px;
+    }
+
+    .register-welcome-description {
+        margin-bottom: 25px;
+        font-size: .93rem;
+    }
+
+    .register-benefits {
+        gap: 13px;
+    }
+
+    .register-welcome-footer {
+        margin-top: 27px;
+    }
+
+    .register-form-panel {
+        padding: 32px 24px 35px;
+    }
+
+    .register-form-heading h2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .register-welcome,
+    .register-form-panel {
+        padding-left: 19px;
+        padding-right: 19px;
+    }
+
+    .register-welcome h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .register-shell {
+        animation: none;
+    }
+
+    .register-input,
+    .register-submit {
+        transition: none;
+    }
+}
+
+
+
+
+
+/* Passionate animated registration heading */
+
+
+.register-moving-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -1px;
+}
+
+.register-heading-line,
+.register-heading-highlight {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    animation: continuousMove 4s ease-in-out infinite alternate;
+}
+
+.register-heading-line {
+    color: #ffffff;
+}
+
+.register-heading-highlight {
+    color: #60a5fa;
+    animation-delay: 0.4s;
+    background: linear-gradient(
+        90deg,
+        #60a5fa,
+        #a5f3fc,
+        #93c5fd,
+        #60a5fa
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation:
+        continuousMove 4s ease-in-out infinite alternate,
+        headingColorFlow 5s linear infinite;
+}
+
+@keyframes continuousMove {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(24px);
+    }
+}
+
+@keyframes headingColorFlow {
+    from {
+        background-position: 0% center;
+    }
+    to {
+        background-position: 200% center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .register-heading-line,
+    .register-heading-highlight {
+        animation: none;
+        transform: none;
+    }
+}
+
+</style>
+{% endblock %}
+
 {% block content %}
+<div class="register-page">
+    <div class="container">
+        <div class="register-shell">
 
-<div class="row justify-content-center">
-
-    <div class="col-md-8 col-lg-6">
-
-        <div class="card form-card shadow-sm p-4 p-md-5">
-
-            <div class="text-center mb-4">
-
-                <div class="text-primary fs-1">
-                    <i class="bi bi-person-plus-fill"></i>
-                </div>
-
-                <h2 class="fw-bold">Create Your Account</h2>
-
-                <p class="text-muted">
-                    Join JobHub and connect with opportunities.
-                </p>
-
-            </div>
-
-
-            {% if errors %}
-                <div class="alert alert-danger">
-                    <strong>Please fix the following:</strong>
-
-                    <ul class="mb-0 mt-2">
-                        {% for error in errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-
-
-            <form method="POST">
-
-                {% csrf_token %}
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">
-                        Username
-                    </label>
-
-                    <input
-                        type="text"
-                        name="username"
-                        value="{{ username }}"
-                        class="form-control form-control-lg"
-                        placeholder="Choose a username"
-                        required
-                    >
-                </div>
-
-
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label fw-semibold">
-                            First Name
-                        </label>
-
-                        <input
-                            type="text"
-                            name="first_name"
-                            value="{{ first_name }}"
-                            class="form-control form-control-lg"
-                            placeholder="First name"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label fw-semibold">
-                            Last Name
-                        </label>
-
-                        <input
-                            type="text"
-                            name="last_name"
-                            value="{{ last_name }}"
-                            class="form-control form-control-lg"
-                            placeholder="Last name"
-                            required
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <div class="mb-3">
-
-                    <label class="form-label fw-semibold">
-                        Email Address
-                    </label>
-
-                    <input
-                        type="email"
-                        name="email"
-                        value="{{ email }}"
-                        class="form-control form-control-lg"
-                        placeholder="you@example.com"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="mb-3">
-
-                    <label class="form-label fw-semibold">
-                        Password
-                    </label>
-
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control form-control-lg"
-                        placeholder="Create a strong password"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="mb-4">
-
-                    <label class="form-label fw-semibold">
-                        Confirm Password
-                    </label>
-
-                    <input
-                        type="password"
-                        name="confirm_password"
-                        class="form-control form-control-lg"
-                        placeholder="Enter password again"
-                        required
-                    >
-
-                </div>
-
-
-                <button class="btn btn-primary btn-lg w-100" type="submit">
-                    <i class="bi bi-person-check-fill"></i>
-                    Create Account
-                </button>
-
-            </form>
-
-
-            <div class="text-center mt-4">
-
-                <span class="text-muted">
-                    Already have an account?
-                </span>
-
-                <a href="{% url 'login' %}" class="fw-semibold text-decoration-none">
-                    Login
+            <!-- Welcome panel -->
+            <section class="register-welcome">
+                <a href="{% url 'all-jobs' %}" class="register-brand">
+                    <span class="register-brand-icon">
+                        <i class="bi bi-briefcase-fill"></i>
+                    </span>
+                    <span>JobHub</span>
                 </a>
 
-            </div>
+                <div class="register-welcome-content">
+                    <div class="register-eyebrow">
+                        Start your journey
+                    </div>
+
+                    <h1 class="register-moving-heading">
+                        <span class="register-heading-line">
+                            Your ambition deserves
+                        </span>
+                        <span class="register-heading-highlight">
+                             a chance to shine.
+                         </span>
+                    </h1>       
+
+                    <p class="register-welcome-description">
+                        Create your JobHub account and open the door to
+                        new opportunities, professional connections, and
+                        the next chapter of your career.
+                    </p>
+
+                    <div class="register-benefits">
+                        <div class="register-benefit">
+                            <span class="register-benefit-icon">
+                                <i class="bi bi-person-badge"></i>
+                            </span>
+                            <span>
+                                <strong>Build your profile</strong><br>
+                                Show the world your skills and experience.
+                            </span>
+                        </div>
+
+                        <div class="register-benefit">
+                            <span class="register-benefit-icon">
+                                <i class="bi bi-briefcase"></i>
+                            </span>
+                            <span>
+                                <strong>Explore opportunities</strong><br>
+                                Find roles that match your ambitions.
+                            </span>
+                        </div>
+
+                        <div class="register-benefit">
+                            <span class="register-benefit-icon">
+                                <i class="bi bi-rocket-takeoff"></i>
+                            </span>
+                            <span>
+                                <strong>Move your career forward</strong><br>
+                                Take the next step, one opportunity at a time.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="register-welcome-footer">
+                    Your next chapter begins with one simple step.
+                </div>
+            </section>
+
+            <!-- Registration form -->
+            <section class="register-form-panel">
+                <div class="register-form-heading">
+                    <h2>Create your account</h2>
+                    <p>
+                        Join JobHub. It only takes a few details to get started.
+                    </p>
+                </div>
+
+                {% if errors %}
+                    <div class="register-errors" role="alert" aria-live="polite">
+                        <div class="register-errors-heading">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            <span>Please fix the following:</span>
+                        </div>
+
+                        <ul>
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="registerUsername" class="register-form-label">
+                            Username
+                        </label>
+
+                        <div class="register-input-wrap">
+                            <i class="bi bi-person register-input-icon"></i>
+                            <input
+                                type="text"
+                                id="registerUsername"
+                                name="username"
+                                value="{{ username|default:'' }}"
+                                class="register-input"
+                                placeholder="Choose a username"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            <label for="registerFirstName" class="register-form-label">
+                                First name
+                            </label>
+
+                            <div class="register-input-wrap">
+                                <i class="bi bi-person register-input-icon"></i>
+                                <input
+                                    type="text"
+                                    id="registerFirstName"
+                                    name="first_name"
+                                    value="{{ first_name|default:'' }}"
+                                    class="register-input"
+                                    placeholder="First name"
+                                    autocomplete="given-name"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 mb-3">
+                            <label for="registerLastName" class="register-form-label">
+                                Last name
+                            </label>
+
+                            <div class="register-input-wrap">
+                                <i class="bi bi-person register-input-icon"></i>
+                                <input
+                                    type="text"
+                                    id="registerLastName"
+                                    name="last_name"
+                                    value="{{ last_name|default:'' }}"
+                                    class="register-input"
+                                    placeholder="Last name"
+                                    autocomplete="family-name"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="registerEmail" class="register-form-label">
+                            Email address
+                        </label>
+
+                        <div class="register-input-wrap">
+                            <i class="bi bi-envelope register-input-icon"></i>
+                            <input
+                                type="email"
+                                id="registerEmail"
+                                name="email"
+                                value="{{ email|default:'' }}"
+                                class="register-input"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="registerPassword" class="register-form-label">
+                            Password
+                        </label>
+
+                        <div class="register-input-wrap">
+                            <i class="bi bi-lock register-input-icon"></i>
+                            <input
+                                type="password"
+                                id="registerPassword"
+                                name="password"
+                                class="register-input register-password-input"
+                                placeholder="Create a strong password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="register-password-toggle"
+                                data-password-target="registerPassword"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="registerConfirmPassword" class="register-form-label">
+                            Confirm password
+                        </label>
+
+                        <div class="register-input-wrap">
+                            <i class="bi bi-shield-lock register-input-icon"></i>
+                            <input
+                                type="password"
+                                id="registerConfirmPassword"
+                                name="confirm_password"
+                                class="register-input register-password-input"
+                                placeholder="Enter your password again"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="register-password-toggle"
+                                data-password-target="registerConfirmPassword"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="register-submit">
+                        <i class="bi bi-person-check-fill"></i>
+                        <span>Create my account</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="register-login">
+                    Already have an account?
+                    <a href="{% url 'login' %}">Sign in</a>
+                </div>
+
+                <div class="register-security-note">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Your information is submitted through a protected form.</span>
+                </div>
+            </section>
 
         </div>
-
     </div>
-
 </div>
 
+<script>
+(function () {
+    const toggleButtons = document.querySelectorAll(
+        ".register-password-toggle"
+    );
+
+    toggleButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const inputId = button.getAttribute("data-password-target");
+            const passwordInput = document.getElementById(inputId);
+            const icon = button.querySelector("i");
+
+            if (!passwordInput || !icon) {
+                return;
+            }
+
+            const showPassword = passwordInput.type === "password";
+
+            passwordInput.type = showPassword ? "text" : "password";
+            icon.className = showPassword ? "bi bi-eye-slash" : "bi bi-eye";
+
+            button.setAttribute(
+                "aria-label",
+                showPassword ? "Hide password" : "Show password"
+            );
+
+            button.setAttribute("aria-pressed", String(showPassword));
+        });
+    });
+})();
+</script>
 {% endblock %}
+```

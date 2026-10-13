@@ -1,102 +1,645 @@
+```django
 {% extends 'base.html' %}
 
-{% block title %}Login | JobHub{% endblock %}
+{% block title %}Sign In | JobHub{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================================
+   JOBHUB PREMIUM LOGIN PAGE
+================================ */
+
+.login-page {
+    min-height: 76vh;
+    display: flex;
+    align-items: center;
+    padding: 35px 0;
+}
+
+.login-shell {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 0.92fr;
+    background: #ffffff;
+    border: 1px solid #e6ebf3;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(16, 33, 58, 0.10);
+    animation: loginAppear 0.65s ease both;
+}
+
+/* Welcome panel */
+
+.login-welcome {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 85% 15%,
+            rgba(59, 130, 246, 0.24), transparent 32%),
+        linear-gradient(145deg, #10213a 0%, #142e50 65%, #183d68 100%);
+}
+
+.login-welcome::before,
+.login-welcome::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.login-welcome::before {
+    width: 340px;
+    height: 340px;
+    right: -155px;
+    top: 18%;
+}
+
+.login-welcome::after {
+    width: 240px;
+    height: 240px;
+    right: -105px;
+    top: 26%;
+}
+
+.login-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+    text-decoration: none;
+    width: fit-content;
+}
+
+.login-brand:hover {
+    color: #ffffff;
+}
+
+.login-brand-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: #2563eb;
+    border-radius: 13px;
+    font-size: 1.35rem;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.3);
+}
+
+.login-welcome-content {
+    max-width: 440px;
+    margin: 60px 0;
+}
+
+.login-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #bfdbfe;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+    margin-bottom: 23px;
+}
+
+.login-eyebrow::before {
+    content: "";
+    width: 24px;
+    height: 2px;
+    background: #60a5fa;
+    border-radius: 2px;
+}
+
+.login-welcome h1 {
+    max-width: 430px;
+    margin: 0 0 23px;
+    font-size: clamp(2.3rem, 4vw, 3.55rem);
+    line-height: 1.12;
+    letter-spacing: -2px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.login-welcome h1 span {
+    color: #93c5fd;
+}
+
+.login-welcome-description {
+    max-width: 390px;
+    color: #d2deed;
+    font-size: 1.02rem;
+    line-height: 1.9;
+    margin-bottom: 32px;
+}
+
+.login-benefits {
+    display: grid;
+    gap: 18px;
+}
+
+.login-benefit {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: #e7eef8;
+    font-size: 0.93rem;
+}
+
+.login-benefit-icon {
+    width: 37px;
+    height: 37px;
+    flex: 0 0 37px;
+    display: grid;
+    place-items: center;
+    color: #bfdbfe;
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
+    font-size: 1.05rem;
+}
+
+.login-welcome-footer {
+    color: #aebfd5;
+    font-size: 0.8rem;
+    line-height: 1.7;
+}
+
+/* Login form panel */
+
+.login-form-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 54px 52px;
+    background: #ffffff;
+}
+
+.login-form-heading {
+    margin-bottom: 34px;
+}
+
+.login-form-heading h2 {
+    color: #10213a;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 0 11px;
+}
+
+.login-form-heading p {
+    color: #718096;
+    font-size: 0.94rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.login-form-label {
+    display: block;
+    color: #25364d;
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.login-input-wrap {
+    position: relative;
+}
+
+.login-input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1.05rem;
+    pointer-events: none;
+}
+
+.login-input {
+    width: 100%;
+    min-height: 54px;
+    padding: 13px 16px 13px 46px;
+    border: 1px solid #dfe6ef;
+    border-radius: 12px;
+    background: #fbfcfe;
+    color: #172b46;
+    font-size: 0.94rem;
+    outline: none;
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+}
+
+.login-input::placeholder {
+    color: #a0acbb;
+}
+
+.login-input:hover {
+    border-color: #bdcce0;
+}
+
+.login-input:focus {
+    background: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.11);
+}
+
+.login-password-input {
+    padding-right: 50px;
+}
+
+.login-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.login-password-toggle:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.login-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 14px 15px;
+    margin-bottom: 25px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fff5f5;
+    color: #b42318;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.login-error i {
+    margin-top: 2px;
+    font-size: 1.05rem;
+}
+
+.login-submit {
+    min-height: 55px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 11px;
+    margin-top: 9px;
+    border: 0;
+    border-radius: 12px;
+    color: #ffffff;
+    background: linear-gradient(110deg, #2563eb, #1d4ed8);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.19);
+    font-size: 0.98rem;
+    font-weight: 700;
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease,
+                filter 0.2s ease;
+}
+
+.login-submit:hover {
+    color: #ffffff;
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(37, 99, 235, 0.27);
+}
+
+.login-submit:active {
+    transform: translateY(0);
+}
+
+.login-register {
+    text-align: center;
+    margin-top: 30px;
+    color: #718096;
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.login-register a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.login-register a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.login-security-note {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    margin-top: 28px;
+    color: #94a3b8;
+    font-size: 0.78rem;
+}
+
+.login-security-note i {
+    color: #16a34a;
+}
+
+/* Motion and responsive layout */
+
+@keyframes loginAppear {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .login-welcome {
+        padding: 38px 30px;
+    }
+
+    .login-form-panel {
+        padding: 42px 30px;
+    }
+
+    .login-welcome h1 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .login-page {
+        min-height: auto;
+        padding: 22px 0 30px;
+    }
+
+    .login-shell {
+        grid-template-columns: 1fr;
+        max-width: 510px;
+        border-radius: 20px;
+    }
+
+    .login-welcome {
+        padding: 28px 26px 30px;
+    }
+
+    .login-welcome-content {
+        margin: 36px 0 28px;
+    }
+
+    .login-welcome h1 {
+        max-width: 400px;
+        font-size: 2.35rem;
+        letter-spacing: -1.3px;
+    }
+
+    .login-welcome-description {
+        margin-bottom: 24px;
+        font-size: 0.94rem;
+    }
+
+    .login-benefits {
+        gap: 13px;
+    }
+
+    .login-welcome-footer {
+        margin-top: 28px;
+    }
+
+    .login-form-panel {
+        padding: 34px 26px 36px;
+    }
+
+    .login-form-heading {
+        margin-bottom: 26px;
+    }
+
+    .login-form-heading h2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-welcome,
+    .login-form-panel {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .login-welcome h1 {
+        font-size: 2.05rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-shell {
+        animation: none;
+    }
+
+    .login-input,
+    .login-password-toggle,
+    .login-submit {
+        transition: none;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="login-page">
+    <div class="container">
+        <div class="login-shell">
 
-<div class="row justify-content-center">
-
-    <div class="col-md-6 col-lg-5">
-
-        <div class="card form-card shadow-sm p-4 p-md-5">
-
-            <div class="text-center mb-4">
-
-                <div class="text-primary fs-1">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                </div>
-
-                <h2 class="fw-bold">Welcome Back</h2>
-
-                <p class="text-muted">
-                    Login to continue to JobHub.
-                </p>
-
-            </div>
-
-
-            {% if error %}
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-circle"></i>
-                    {{ error }}
-                </div>
-            {% endif %}
-
-
-            <form method="POST">
-
-                {% csrf_token %}
-
-                <div class="mb-3">
-
-                    <label class="form-label fw-semibold">
-                        Username
-                    </label>
-
-                    <input
-                        type="text"
-                        name="username"
-                        class="form-control form-control-lg"
-                        placeholder="Enter your username"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="mb-4">
-
-                    <label class="form-label fw-semibold">
-                        Password
-                    </label>
-
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control form-control-lg"
-                        placeholder="Enter your password"
-                        required
-                    >
-
-                </div>
-
-
-                <button type="submit" class="btn btn-primary btn-lg w-100">
-
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    Login
-
-                </button>
-
-            </form>
-
-
-            <div class="text-center mt-4">
-
-                <span class="text-muted">
-                    Don't have an account?
-                </span>
-
-                <a href="{% url 'register' %}" class="fw-semibold text-decoration-none">
-                    Create one
+            <!-- Welcome panel -->
+            <section class="login-welcome">
+                <a href="{% url 'all-jobs' %}" class="login-brand">
+                    <span class="login-brand-icon">
+                        <i class="bi bi-briefcase-fill"></i>
+                    </span>
+                    <span>JobHub</span>
                 </a>
 
-            </div>
+                <div class="login-welcome-content">
+                    <div class="login-eyebrow">
+                        Your career, your future
+                    </div>
+
+                    <h1>
+                        Your next opportunity <span>starts here.</span>
+                    </h1>
+
+                    <p class="login-welcome-description">
+                        Connect with opportunities, showcase your skills,
+                        and take the next step in your professional journey.
+                        Your future deserves a great starting point.
+                    </p>
+
+                    <div class="login-benefits">
+                        <div class="login-benefit">
+                            <span class="login-benefit-icon">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <span>Discover opportunities that match your goals</span>
+                        </div>
+
+                        <div class="login-benefit">
+                            <span class="login-benefit-icon">
+                                <i class="bi bi-person-check"></i>
+                            </span>
+                            <span>Showcase your skills and experience</span>
+                        </div>
+
+                        <div class="login-benefit">
+                            <span class="login-benefit-icon">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </span>
+                            <span>Take the next step in your career</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="login-welcome-footer">
+                    Every great journey begins with a single step.
+                    Take yours with JobHub.
+                </div>
+            </section>
+
+            <!-- Login form -->
+            <section class="login-form-panel">
+                <div class="login-form-heading">
+                    <h2>Welcome back</h2>
+                    <p>
+                        Sign in to your account and pick up where you left off.
+                    </p>
+                </div>
+
+                {% if error %}
+                    <div class="login-error" role="alert" aria-live="polite">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <div>{{ error }}</div>
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="loginUsername" class="login-form-label">
+                            Username
+                        </label>
+
+                        <div class="login-input-wrap">
+                            <i class="bi bi-person login-input-icon"></i>
+                            <input
+                                type="text"
+                                id="loginUsername"
+                                name="username"
+                                class="login-input"
+                                placeholder="Enter your username"
+                                autocomplete="username"
+                                required
+                                autofocus
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="loginPassword" class="login-form-label">
+                            Password
+                        </label>
+
+                        <div class="login-input-wrap">
+                            <i class="bi bi-lock login-input-icon"></i>
+                            <input
+                                type="password"
+                                id="loginPassword"
+                                name="password"
+                                class="login-input login-password-input"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="login-password-toggle"
+                                id="toggleLoginPassword"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                            >
+                                <i class="bi bi-eye" id="loginPasswordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-submit">
+                        <span>Sign in to JobHub</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="login-register">
+                    New to JobHub?
+                    <a href="{% url 'register' %}">Create your account</a>
+                </div>
+
+                <div class="login-security-note">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Your sign-in is protected by secure form submission.</span>
+                </div>
+            </section>
 
         </div>
-
     </div>
-
 </div>
 
+<script>
+(function () {
+    const passwordInput = document.getElementById("loginPassword");
+    const toggleButton = document.getElementById("toggleLoginPassword");
+    const passwordIcon = document.getElementById("loginPasswordIcon");
+
+    if (!passwordInput || !toggleButton || !passwordIcon) {
+        return;
+    }
+
+    toggleButton.addEventListener("click", function () {
+        const showPassword = passwordInput.type === "password";
+
+        passwordInput.type = showPassword ? "text" : "password";
+        passwordIcon.className = showPassword ? "bi bi-eye-slash" : "bi bi-eye";
+        toggleButton.setAttribute("aria-label",
+            showPassword ? "Hide password" : "Show password");
+        toggleButton.setAttribute("aria-pressed", String(showPassword));
+    });
+})();
+</script>
 {% endblock %}
+```
