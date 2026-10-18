@@ -1,14 +1,10 @@
-```django
+
 {% extends 'base.html' %}
 
 {% block title %}Create Account | JobHub{% endblock %}
 
 {% block extra_css %}
 <style>
-/* ==================================
-   JOBHUB PREMIUM REGISTRATION PAGE
-================================== */
-
 .register-page {
     min-height: 76vh;
     display: flex;
@@ -21,16 +17,14 @@
     max-width: 1120px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 0.88fr 1.12fr;
+    grid-template-columns: .88fr 1.12fr;
     background: #fff;
     border: 1px solid #e6ebf3;
     border-radius: 26px;
     overflow: hidden;
-    box-shadow: 0 24px 70px rgba(16, 33, 58, 0.10);
+    box-shadow: 0 24px 70px rgba(16, 33, 58, .10);
     animation: registerAppear .6s ease both;
 }
-
-/* Welcome panel */
 
 .register-welcome {
     position: relative;
@@ -42,8 +36,7 @@
     padding: 46px 40px;
     color: #fff;
     background:
-        radial-gradient(circle at 90% 20%,
-            rgba(59, 130, 246, .25), transparent 34%),
+        radial-gradient(circle at 90% 20%, rgba(59,130,246,.25), transparent 34%),
         linear-gradient(145deg, #10213a, #142e50 68%, #183d68);
 }
 
@@ -52,7 +45,7 @@
     content: "";
     position: absolute;
     z-index: -1;
-    border: 1px solid rgba(255, 255, 255, .09);
+    border: 1px solid rgba(255,255,255,.09);
     border-radius: 50%;
     pointer-events: none;
 }
@@ -96,7 +89,7 @@
     background: #2563eb;
     border-radius: 13px;
     font-size: 1.35rem;
-    box-shadow: 0 8px 22px rgba(37, 99, 235, .3);
+    box-shadow: 0 8px 22px rgba(37,99,235,.3);
 }
 
 .register-welcome-content {
@@ -123,24 +116,46 @@
     border-radius: 2px;
 }
 
-.register-welcome h1 {
-    color: #fff;
+.register-moving-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
     font-size: clamp(2.2rem, 3.5vw, 3.2rem);
     font-weight: 800;
-    line-height: 1.13;
-    letter-spacing: -1.8px;
-    margin: 0 0 22px;
+    line-height: 1.25;
+    letter-spacing: -1px;
 }
 
-.register-welcome h1 span {
-    color: #93c5fd;
+.register-heading-line,
+.register-heading-highlight {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    animation: continuousMove 4s ease-in-out infinite alternate;
+}
+
+.register-heading-line {
+    color: #fff;
+}
+
+.register-heading-highlight {
+    color: #60a5fa;
+    animation:
+        continuousMove 4s ease-in-out .4s infinite alternate,
+        headingColorFlow 5s linear infinite;
+    background: linear-gradient(90deg, #60a5fa, #a5f3fc, #93c5fd, #60a5fa);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .register-welcome-description {
     color: #d2deed;
     font-size: .98rem;
     line-height: 1.9;
-    margin-bottom: 32px;
+    margin: 22px 0 32px;
 }
 
 .register-benefits {
@@ -164,8 +179,8 @@
     display: grid;
     place-items: center;
     color: #bfdbfe;
-    background: rgba(255, 255, 255, .09);
-    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(255,255,255,.09);
+    border: 1px solid rgba(255,255,255,.08);
     border-radius: 11px;
     font-size: 1.05rem;
 }
@@ -175,8 +190,6 @@
     font-size: .8rem;
     line-height: 1.7;
 }
-
-/* Registration form */
 
 .register-form-panel {
     padding: 45px 48px;
@@ -234,8 +247,7 @@
     border-radius: 11px;
     outline: none;
     font-size: .91rem;
-    transition: border-color .2s ease, box-shadow .2s ease,
-                background .2s ease;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
 .register-input::placeholder {
@@ -249,7 +261,12 @@
 .register-input:focus {
     background: #fff;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, .11);
+    box-shadow: 0 0 0 4px rgba(59,130,246,.11);
+}
+
+select.register-input {
+    padding-right: 12px;
+    cursor: pointer;
 }
 
 .register-password-input {
@@ -313,16 +330,17 @@
     border-radius: 12px;
     color: #fff;
     background: linear-gradient(110deg, #2563eb, #1d4ed8);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, .19);
+    box-shadow: 0 8px 20px rgba(37,99,235,.19);
     font-size: .96rem;
     font-weight: 700;
     transition: transform .2s ease, box-shadow .2s ease;
+    cursor: pointer;
 }
 
 .register-submit:hover {
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(37, 99, 235, .27);
+    box-shadow: 0 12px 26px rgba(37,99,235,.27);
 }
 
 .register-login {
@@ -359,36 +377,35 @@
     color: #16a34a;
 }
 
+.form-text {
+    color: #718096;
+    font-size: .8rem;
+    margin-top: 7px;
+}
+
 @keyframes registerAppear {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes continuousMove {
+    from { transform: translateX(0); }
+    to { transform: translateX(24px); }
+}
+
+@keyframes headingColorFlow {
+    from { background-position: 0% center; }
+    to { background-position: 200% center; }
 }
 
 @media (max-width: 991.98px) {
-    .register-welcome {
-        padding: 36px 27px;
-    }
-
-    .register-form-panel {
-        padding: 38px 28px;
-    }
-
-    .register-welcome h1 {
-        font-size: 2.35rem;
-    }
+    .register-welcome { padding: 36px 27px; }
+    .register-form-panel { padding: 38px 28px; }
+    .register-moving-heading { font-size: 2.35rem; }
 }
 
 @media (max-width: 767.98px) {
-    .register-page {
-        min-height: auto;
-        padding: 22px 0 30px;
-    }
+    .register-page { min-height: auto; padding: 22px 0 30px; }
 
     .register-shell {
         grid-template-columns: 1fr;
@@ -396,56 +413,29 @@
         border-radius: 20px;
     }
 
-    .register-welcome {
-        padding: 27px 25px 29px;
-    }
-
-    .register-welcome-content {
-        margin: 35px 0 27px;
-    }
-
-    .register-welcome h1 {
-        font-size: 2.25rem;
-        letter-spacing: -1.2px;
-    }
-
-    .register-welcome-description {
-        margin-bottom: 25px;
-        font-size: .93rem;
-    }
-
-    .register-benefits {
-        gap: 13px;
-    }
-
-    .register-welcome-footer {
-        margin-top: 27px;
-    }
-
-    .register-form-panel {
-        padding: 32px 24px 35px;
-    }
-
-    .register-form-heading h2 {
-        font-size: 1.8rem;
-    }
+    .register-welcome { padding: 27px 25px 29px; }
+    .register-welcome-content { margin: 35px 0 27px; }
+    .register-moving-heading { font-size: 2.25rem; letter-spacing: -1.2px; }
+    .register-welcome-description { margin-bottom: 25px; font-size: .93rem; }
+    .register-benefits { gap: 13px; }
+    .register-welcome-footer { margin-top: 27px; }
+    .register-form-panel { padding: 32px 24px 35px; }
+    .register-form-heading h2 { font-size: 1.8rem; }
 }
 
 @media (max-width: 380px) {
     .register-welcome,
-    .register-form-panel {
-        padding-left: 19px;
-        padding-right: 19px;
-    }
+    .register-form-panel { padding-left: 19px; padding-right: 19px; }
 
-    .register-welcome h1 {
-        font-size: 2rem;
-    }
+    .register-moving-heading { font-size: 2rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .register-shell {
+    .register-shell,
+    .register-heading-line,
+    .register-heading-highlight {
         animation: none;
+        transform: none;
     }
 
     .register-input,
@@ -453,82 +443,6 @@
         transition: none;
     }
 }
-
-
-
-
-
-/* Passionate animated registration heading */
-
-
-.register-moving-heading {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow: hidden;
-    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
-    font-weight: 800;
-    line-height: 1.25;
-    letter-spacing: -1px;
-}
-
-.register-heading-line,
-.register-heading-highlight {
-    display: block;
-    width: fit-content;
-    max-width: 100%;
-    animation: continuousMove 4s ease-in-out infinite alternate;
-}
-
-.register-heading-line {
-    color: #ffffff;
-}
-
-.register-heading-highlight {
-    color: #60a5fa;
-    animation-delay: 0.4s;
-    background: linear-gradient(
-        90deg,
-        #60a5fa,
-        #a5f3fc,
-        #93c5fd,
-        #60a5fa
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation:
-        continuousMove 4s ease-in-out infinite alternate,
-        headingColorFlow 5s linear infinite;
-}
-
-@keyframes continuousMove {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(24px);
-    }
-}
-
-@keyframes headingColorFlow {
-    from {
-        background-position: 0% center;
-    }
-    to {
-        background-position: 200% center;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .register-heading-line,
-    .register-heading-highlight {
-        animation: none;
-        transform: none;
-    }
-}
-
 </style>
 {% endblock %}
 
@@ -537,7 +451,6 @@
     <div class="container">
         <div class="register-shell">
 
-            <!-- Welcome panel -->
             <section class="register-welcome">
                 <a href="{% url 'all-jobs' %}" class="register-brand">
                     <span class="register-brand-icon">
@@ -547,18 +460,16 @@
                 </a>
 
                 <div class="register-welcome-content">
-                    <div class="register-eyebrow">
-                        Start your journey
-                    </div>
+                    <div class="register-eyebrow">Start your journey</div>
 
                     <h1 class="register-moving-heading">
                         <span class="register-heading-line">
                             Your ambition deserves
                         </span>
                         <span class="register-heading-highlight">
-                             a chance to shine.
-                         </span>
-                    </h1>       
+                            a chance to shine.
+                        </span>
+                    </h1>
 
                     <p class="register-welcome-description">
                         Create your JobHub account and open the door to
@@ -604,13 +515,10 @@
                 </div>
             </section>
 
-            <!-- Registration form -->
             <section class="register-form-panel">
                 <div class="register-form-heading">
                     <h2>Create your account</h2>
-                    <p>
-                        Join JobHub. It only takes a few details to get started.
-                    </p>
+                    <p>Join JobHub. It only takes a few details to get started.</p>
                 </div>
 
                 {% if errors %}
@@ -619,7 +527,6 @@
                             <i class="bi bi-exclamation-circle-fill"></i>
                             <span>Please fix the following:</span>
                         </div>
-
                         <ul>
                             {% for error in errors %}
                                 <li>{{ error }}</li>
@@ -635,7 +542,6 @@
                         <label for="registerUsername" class="register-form-label">
                             Username
                         </label>
-
                         <div class="register-input-wrap">
                             <i class="bi bi-person register-input-icon"></i>
                             <input
@@ -656,7 +562,6 @@
                             <label for="registerFirstName" class="register-form-label">
                                 First name
                             </label>
-
                             <div class="register-input-wrap">
                                 <i class="bi bi-person register-input-icon"></i>
                                 <input
@@ -676,7 +581,6 @@
                             <label for="registerLastName" class="register-form-label">
                                 Last name
                             </label>
-
                             <div class="register-input-wrap">
                                 <i class="bi bi-person register-input-icon"></i>
                                 <input
@@ -697,7 +601,6 @@
                         <label for="registerEmail" class="register-form-label">
                             Email address
                         </label>
-
                         <div class="register-input-wrap">
                             <i class="bi bi-envelope register-input-icon"></i>
                             <input
@@ -714,10 +617,67 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="registerRole" class="register-form-label">
+                            I want to join JobHub as
+                        </label>
+                        <div class="register-input-wrap">
+                            <i class="bi bi-briefcase register-input-icon"></i>
+                            <select
+                                id="registerRole"
+                                name="role"
+                                class="register-input"
+                                required
+                            >
+                                <option value="job_seeker"
+                                    {% if role == "job_seeker" or not role %}selected{% endif %}>
+                                    Job Seeker — Find and apply for jobs
+                                </option>
+                                <option value="employer"
+                                    {% if role == "employer" %}selected{% endif %}>
+                                    Employer — Post jobs and recruit talent
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="registerIndustry" class="register-form-label">
+                            Which industry are you in?
+                        </label>
+                        <div class="register-input-wrap">
+                            <i class="bi bi-building register-input-icon"></i>
+                            <select
+                                id="registerIndustry"
+                                name="industry"
+                                class="register-input"
+                                required
+                            >
+                                <option value="">Select your industry</option>
+                                <option value="technology" {% if industry == "technology" or not industry %}selected{% endif %}>Technology</option>
+                                <option value="healthcare" {% if industry == "healthcare" %}selected{% endif %}>Healthcare</option>
+                                <option value="agriculture" {% if industry == "agriculture" %}selected{% endif %}>Agriculture</option>
+                                <option value="education" {% if industry == "education" %}selected{% endif %}>Education</option>
+                                <option value="engineering" {% if industry == "engineering" %}selected{% endif %}>Engineering</option>
+                                <option value="finance" {% if industry == "finance" %}selected{% endif %}>Finance and Banking</option>
+                                <option value="business" {% if industry == "business" %}selected{% endif %}>Business and Entrepreneurship</option>
+                                <option value="media" {% if industry == "media" %}selected{% endif %}>Media and Communications</option>
+                                <option value="construction" {% if industry == "construction" %}selected{% endif %}>Construction and Real Estate</option>
+                                <option value="transportation" {% if industry == "transportation" %}selected{% endif %}>Transportation and Logistics</option>
+                                <option value="energy" {% if industry == "energy" %}selected{% endif %}>Energy</option>
+                                <option value="manufacturing" {% if industry == "manufacturing" %}selected{% endif %}>Manufacturing</option>
+                                <option value="hospitality" {% if industry == "hospitality" %}selected{% endif %}>Hospitality and Tourism</option>
+                                <option value="other" {% if industry == "other" %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-text">
+                            This helps JobHub connect you with relevant professionals and opportunities.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="registerPassword" class="register-form-label">
                             Password
                         </label>
-
                         <div class="register-input-wrap">
                             <i class="bi bi-lock register-input-icon"></i>
                             <input
@@ -729,7 +689,6 @@
                                 autocomplete="new-password"
                                 required
                             >
-
                             <button
                                 type="button"
                                 class="register-password-toggle"
@@ -746,7 +705,6 @@
                         <label for="registerConfirmPassword" class="register-form-label">
                             Confirm password
                         </label>
-
                         <div class="register-input-wrap">
                             <i class="bi bi-shield-lock register-input-icon"></i>
                             <input
@@ -758,7 +716,6 @@
                                 autocomplete="new-password"
                                 required
                             >
-
                             <button
                                 type="button"
                                 class="register-password-toggle"
@@ -825,4 +782,3 @@
 })();
 </script>
 {% endblock %}
-```

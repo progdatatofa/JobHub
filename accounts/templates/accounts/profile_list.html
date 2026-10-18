@@ -1,727 +1,1336 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Discover Professionals | JobHub{% endblock %}
+{% block title %}Discover Talent | JobHub{% endblock %}
 
-{% block extra_css %}
+{% block content %}
 <style>
     .profile-directory {
-        --directory-navy: #10213a;
-        --directory-blue: #2563eb;
-        --directory-muted: #64748b;
-        --directory-border: #e5eaf2;
-    }
-
-    .profile-directory .directory-hero {
-        position: relative;
-        isolation: isolate;
+        --jd-ink: #172554;
+        --jd-muted: #64748b;
+        --jd-primary: #4f46e5;
+        --jd-border: #e2e8f0;
+        color: var(--jd-ink);
+        padding: 20px 0 60px;
         overflow: hidden;
-        padding: clamp(28px, 5vw, 58px);
-        border-radius: 28px;
         background:
-            radial-gradient(circle at 85% 15%, rgba(96, 165, 250, .32), transparent 30%),
-            linear-gradient(125deg, #0f1f38 0%, #173d79 58%, #2563eb 100%);
-        color: white;
-        box-shadow: 0 22px 55px rgba(16, 33, 58, .16);
+            radial-gradient(ellipse at 5% 5%, rgba(99,102,241,.09), transparent 32%),
+            radial-gradient(ellipse at 95% 35%, rgba(14,165,233,.08), transparent 28%);
     }
 
-    .profile-directory .directory-hero::after {
+    .profile-directory * { box-sizing: border-box; }
+
+    .jd-container {
+        width: min(1180px, 94%);
+        margin: 0 auto;
+    }
+
+    /* HERO */
+    .jd-hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1.4fr .6fr;
+        align-items: center;
+        gap: 24px;
+        padding: 30px 34px;
+        min-height: 245px;
+        border-radius: 28px;
+        overflow: hidden;
+        color: white;
+        background:
+            radial-gradient(circle at 85% 10%, rgba(255,255,255,.19), transparent 25%),
+            linear-gradient(120deg, #101c49 0%, #3730a3 52%, #6366f1 100%);
+        box-shadow: 0 18px 50px rgba(49,46,129,.18);
+    }
+
+    .jd-hero::before,
+    .jd-hero::after {
         content: "";
         position: absolute;
-        z-index: -1;
-        width: 250px;
-        height: 250px;
-        right: -80px;
-        bottom: -130px;
-        border: 1px solid rgba(255, 255, 255, .2);
+        border: 1px solid rgba(255,255,255,.13);
         border-radius: 50%;
-        box-shadow:
-            0 0 0 25px rgba(255, 255, 255, .035),
-            0 0 0 55px rgba(255, 255, 255, .025);
+        pointer-events: none;
     }
 
-    .profile-directory .hero-kicker {
+    .jd-hero::before {
+        width: 280px;
+        height: 280px;
+        right: -85px;
+        top: -135px;
+    }
+
+    .jd-hero::after {
+        width: 200px;
+        height: 200px;
+        right: 5px;
+        bottom: -140px;
+    }
+
+    .jd-hero-copy, .jd-hero-art {
+        position: relative;
+        z-index: 1;
+    }
+
+    .jd-eyebrow {
         display: inline-flex;
         align-items: center;
         gap: 8px;
         padding: 7px 12px;
-        border: 1px solid rgba(255, 255, 255, .2);
-        border-radius: 30px;
-        background: rgba(255, 255, 255, .09);
-        color: #e0ecff;
-        font-size: .78rem;
-        font-weight: 700;
-        letter-spacing: 1px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 50px;
+        background: rgba(255,255,255,.1);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
         text-transform: uppercase;
     }
 
-    .profile-directory .hero-heading {
-        max-width: 650px;
-        margin: 20px 0 14px;
-        font-size: clamp(2rem, 4vw, 3.35rem);
-        font-weight: 800;
-        line-height: 1.13;
-        letter-spacing: -1.6px;
+    .jd-eyebrow-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #86efac;
+        box-shadow: 0 0 12px rgba(134,239,172,.8);
     }
 
-    .profile-directory .hero-description {
-        max-width: 550px;
-        color: #d5e2f8;
-        font-size: 1.05rem;
+    .jd-moving-heading {
+        margin: 17px 0 12px;
+        font-size: clamp(30px, 4.5vw, 48px);
+        line-height: 1.1;
+        letter-spacing: -1.8px;
+        font-weight: 850;
     }
 
-    .profile-directory .hero-visual {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 180px;
+    .jd-moving-heading span {
+        display: inline-block;
+        color: #c7d2fe;
+        animation: jd-heading-motion 5s ease-in-out infinite alternate;
     }
 
-    .profile-directory .hero-icon-wrap {
-        display: grid;
-        place-items: center;
-        width: 150px;
-        height: 150px;
-        border: 1px solid rgba(255, 255, 255, .25);
-        border-radius: 35px;
-        background: rgba(255, 255, 255, .1);
-        box-shadow: 0 15px 45px rgba(0, 0, 0, .12);
-        transform: rotate(-6deg);
-        animation: directory-float 5s ease-in-out infinite;
+    @keyframes jd-heading-motion {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(15px); }
     }
 
-    .profile-directory .hero-icon-wrap i {
-        font-size: 5rem;
-        color: white;
+    .jd-hero-description {
+        max-width: 590px;
+        margin: 0;
+        color: #e0e7ff;
+        font-size: 14px;
+        line-height: 1.8;
     }
 
-    @keyframes directory-float {
-        0%, 100% { transform: translateY(0) rotate(-6deg); }
-        50% { transform: translateY(-9px) rotate(-3deg); }
-    }
-
-    .profile-directory .directory-stat {
-        height: 100%;
-        padding: 19px 20px;
-        border: 1px solid var(--directory-border);
-        border-radius: 18px;
-        background: white;
-        box-shadow: 0 6px 22px rgba(16, 33, 58, .035);
-        transition: transform .25s ease, box-shadow .25s ease;
-    }
-
-    .profile-directory .directory-stat:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(16, 33, 58, .08);
-    }
-
-    .profile-directory .stat-icon {
-        display: grid;
-        place-items: center;
-        width: 43px;
-        height: 43px;
-        margin-bottom: 13px;
-        border-radius: 13px;
-        background: #eff5ff;
-        color: var(--directory-blue);
-        font-size: 1.25rem;
-    }
-
-    .profile-directory .stat-value {
-        color: var(--directory-navy);
-        font-size: 1.7rem;
-        font-weight: 800;
-        line-height: 1.2;
-    }
-
-    .profile-directory .stat-label {
-        margin-top: 5px;
-        color: var(--directory-muted);
-        font-size: .88rem;
-    }
-
-    .profile-directory .directory-toolbar {
+    .jd-hero-actions {
         display: flex;
         flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .jd-button {
+        display: inline-flex;
+        justify-content: center;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .profile-directory .directory-title {
-        margin-bottom: 5px;
-        color: var(--directory-navy);
-        font-size: clamp(1.45rem, 3vw, 1.9rem);
-        font-weight: 800;
-        letter-spacing: -.7px;
-    }
-
-    .profile-directory .directory-subtitle {
-        margin: 0;
-        color: var(--directory-muted);
-    }
-
-    .profile-directory .search-panel {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        width: min(100%, 420px);
-        padding: 5px 15px;
-        border: 1px solid #dfe6f0;
+        gap: 8px;
+        min-height: 41px;
+        padding: 10px 17px;
+        border: 1px solid transparent;
         border-radius: 13px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 800;
+        transition: transform .2s, background .2s;
+    }
+
+    .jd-button:hover { transform: translateY(-2px); }
+
+    .jd-button-light {
+        color: #312e81;
         background: white;
-        transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    .profile-directory .search-panel:focus-within {
-        border-color: #8bb4ff;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, .09);
+    .jd-button-glass {
+        color: white;
+        background: rgba(255,255,255,.1);
+        border-color: rgba(255,255,255,.25);
     }
 
-    .profile-directory .search-panel > i {
-        color: var(--directory-blue);
-        font-size: 1.1rem;
-    }
-
-    .profile-directory .search-panel input {
-        width: 100%;
-        min-width: 0;
-        padding: 10px 0;
-        border: 0;
-        outline: none;
-        background: transparent;
-        color: var(--directory-navy);
-    }
-
-    .profile-directory .search-panel input::placeholder {
-        color: #94a3b8;
-    }
-
-    .profile-directory .profile-grid {
-        align-items: stretch;
-    }
-
-    .profile-directory .profile-column {
+    .jd-hero-art {
         display: flex;
-        animation: directory-appear .5s ease both;
-    }
-
-    .profile-directory .profile-column:nth-child(2) {
-        animation-delay: .05s;
-    }
-
-    .profile-directory .profile-column:nth-child(3) {
-        animation-delay: .1s;
-    }
-
-    .profile-directory .profile-column:nth-child(4) {
-        animation-delay: .15s;
-    }
-
-    @keyframes directory-appear {
-        from { opacity: 0; transform: translateY(14px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .profile-directory .professional-card {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        overflow: hidden;
-        border: 1px solid var(--directory-border);
-        border-radius: 21px;
-        background: white;
-        box-shadow: 0 5px 20px rgba(16, 33, 58, .045);
-        transition: transform .28s ease, box-shadow .28s ease,
-            border-color .28s ease;
-    }
-
-    .profile-directory .professional-card:hover {
-        transform: translateY(-7px);
-        border-color: #c9d9f7;
-        box-shadow: 0 20px 42px rgba(16, 33, 58, .105);
-    }
-
-    .profile-directory .card-accent {
-        height: 6px;
-        background: linear-gradient(90deg, #2563eb, #7c9cff, #bfdbfe);
-    }
-
-    .profile-directory .professional-card .card-body {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
+        justify-content: center;
         align-items: center;
-        padding: 27px 23px 23px;
-        text-align: center;
+        min-height: 150px;
     }
 
-    .profile-directory .avatar-frame {
+    .jd-orbit {
         position: relative;
         display: grid;
         place-items: center;
-        width: 122px;
-        height: 122px;
-        margin-bottom: 17px;
+        width: 160px;
+        height: 160px;
+        border: 1px solid rgba(255,255,255,.28);
         border-radius: 50%;
-        background: #eff5ff;
+        background: rgba(255,255,255,.06);
     }
 
-    .profile-directory .avatar-frame .profile-image {
+    .jd-orbit-inner {
+        display: grid;
+        place-items: center;
         width: 110px;
         height: 110px;
-        object-fit: cover;
-        border: 4px solid white;
-        border-radius: 50%;
-        box-shadow: 0 4px 15px rgba(16, 33, 58, .12);
-        transition: transform .3s ease;
+        border: 1px solid rgba(255,255,255,.24);
+        border-radius: 34px;
+        background: rgba(255,255,255,.12);
+        transform: rotate(-8deg);
     }
 
-    .profile-directory .professional-card:hover .profile-image {
-        transform: scale(1.035);
+    .jd-orbit-symbol {
+        font-size: 48px;
+        transform: rotate(8deg);
     }
 
-    .profile-directory .avatar-frame .default-avatar {
-        width: 110px;
-        height: 110px;
+    .jd-orbit-tag {
+        position: absolute;
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin: 0;
-        border: 4px solid white;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #e8eefb, #dbeafe);
-        color: #5473a4;
-        font-size: 42px;
-    }
-
-    .profile-directory .professional-name {
-        margin-bottom: 4px;
-        color: var(--directory-navy);
-        font-size: 1.2rem;
+        gap: 5px;
+        padding: 8px 11px;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 12px;
+        background: #fff;
+        color: #312e81;
+        font-size: 10px;
         font-weight: 800;
-        overflow-wrap: anywhere;
+        box-shadow: 0 8px 20px rgba(15,23,42,.15);
     }
 
-    .profile-directory .professional-handle {
-        margin-bottom: 13px;
-        color: var(--directory-blue);
-        font-size: .9rem;
-        font-weight: 600;
-        overflow-wrap: anywhere;
+    .jd-orbit-tag-one { top: 7px; right: -18px; }
+    .jd-orbit-tag-two { bottom: 9px; left: -20px; }
+
+    /* SHARED SECTIONS */
+    .jd-section { margin-top: 28px; }
+
+    .jd-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 15px;
+        margin-bottom: 15px;
     }
 
-    .profile-directory .professional-location {
+    .jd-section-kicker {
+        margin: 0 0 5px;
+        color: var(--jd-primary);
+        font-size: 10px;
+        font-weight: 850;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+    }
+
+    .jd-section-title {
+        margin: 0;
+        color: #172554;
+        font-size: clamp(20px, 3vw, 27px);
+        font-weight: 850;
+        letter-spacing: -.7px;
+    }
+
+    .jd-section-subtitle {
+        margin: 6px 0 0;
+        color: var(--jd-muted);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    /* OVERVIEW */
+    .jd-overview-grid {
+        display: grid;
+        grid-template-columns: .8fr 1.2fr;
+        gap: 16px;
+    }
+
+    .jd-panel {
+        min-width: 0;
+        padding: 21px;
+        border: 1px solid rgba(226,232,240,.9);
+        border-radius: 23px;
+        background: rgba(255,255,255,.88);
+        box-shadow: 0 8px 30px rgba(15,23,42,.035);
+    }
+
+    .jd-total-label {
+        color: var(--jd-muted);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .jd-total-number {
+        margin: 10px 0;
+        color: #312e81;
+        font-size: 44px;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: -2px;
+    }
+
+    .jd-total-note {
+        color: var(--jd-muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .jd-stat-icon {
+        display: grid;
+        place-items: center;
+        width: 39px;
+        height: 39px;
+        margin-bottom: 17px;
+        border-radius: 14px;
+        background: #eef2ff;
+        font-size: 19px;
+    }
+
+    .jd-chart-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .jd-chart-heading h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 850;
+    }
+
+    .jd-chart-heading p {
+        margin: 5px 0 0;
+        color: var(--jd-muted);
+        font-size: 11px;
+    }
+
+    .jd-chart-badge {
+        flex-shrink: 0;
+        padding: 6px 9px;
+        border-radius: 20px;
+        color: #4338ca;
+        background: #eef2ff;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .jd-chart-wrap {
+        position: relative;
+        height: 205px;
+        width: 100%;
+    }
+
+    .jd-chart-fallback {
+        display: grid;
+        place-items: center;
+        height: 100%;
+        color: var(--jd-muted);
+        font-size: 12px;
+        text-align: center;
+    }
+
+    /* DIRECTORY SEARCH AND FILTER */
+    .jd-search-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 17px;
+    }
+
+    .jd-search-controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .jd-search-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: min(430px, 100%);
+        padding: 0 15px;
+        border: 1px solid var(--jd-border);
+        border-radius: 15px;
+        background: #fff;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .jd-search-box:focus-within {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 4px rgba(99,102,241,.09);
+    }
+
+    .jd-search-icon {
+        color: #6366f1;
+        font-size: 18px;
+    }
+
+    .jd-search-input {
+        width: 100%;
+        min-width: 0;
+        padding: 14px 0;
+        border: 0;
+        outline: 0;
+        color: #172554;
+        background: transparent;
+        font-size: 12px;
+    }
+
+    .jd-industry-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .jd-industry-select {
+        min-width: 190px;
+        max-width: 100%;
+        min-height: 46px;
+        border: 1px solid var(--jd-border);
+        border-radius: 13px;
+        color: #172554;
+        background-color: #fff;
+        font-size: 12px;
+    }
+
+    .jd-clear-filter {
         display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 40px;
+        padding: 9px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 11px;
+        color: #475569;
+        background: white;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+    .jd-clear-filter:hover {
+        color: #312e81;
+        border-color: #a5b4fc;
+        background: #eef2ff;
+    }
+
+    .jd-result-count {
+        flex-shrink: 0;
+        color: var(--jd-muted);
+        font-size: 11px;
+    }
+
+    .jd-active-filter {
+        margin: -3px 0 15px;
+        color: #64748b;
+        font-size: 11px;
+    }
+
+    .jd-active-filter strong { color: #4338ca; }
+
+    /* PROFILE CARDS */
+    .jd-profile-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .jd-profile-card {
+        position: relative;
+        min-width: 0;
+        padding: 19px;
+        border: 1px solid #e5e7eb;
+        border-radius: 25px 25px 25px 9px;
+        background: linear-gradient(145deg, #fff 0%, #fafaff 100%);
+        box-shadow: 0 7px 24px rgba(15,23,42,.035);
+        transition: transform .22s, border-color .22s, box-shadow .22s;
+    }
+
+    .jd-profile-card:hover {
+        transform: translateY(-4px);
+        border-color: #c7d2fe;
+        box-shadow: 0 15px 30px rgba(79,70,229,.09);
+    }
+
+    .jd-profile-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .jd-avatar {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 54px;
+        height: 54px;
+        overflow: hidden;
+        border: 3px solid #eef2ff;
+        border-radius: 18px 18px 18px 7px;
+        background: linear-gradient(135deg, #c7d2fe, #e0e7ff);
+        color: #3730a3;
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .jd-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .jd-profile-identity { min-width: 0; }
+
+    .jd-profile-name {
+        overflow-wrap: anywhere;
+        margin: 0;
+        color: #172554;
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1.4;
+    }
+
+    .jd-profile-username {
+        overflow-wrap: anywhere;
+        margin: 4px 0 0;
+        color: #818cf8;
+        font-size: 11px;
+    }
+
+    .jd-profile-industry {
+        display: inline-flex;
+        max-width: 100%;
+        margin-top: 10px;
+        padding: 5px 8px;
+        overflow: hidden;
+        border: 1px solid #e0e7ff;
+        border-radius: 8px;
+        color: #4338ca;
+        background: #eef2ff;
+        font-size: 10px;
+        font-weight: 750;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .jd-profile-location {
+        display: flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 13px;
-        color: var(--directory-muted);
-        font-size: .88rem;
+        margin: 14px 0 0;
+        color: #64748b;
+        font-size: 11px;
     }
 
-    .profile-directory .professional-bio {
+    .jd-profile-bio {
         display: -webkit-box;
-        min-height: 50px;
-        margin-bottom: 18px;
+        min-height: 39px;
         overflow: hidden;
+        margin: 12px 0;
         color: #64748b;
-        font-size: .92rem;
-        line-height: 1.65;
+        font-size: 11px;
+        line-height: 1.75;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .jd-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 25px;
+        margin-bottom: 15px;
+    }
+
+    .jd-skill {
+        max-width: 100%;
+        overflow: hidden;
+        padding: 5px 8px;
+        border: 1px solid #e0e7ff;
+        border-radius: 8px;
+        color: #4338ca;
+        background: #eef2ff;
+        font-size: 9px;
+        font-weight: 750;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .jd-profile-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid #eef2f7;
+    }
+
+    .jd-member-label {
+        color: #94a3b8;
+        font-size: 10px;
+    }
+
+    .jd-profile-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        color: white;
+        background: #4f46e5;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 800;
+        transition: background .2s;
+    }
+
+    .jd-profile-link:hover {
+        color: white;
+        background: #3730a3;
+    }
+
+    .jd-empty {
+        grid-column: 1 / -1;
+        padding: 38px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 22px;
+        color: #64748b;
+        background: rgba(255,255,255,.7);
+        text-align: center;
+    }
+
+    .jd-empty-icon {
+        margin-bottom: 10px;
+        font-size: 30px;
+    }
+
+    .jd-empty h3 {
+        margin: 0 0 7px;
+        color: #172554;
+        font-size: 16px;
+    }
+
+    .jd-empty p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .jd-hidden { display: none !important; }
+
+    /* EXTERNAL OPPORTUNITIES */
+    .jd-opportunities {
+        position: relative;
+        overflow: hidden;
+        padding: 25px;
+        border: 1px solid #e0e7ff;
+        border-radius: 26px;
+        background:
+            radial-gradient(circle at 100% 0%, rgba(129,140,248,.13), transparent 35%),
+            linear-gradient(135deg, #fff 0%, #f8faff 100%);
+    }
+
+    .jd-opportunities-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .jd-opportunities-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 47px;
+        height: 47px;
+        border-radius: 16px;
+        background: #eef2ff;
+        font-size: 22px;
+    }
+
+    .jd-opportunities-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+    }
+
+    .jd-opportunities-heading h3 {
+        margin: 0;
+        color: #172554;
+        font-size: 19px;
+        font-weight: 850;
+    }
+
+    .jd-opportunities-heading p {
+        max-width: 590px;
+        margin: 7px 0 0;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .jd-opportunity-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .jd-opportunity-card {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        padding: 17px;
+        border: 1px solid #e8edf5;
+        border-radius: 18px 18px 18px 7px;
+        background: rgba(255,255,255,.92);
+        transition: border-color .2s, transform .2s;
+    }
+
+    .jd-opportunity-card:hover {
+        transform: translateY(-2px);
+        border-color: #c7d2fe;
+    }
+
+    .jd-opportunity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 10px;
+    }
+
+    .jd-opportunity-category {
+        padding: 5px 8px;
+        border-radius: 7px;
+        color: #4338ca;
+        background: #eef2ff;
+        font-size: 9px;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .jd-opportunity-date {
+        color: #94a3b8;
+        font-size: 10px;
+    }
+
+    .jd-opportunity-title {
+        margin: 0;
+        overflow-wrap: anywhere;
+        color: #172554;
+        font-size: 13px;
+        font-weight: 850;
+        line-height: 1.6;
+    }
+
+    .jd-opportunity-description {
+        display: -webkit-box;
+        overflow: hidden;
+        margin: 8px 0 15px;
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.8;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
     }
 
-    .profile-directory .professional-bio.empty-bio {
-        color: #94a3b8;
-        font-style: italic;
-    }
-
-    .profile-directory .skill-summary {
-        width: 100%;
-        margin-top: auto;
-        margin-bottom: 20px;
-        padding: 10px 12px;
-        border-radius: 11px;
-        background: #f5f8ff;
-        color: #3c5b8b;
-        font-size: .84rem;
-        text-align: left;
-        overflow-wrap: anywhere;
-    }
-
-    .profile-directory .skill-summary i {
-        margin-right: 6px;
-        color: var(--directory-blue);
-    }
-
-    .profile-directory .profile-action {
+    .jd-opportunity-footer {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        padding: 11px 15px;
-        border: 1px solid #cbdcff;
-        border-radius: 11px;
-        background: #f5f8ff;
-        color: var(--directory-blue);
-        font-weight: 700;
+        gap: 10px;
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .jd-opportunity-source {
+        overflow: hidden;
+        color: #64748b;
+        font-size: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .jd-opportunity-link {
+        flex-shrink: 0;
+        color: #4f46e5;
+        font-size: 11px;
+        font-weight: 850;
         text-decoration: none;
-        transition: color .2s ease, background .2s ease,
-            border-color .2s ease, transform .2s ease;
     }
 
-    .profile-directory .profile-action:hover {
-        transform: translateY(-1px);
-        border-color: var(--directory-blue);
-        background: var(--directory-blue);
-        color: white;
-    }
+    .jd-opportunity-link:hover { text-decoration: underline; }
 
-    .profile-directory .profile-action i {
-        transition: transform .2s ease;
-    }
-
-    .profile-directory .profile-action:hover i {
-        transform: translateX(3px);
-    }
-
-    .profile-directory .empty-state {
-        padding: 55px 20px;
+    .jd-opportunity-empty {
+        grid-column: 1 / -1;
+        padding: 24px;
         border: 1px dashed #cbd5e1;
-        border-radius: 20px;
-        background: white;
+        border-radius: 16px;
+        color: #64748b;
+        background: rgba(255,255,255,.75);
+        font-size: 12px;
+        line-height: 1.8;
         text-align: center;
     }
 
-    .profile-directory .empty-state-icon {
-        display: grid;
-        place-items: center;
-        width: 76px;
-        height: 76px;
-        margin: 0 auto 17px;
-        border-radius: 24px;
-        background: #eff5ff;
-        color: var(--directory-blue);
-        font-size: 2rem;
+    .jd-opportunities-note {
+        margin: 14px 0 0;
+        color: #94a3b8;
+        font-size: 10px;
+        line-height: 1.7;
     }
 
-    .profile-directory .empty-state h3 {
-        color: var(--directory-navy);
-        font-weight: 800;
-    }
-
-    .profile-directory .empty-state p {
-        color: var(--directory-muted);
-    }
-
-    .profile-directory .results-note {
-        color: var(--directory-muted);
-        font-size: .9rem;
-    }
-
-    @media (max-width: 767.98px) {
-        .profile-directory .hero-visual {
-            min-height: 115px;
-            justify-content: flex-start;
-            margin-top: 20px;
+    @media (max-width: 900px) {
+        .jd-hero {
+            grid-template-columns: 1fr .4fr;
+            padding: 27px;
         }
 
-        .profile-directory .hero-icon-wrap {
-            width: 95px;
-            height: 95px;
-            border-radius: 25px;
+        .jd-orbit { width: 125px; height: 125px; }
+        .jd-orbit-inner { width: 88px; height: 88px; }
+        .jd-orbit-symbol { font-size: 37px; }
+
+        .jd-profile-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 620px) {
+        .profile-directory { padding-top: 10px; }
+
+        .jd-hero {
+            grid-template-columns: 1fr;
+            padding: 25px 21px;
+            border-radius: 23px;
         }
 
-        .profile-directory .hero-icon-wrap i {
-            font-size: 3.3rem;
+        .jd-moving-heading { font-size: 34px; }
+        .jd-hero-art { display: none; }
+
+        .jd-overview-grid { grid-template-columns: 1fr; }
+        .jd-panel { padding: 18px; }
+
+        .jd-section-heading {
+            align-items: flex-start;
+            flex-direction: column;
         }
 
-        .profile-directory .directory-toolbar {
+        .jd-search-controls {
             align-items: stretch;
-        }
-
-        .profile-directory .search-panel {
+            flex-direction: column;
             width: 100%;
         }
+
+        .jd-search-box { width: 100%; }
+
+        .jd-industry-form { width: 100%; }
+
+        .jd-industry-select { flex: 1; width: 100%; }
+
+        .jd-profile-grid { grid-template-columns: 1fr; }
+        .jd-profile-card { padding: 17px; }
+        .jd-opportunities { padding: 18px; }
+
+        .jd-opportunities-top { flex-direction: column; }
+
+        .jd-opportunity-grid { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .profile-directory *,
-        .profile-directory *::before,
-        .profile-directory *::after {
-            animation: none !important;
-            transition: none !important;
-            scroll-behavior: auto !important;
+        .jd-moving-heading span { animation: none; }
+
+        .jd-profile-card,
+        .jd-button,
+        .jd-opportunity-card {
+            transition: none;
         }
     }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="profile-directory">
+    <div class="jd-container">
 
-    <!-- Hero -->
-    <section class="directory-hero mb-4 mb-lg-5">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <div class="hero-kicker">
-                    <i class="bi bi-stars"></i>
-                    The JobHub community
+        <!-- HERO -->
+        <section class="jd-hero">
+            <div class="jd-hero-copy">
+                <div class="jd-eyebrow">
+                    <span class="jd-eyebrow-dot"></span>
+                    THE JOBHUB COMMUNITY
                 </div>
 
-                <h1 class="hero-heading">
-                    Meet the people behind the talent.
+                <h1 class="jd-moving-heading">
+                    Discover <span>Talent.</span>
                 </h1>
 
-<p class="hero-rotating-line">
-    Your next step starts when you
-    <span id="rotatingHeroText" aria-live="polite">discover talent</span>
-    <span class="rotating-cursor" aria-hidden="true"></span>
-</p>
-
-
-                <p class="hero-description mb-4">
-                    Discover professionals, explore their backgrounds,
-                    and connect with people who bring valuable skills
-                    and experience to the table.
+                <p class="jd-hero-description">
+                    Meet professionals, discover valuable skills, build meaningful
+                    connections, and explore opportunities that move your career forward.
+                    Your next professional connection could start here.
                 </p>
 
-                <a href="{% url 'all-jobs' %}"
-                   class="btn btn-light rounded-3 px-4 py-3 fw-semibold">
-                    Explore opportunities
-                    <i class="bi bi-arrow-up-right ms-2"></i>
-                </a>
+                <div class="jd-hero-actions">
+                    <a href="#professionals" class="jd-button jd-button-light">
+                        Explore professionals <span aria-hidden="true">↗</span>
+                    </a>
+
+                    <a href="#opportunities" class="jd-button jd-button-glass">
+                        Discover opportunities
+                    </a>
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="hero-visual" aria-hidden="true">
-                    <div class="hero-icon-wrap">
-                        <i class="bi bi-people-fill"></i>
+            <div class="jd-hero-art" aria-hidden="true">
+                <div class="jd-orbit">
+                    <div class="jd-orbit-inner">
+                        <span class="jd-orbit-symbol">✦</span>
+                    </div>
+                    <span class="jd-orbit-tag jd-orbit-tag-one">✧ Skills</span>
+                    <span class="jd-orbit-tag jd-orbit-tag-two">◎ Community</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFESSIONAL GROWTH -->
+        <section class="jd-section" id="professional-growth">
+            <div class="jd-section-heading">
+                <div>
+                    <p class="jd-section-kicker">COMMUNITY INSIGHTS</p>
+                    <h2 class="jd-section-title">Professional growth</h2>
+                    <p class="jd-section-subtitle">
+                        Explore the JobHub community and its registration trend.
+                    </p>
+                </div>
+            </div>
+
+            <div class="jd-overview-grid">
+                <div class="jd-panel">
+                    <div class="jd-stat-icon" aria-hidden="true">♙</div>
+                    <div class="jd-total-label">Registered professionals</div>
+
+                    <div class="jd-total-number" id="jd-professional-total">
+                        {{ profiles|length }}
+                    </div>
+
+                    <div class="jd-total-note">
+                        Number of profiles currently shown in the directory.
+                        This number updates when an industry filter is applied.
+                    </div>
+                </div>
+
+                <div class="jd-panel">
+                    <div class="jd-chart-heading">
+                        <div>
+                            <h3>Registration over time</h3>
+                            <p>Monthly professional registrations over the last six months</p>
+                        </div>
+                        <span class="jd-chart-badge">6 MONTHS</span>
+                    </div>
+
+                    <div class="jd-chart-wrap">
+                        <canvas
+                            id="jdGrowthChart"
+                            role="img"
+                            aria-label="Chart of monthly professional registrations"
+                        ></canvas>
+
+                        <div class="jd-chart-fallback jd-hidden" id="jdChartFallback">
+                            Growth information is not available yet.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Summary -->
-    <section class="row g-3 mb-5" aria-label="Community overview">
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="directory-stat">
-                <div class="stat-icon">
-                    <i class="bi bi-people"></i>
+        <!-- PROFESSIONAL DIRECTORY -->
+        <section class="jd-section" id="professionals">
+            <div class="jd-section-heading">
+                <div>
+                    <p class="jd-section-kicker">FIND YOUR PEOPLE</p>
+                    <h2 class="jd-section-title">Meet the professionals</h2>
+                    <p class="jd-section-subtitle">
+                        Discover members, explore their skills, and open their profiles.
+                    </p>
                 </div>
-                <div class="stat-value">{{ profiles|length }}</div>
-                <div class="stat-label">Professionals in the directory</div>
             </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="directory-stat">
-                <div class="stat-icon">
-                    <i class="bi bi-search"></i>
+            <div class="jd-search-row">
+                <div class="jd-search-controls">
+                    <label class="jd-search-box">
+                        <span class="jd-search-icon" aria-hidden="true">⌕</span>
+
+                        <input
+                            type="search"
+                            id="jdProfileSearch"
+                            class="jd-search-input"
+                            placeholder="Search by name, username, location or skill..."
+                            autocomplete="off"
+                            aria-label="Search professionals"
+                        >
+                    </label>
+
+                    <form
+                        method="GET"
+                        action="{% url 'profile-list' %}"
+                        class="jd-industry-form"
+                    >
+                        <select
+                            name="industry"
+                            id="jdIndustryFilter"
+                            class="form-select jd-industry-select"
+                            aria-label="Filter professionals by industry"
+                            onchange="this.form.submit()"
+                        >
+                            <option value="">All industries</option>
+
+                            {% for value, label in industry_choices %}
+                                <option
+                                    value="{{ value }}"
+                                    {% if selected_industry == value %}selected{% endif %}
+                                >
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        {% if selected_industry %}
+                            <a
+                                href="{% url 'profile-list' %}"
+                                class="jd-clear-filter"
+                            >
+                                Clear filter
+                            </a>
+                        {% endif %}
+                    </form>
                 </div>
-                <div class="stat-value">Discover</div>
-                <div class="stat-label">Search people by name, skills or location</div>
-            </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="directory-stat">
-                <div class="stat-icon">
-                    <i class="bi bi-briefcase"></i>
-                </div>
-                <div class="stat-value">Opportunities</div>
-                <div class="stat-label">Explore jobs and professional connections</div>
+                <span class="jd-result-count" id="jdProfileCount" aria-live="polite">
+                    {{ profiles|length }} professional{{ profiles|length|pluralize }}
+                </span>
             </div>
-        </div>
-    </section>
 
-    <!-- Directory heading and live search -->
-    <section>
-        <div class="directory-toolbar">
-            <div>
-                <h2 class="directory-title">Discover professionals</h2>
-                <p class="directory-subtitle">
-                    Get to know the people in your community.
+            {% if selected_industry %}
+                <p class="jd-active-filter">
+                    Showing professionals in:
+                    <strong>
+                        {% for value, label in industry_choices %}
+                            {% if selected_industry == value %}{{ label }}{% endif %}
+                        {% endfor %}
+                    </strong>
                 </p>
-            </div>
+            {% endif %}
 
-            <label class="search-panel">
-                <i class="bi bi-search" aria-hidden="true"></i>
-                <input
-                    type="search"
-                    id="profileSearch"
-                    placeholder="Search name, skill or location..."
-                    aria-label="Search profiles by name, skill or location"
-                    autocomplete="off"
-                >
-            </label>
-        </div>
-
-        <p class="results-note mb-3" id="profileResults" aria-live="polite">
-            Showing {{ profiles|length }} profile{{ profiles|length|pluralize }}
-        </p>
-
-        <div class="row g-4 profile-grid" id="profileGrid">
-
-            {% for profile in profiles %}
-                <div class="col-md-6 col-lg-4 profile-column"
-                     data-profile-card
-                     data-search="{{ profile.user.first_name }} {{ profile.user.last_name }} {{ profile.user.username }} {{ profile.location|default:'' }} {{ profile.bio|default:'' }} {{ profile.skills|default:'' }}">
-
-                    <article class="professional-card">
-
-                        <div class="card-accent"></div>
-
-                        <div class="card-body">
-
-                            <div class="avatar-frame">
+            <div class="jd-profile-grid" id="jdProfileGrid">
+                {% for profile in profiles %}
+                    <article
+                        class="jd-profile-card"
+                        data-search="{{ profile.user.get_full_name|default:profile.user.username|lower }} {{ profile.user.username|lower }} {{ profile.location|default:''|lower }} {{ profile.bio|default:''|lower }} {{ profile.skills|default:''|lower }} {{ profile.get_industry_display|default:''|lower }}"
+                    >
+                        <div class="jd-profile-top">
+                            <div class="jd-avatar">
                                 {% if profile.profile_image %}
                                     <img
                                         src="{{ profile.profile_image.url }}"
-                                        alt="{{ profile.user.first_name }} {{ profile.user.last_name }} profile image"
-                                        class="profile-image"
+                                        alt="{{ profile.user.username }}'s profile photo"
                                         loading="lazy"
                                     >
                                 {% else %}
-                                    <div class="default-avatar">
-                                        <i class="bi bi-person"></i>
-                                    </div>
+                                    {{ profile.user.username|first|upper }}
                                 {% endif %}
                             </div>
 
-                            <h3 class="professional-name">
-                                {{ profile.user.first_name }}
-                                {{ profile.user.last_name }}
-                            </h3>
+                            <div class="jd-profile-identity">
+                                <h3 class="jd-profile-name">
+                                    {{ profile.user.get_full_name|default:profile.user.username }}
+                                </h3>
 
-                            <p class="professional-handle">
-                                @{{ profile.user.username }}
-                            </p>
-
-                            {% if profile.location %}
-                                <div class="professional-location">
-                                    <i class="bi bi-geo-alt-fill"></i>
-                                    <span>{{ profile.location }}</span>
-                                </div>
-                            {% endif %}
-
-                            {% if profile.bio %}
-                                <p class="professional-bio">
-                                    {{ profile.bio|truncatewords:24 }}
+                                <p class="jd-profile-username">
+                                    @{{ profile.user.username }}
                                 </p>
+                            </div>
+                        </div>
+
+                        <span class="jd-profile-industry">
+                            {{ profile.get_industry_display|default:"Industry not specified" }}
+                        </span>
+
+                        <p class="jd-profile-location">
+                            <span aria-hidden="true">⌖</span>
+                            {{ profile.location|default:"Location not specified" }}
+                        </p>
+
+                        <p class="jd-profile-bio">
+                            {{ profile.bio|default:"This professional has not added a biography yet." }}
+                        </p>
+
+                        <div class="jd-skills">
+                            {% if profile.skills %}
+                                <span class="jd-skill">
+                                    {{ profile.skills|truncatechars:65 }}
+                                </span>
                             {% else %}
-                                <p class="professional-bio empty-bio">
-                                    This professional hasn't added a bio yet.
-                                </p>
+                                <span class="jd-skill">Skills not listed</span>
                             {% endif %}
+                        </div>
 
-                            <div class="skill-summary">
-                                <i class="bi bi-lightning-charge-fill"></i>
-                                {% if profile.skills %}
-                                    {{ profile.skills|truncatewords:12 }}
-                                {% else %}
-                                    Skills not listed yet
-                                {% endif %}
-                            </div>
+                        <div class="jd-profile-footer">
+                            <span class="jd-member-label">JobHub member</span>
 
                             <a
                                 href="{% url 'profile-detail' profile.id %}"
-                                class="profile-action"
+                                class="jd-profile-link"
                             >
-                                <i class="bi bi-person-vcard"></i>
-                                View full profile
-                                <i class="bi bi-arrow-right ms-auto"></i>
+                                View profile <span aria-hidden="true">↗</span>
                             </a>
-
                         </div>
                     </article>
-                </div>
-            {% empty %}
-                <div class="col-12" id="noProfiles">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <h3>No professionals yet</h3>
-                        <p class="mb-0">
-                            There are no profiles to display right now.
+                {% empty %}
+                    <div class="jd-empty" id="jdNoProfiles">
+                        <div class="jd-empty-icon" aria-hidden="true">♙</div>
+                        <h3>No professionals found</h3>
+                        <p>
+                            There are currently no profiles in this selection.
+                            Try another industry or clear the filter to see all profiles.
                         </p>
                     </div>
+                {% endfor %}
+
+                <div class="jd-empty jd-hidden" id="jdNoSearchResults">
+                    <div class="jd-empty-icon" aria-hidden="true">⌕</div>
+                    <h3>No matching professionals</h3>
+                    <p>Try another name, location, username, industry or skill.</p>
                 </div>
-            {% endfor %}
-
-        </div>
-
-        <div class="empty-state mt-3 d-none" id="noSearchResults">
-            <div class="empty-state-icon">
-                <i class="bi bi-search"></i>
             </div>
-            <h3>No matching profiles</h3>
-            <p>Try a different name, skill or location.</p>
-            <button type="button" class="btn btn-primary px-4"
-                    id="clearProfileSearch">
-                Clear search
-            </button>
-        </div>
-    </section>
+        </section>
+
+        <!-- EXTERNAL OPPORTUNITIES -->
+        <section class="jd-section" id="opportunities">
+            <div class="jd-opportunities">
+                <div class="jd-opportunities-top">
+                    <div class="jd-opportunities-heading">
+                        <div class="jd-opportunities-icon" aria-hidden="true">✧</div>
+
+                        <div>
+                            <p class="jd-section-kicker">BEYOND THE DIRECTORY</p>
+                            <h3>Explore Beyond JobHub</h3>
+
+                            <p>
+                                Explore external updates and opportunities across careers,
+                                technology, health, agriculture, education, internships,
+                                scholarships, fellowships and more.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jd-opportunity-grid">
+                    {% for item in external_updates %}
+                        <article class="jd-opportunity-card">
+                            <div class="jd-opportunity-meta">
+                                <span class="jd-opportunity-category">
+                                    {{ item.category|default:"Opportunity" }}
+                                </span>
+
+                                {% if item.pubDate %}
+                                    <span class="jd-opportunity-date">
+                                        {{ item.pubDate }}
+                                    </span>
+                                {% elif item.date %}
+                                    <span class="jd-opportunity-date">
+                                        {{ item.date }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <h4 class="jd-opportunity-title">
+                                {{ item.title }}
+                            </h4>
+
+                            <p class="jd-opportunity-description">
+                                {{ item.description|default:"Open the original source to read more about this update."|striptags }}
+                            </p>
+
+                            <div class="jd-opportunity-footer">
+                                <span class="jd-opportunity-source">
+                                    {{ item.source|default:"External source" }}
+                                </span>
+
+                                {% if item.link %}
+                                    <a
+                                        class="jd-opportunity-link"
+                                        href="{{ item.link }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Read more ↗
+                                    </a>
+                                {% elif item.url %}
+                                    <a
+                                        class="jd-opportunity-link"
+                                        href="{{ item.url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Read more ↗
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="jd-opportunity-empty">
+                            <strong>New opportunities are on the way.</strong>
+                            <br>
+                            External updates are not available right now. Please check
+                            again later.
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <p class="jd-opportunities-note">
+                    External updates are provided by their original publishers.
+                    Always confirm eligibility, deadlines and application details on
+                    the official source before applying.
+                </p>
+            </div>
+        </section>
+
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-(function () {
-    const searchInput = document.getElementById("profileSearch");
-    const grid = document.getElementById("profileGrid");
-    const resultText = document.getElementById("profileResults");
-    const noResults = document.getElementById("noSearchResults");
-    const clearButton = document.getElementById("clearProfileSearch");
+document.addEventListener("DOMContentLoaded", function () {
+    /* PROFILE SEARCH */
+    const searchInput = document.getElementById("jdProfileSearch");
+    const profileGrid = document.getElementById("jdProfileGrid");
+    const profileCards = Array.from(
+        profileGrid.querySelectorAll(".jd-profile-card")
+    );
+    const countElement = document.getElementById("jdProfileCount");
+    const noSearchResults = document.getElementById("jdNoSearchResults");
+    const totalElement = document.getElementById("jd-professional-total");
 
-    if (!searchInput || !grid || !resultText || !noResults) {
-        return;
-    }
+    function updateProfileSearch() {
+        const query = (searchInput.value || "").trim().toLowerCase();
+        let visibleCount = 0;
 
-    const cards = Array.from(grid.querySelectorAll("[data-profile-card]"));
-    const total = cards.length;
-
-    function filterProfiles() {
-        const query = searchInput.value.trim().toLocaleLowerCase();
-        let visible = 0;
-
-        cards.forEach(function (card) {
-            const searchableText = (
-                card.dataset.search || ""
-            ).toLocaleLowerCase();
-
+        profileCards.forEach(function (card) {
+            const searchableText = card.dataset.search || "";
             const matches = searchableText.includes(query);
 
-            card.classList.toggle("d-none", !matches);
+            card.classList.toggle("jd-hidden", !matches);
 
             if (matches) {
-                visible += 1;
+                visibleCount += 1;
             }
         });
 
-        resultText.textContent = query
-            ? `Showing ${visible} of ${total} profile${total === 1 ? "" : "s"}`
-            : `Showing ${total} profile${total === 1 ? "" : "s"}`;
+        countElement.textContent =
+            visibleCount + " professional" + (visibleCount === 1 ? "" : "s");
 
-        noResults.classList.toggle(
-            "d-none",
-            visible !== 0 || total === 0
+        totalElement.textContent = visibleCount;
+
+        noSearchResults.classList.toggle(
+            "jd-hidden",
+            visibleCount !== 0 || profileCards.length === 0
         );
     }
 
-    searchInput.addEventListener("input", filterProfiles);
+    searchInput.addEventListener("input", updateProfileSearch);
 
-    if (clearButton) {
-        clearButton.addEventListener("click", function () {
-            searchInput.value = "";
-            filterProfiles();
-            searchInput.focus();
+    /* PROFESSIONAL REGISTRATION CHART */
+    const chartCanvas = document.getElementById("jdGrowthChart");
+    const chartFallback = document.getElementById("jdChartFallback");
+
+    const growthLabels = {{ growth_labels|default:"[]"|safe }};
+    const growthTotals = {{ growth_totals|default:"[]"|safe }};
+
+    if (
+        typeof Chart !== "undefined" &&
+        Array.isArray(growthLabels) &&
+        Array.isArray(growthTotals) &&
+        growthLabels.length > 0 &&
+        growthLabels.length === growthTotals.length
+    ) {
+        new Chart(chartCanvas, {
+            type: "line",
+            data: {
+                labels: growthLabels,
+                datasets: [{
+                    label: "New registrations",
+                    data: growthTotals,
+                    borderColor: "#6366f1",
+                    backgroundColor: "rgba(99, 102, 241, 0.12)",
+                    fill: true,
+                    tension: 0.38,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: "#ffffff",
+                    pointBorderColor: "#6366f1",
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: "index"
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "#172554",
+                        padding: 12,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: "#64748b",
+                            font: { size: 10 }
+                        },
+                        border: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: "rgba(148,163,184,.15)"
+                        },
+                        ticks: {
+                            precision: 0,
+                            color: "#64748b",
+                            font: { size: 10 }
+                        },
+                        border: { display: false }
+                    }
+                }
+            }
         });
+    } else {
+        chartCanvas.classList.add("jd-hidden");
+        chartFallback.classList.remove("jd-hidden");
     }
-})();
+});
 </script>
 {% endblock %}

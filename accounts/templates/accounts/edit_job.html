@@ -6,7 +6,7 @@
 
 <div class="container py-5">
 
-```
+
 <div class="row justify-content-center">
 
     <div class="col-lg-8">
@@ -21,11 +21,18 @@
         <div class="card border-0 shadow-sm">
 
             <div class="card-body p-4 p-md-5">
-                {% if error %}
+                
+                {% if errors %}
                     <div class="alert alert-danger">
-                        {{ error }}
+                        <strong>Please correct the following:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for message in errors %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endif %}
+
 
                 <form method="POST">
 
@@ -148,14 +155,22 @@
                             Salary
                         </label>
 
+                        
                         <input
-                            type="text"
+                            type="number"
                             class="form-control"
                             id="salary"
                             name="salary"
-                            value="{{ job.salary }}"
-                            placeholder="e.g. ₦200,000 - ₦300,000"
+                            min="0"
+                            step="1"
+                            value="{{ salary|default:job.salary }}"
+                            placeholder="Enter salary in naira"
+                            required
                         >
+                        <div class="form-text">
+                            Enter one salary amount in naira, without commas or currency symbols.
+                        </div>
+
                     </div>
 
                     <div class="mb-4">
@@ -163,13 +178,16 @@
                             Application Deadline
                         </label>
 
-                        <input
-                            type="date"
-                            class="form-control"
-                            id="application_deadline"
-                            name="application_deadline"
-                            value="{{ job.deadline|date:'Y-m-d' }}"
-                        >
+                        
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="application_deadline"
+                                name="application_deadline"
+                                value="{{ deadline|default:job.deadline|date:'Y-m-d' }}"
+                                required
+                            >
+
                     </div>
 
                     <div class="d-flex gap-2">
@@ -199,7 +217,7 @@
 
     </div>
 </div>
-```
+
 
 </div>
 

@@ -24,5 +24,11 @@ urlpatterns = [
     #My Applications
     path('myapplications/', views.my_application, name='my-applications'),
     path('myapplications/<int:id>/jobapplications/', views.job_applications, name='job-applications'),
-    path('myapplications/<int:id>/statusupdate/', views.update_application_status, name='update-status')
+    path('myapplications/<int:id>/statusupdate/', views.update_application_status, name='update-status'),
+   
+    path(
+    'myapplications/<int:id>/statusupdate/',
+    views.update_application_status,
+    name='update-status',
+),
 ]

@@ -3,402 +3,213 @@
 
 {% block title %}Apply for {{ job.title }} | JobHub{% endblock %}
 
-{% block extra_css %}
-<style>
-    .job-application-page {
-        --apply-blue: #2563eb;
-        --apply-navy: #10213a;
-        --apply-muted: #64748b;
-        --apply-border: #e5eaf2;
-        padding: 42px 0 68px;
-        color: var(--apply-navy);
-    }
-
-    .job-application-page .application-heading {
-        text-align: center;
-        margin-bottom: 30px;
-        animation: applicationFadeIn .45s ease both;
-    }
-
-    .job-application-page .heading-icon {
-        width: 66px;
-        height: 66px;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        background: #eaf1ff;
-        color: var(--apply-blue);
-        border-radius: 20px;
-        font-size: 1.8rem;
-        margin-bottom: 18px;
-    }
-
-    .job-application-page .page-title {
-        font-size: clamp(1.8rem, 4vw, 2.4rem);
-        font-weight: 800;
-        letter-spacing: -0.8px;
-        margin-bottom: 12px;
-    }
-
-    .job-application-page .page-subtitle {
-        color: var(--apply-muted);
-        line-height: 1.75;
-        max-width: 540px;
-        margin: 0 auto;
-    }
-
-    .job-application-page .application-card {
-        background: #fff;
-        border: 1px solid var(--apply-border);
-        border-radius: 22px;
-        overflow: hidden;
-        box-shadow: 0 14px 42px rgba(16, 33, 58, .07);
-        animation: applicationFadeIn .55s ease both;
-    }
-
-    .job-application-page .application-card-body {
-        padding: 30px;
-    }
-
-    .job-application-page .job-overview {
-        background: linear-gradient(135deg, #f4f7ff, #f8fbff);
-        border: 1px solid #e0eaff;
-        border-radius: 16px;
-        padding: 23px;
-        margin-bottom: 30px;
-    }
-
-    .job-application-page .overview-label {
-        color: var(--apply-muted);
-        font-size: .82rem;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .job-application-page .overview-value {
-        font-weight: 700;
-        color: var(--apply-navy);
-        overflow-wrap: anywhere;
-        margin: 0;
-    }
-
-    .job-application-page .overview-title {
-        font-size: 1.25rem;
-        font-weight: 800;
-        line-height: 1.4;
-        overflow-wrap: anywhere;
-        margin-bottom: 7px;
-    }
-
-    .job-application-page .company-name {
-        color: var(--apply-blue);
-        font-weight: 600;
-        margin-bottom: 0;
-    }
-
-    .job-application-page .section-title {
-        font-size: 1.1rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-    }
-
-    .job-application-page .section-description {
-        color: var(--apply-muted);
-        line-height: 1.7;
-        font-size: .92rem;
-        margin-bottom: 22px;
-    }
-
-    .job-application-page .form-label {
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
-
-    .job-application-page .form-control {
-        border: 1px solid #dce3ed;
-        border-radius: 12px;
-        padding: 13px 15px;
-        color: var(--apply-navy);
-        transition: border-color .2s ease, box-shadow .2s ease;
-    }
-
-    .job-application-page textarea.form-control {
-        min-height: 210px;
-        resize: vertical;
-        line-height: 1.75;
-    }
-
-    .job-application-page .form-control:focus {
-        border-color: var(--apply-blue);
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
-    }
-
-    .job-application-page .form-text {
-        color: var(--apply-muted);
-        line-height: 1.65;
-        margin-top: 9px;
-    }
-
-    .job-application-page .application-tips {
-        background: #f8fafc;
-        border: 1px solid var(--apply-border);
-        border-radius: 13px;
-        padding: 16px;
-        margin: 22px 0 28px;
-    }
-
-    .job-application-page .application-tips h3 {
-        font-size: .93rem;
-        font-weight: 800;
-        margin-bottom: 9px;
-    }
-
-    .job-application-page .application-tips ul {
-        color: var(--apply-muted);
-        padding-left: 20px;
-        margin-bottom: 0;
-        line-height: 1.9;
-        font-size: .9rem;
-    }
-
-    .job-application-page .btn {
-        border-radius: 10px;
-        padding: 12px 17px;
-        font-weight: 700;
-        transition: transform .2s ease, box-shadow .2s ease;
-    }
-
-    .job-application-page .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .job-application-page .btn-primary {
-        background: var(--apply-blue);
-        border-color: var(--apply-blue);
-        box-shadow: 0 5px 14px rgba(37, 99, 235, .15);
-    }
-
-    .job-application-page .btn-primary:hover {
-        background: #1d4ed8;
-        border-color: #1d4ed8;
-        box-shadow: 0 8px 20px rgba(37, 99, 235, .2);
-    }
-
-    .job-application-page .privacy-note {
-        text-align: center;
-        color: var(--apply-muted);
-        font-size: .83rem;
-        line-height: 1.65;
-        margin: 20px 0 0;
-    }
-
-    .job-application-page .alert {
-        border-radius: 12px;
-        line-height: 1.65;
-    }
-
-    @keyframes applicationFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @media (max-width: 575.98px) {
-        .job-application-page {
-            padding-top: 26px;
-        }
-
-        .job-application-page .application-card-body {
-            padding: 21px;
-        }
-
-        .job-application-page .job-overview {
-            padding: 18px;
-        }
-
-        .job-application-page .application-actions {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .job-application-page .application-actions .btn {
-            width: 100%;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .job-application-page *,
-        .job-application-page *::before,
-        .job-application-page *::after {
-            animation-duration: .01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: .01ms !important;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="job-application-page">
-    <div class="container">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
 
-        <!-- Page Heading -->
-        <header class="application-heading">
-            <div class="heading-icon">
-                <i class="bi bi-send-check-fill"></i>
-            </div>
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
 
-            <h1 class="page-title">Take the Next Step</h1>
+                    <h2 class="fw-bold mb-2">Apply for a Job</h2>
 
-            <p class="page-subtitle">
-                Present your experience, explain your interest, and show the
-                employer why you could be a strong candidate for this opportunity.
-            </p>
-        </header>
+                    <p class="text-muted mb-4">
+                        Applying for
+                        <strong>{{ job.title }}</strong>
+                        at <strong>{{ job.company }}</strong>
+                    </p>
 
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-xl-7">
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
 
-                <section class="application-card">
-                    <div class="application-card-body">
+                    <form method="POST"
+                          enctype="multipart/form-data"
+                          action="{% url 'apply-job' job.id %}">
+                        {% csrf_token %}
 
-                        {% if error %}
-                            <div class="alert alert-danger mb-4" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                {{ error }}
-                            </div>
-                        {% endif %}
+                        <!-- CV -->
+                        <div class="mb-4">
+                            <label for="cv" class="form-label fw-semibold">
+                                CV / Résumé
+                            </label>
 
-                        <!-- Job Overview -->
-                        <div class="job-overview">
-                            <span class="overview-label">You're applying for</span>
+                            {% if profile.cv %}
+                                <p class="small text-success mb-2">
+                                    You have a default CV saved in your profile.
+                                    Leave this field empty to use it for this application.
+                                </p>
+                            {% else %}
+                                <p class="small text-muted mb-2">
+                                    Upload your CV to apply for this job.
+                                </p>
+                            {% endif %}
 
-                            <h2 class="overview-title">{{ job.title }}</h2>
+                            <input
+                                type="file"
+                                name="cv"
+                                id="cv"
+                                class="form-control"
+                                accept=".pdf,application/pdf"
+                            >
 
-                            <p class="company-name mb-4">
-                                <i class="bi bi-building me-2"></i>
-                                {{ job.company }}
-                            </p>
-
-                            <div class="row g-3">
-                                <div class="col-sm-6">
-                                    <span class="overview-label">Location</span>
-                                    <p class="overview-value">
-                                        <i class="bi bi-geo-alt text-primary me-1"></i>
-                                        {{ job.location }}
-                                    </p>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <span class="overview-label">Job Type</span>
-                                    <p class="overview-value">
-                                        <i class="bi bi-briefcase text-primary me-1"></i>
-                                        {{ job.job_type }}
-                                    </p>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <span class="overview-label">Salary</span>
-                                    <p class="overview-value">
-                                        <i class="bi bi-cash-stack text-primary me-1"></i>
-                                        {{ job.salary|default:"Not specified" }}
-                                    </p>
-                                </div>
-
-                                {% if job.deadline %}
-                                    <div class="col-sm-6">
-                                        <span class="overview-label">Application Deadline</span>
-                                        <p class="overview-value">
-                                            <i class="bi bi-calendar-event text-primary me-1"></i>
-                                            {{ job.deadline|date:"M d, Y" }}
-                                        </p>
-                                    </div>
-                                {% endif %}
+                            <div class="form-text">
+                                PDF format only. You can select a different CV
+                                for this application.
                             </div>
                         </div>
 
-                        <!-- Application Form -->
-                        <div>
-                            <h2 class="section-title">Your Cover Letter</h2>
+                        <!-- Text cover letter -->
+                        <div class="mb-4">
+                            <label for="cover_letter"
+                                   class="form-label fw-semibold">
+                                Cover Letter
+                            </label>
 
-                            <p class="section-description">
-                                Introduce yourself and explain how your skills
-                                and experience relate to this role.
-                            </p>
+                            <textarea
+                                name="cover_letter"
+                                id="cover_letter"
+                                class="form-control"
+                                rows="6"
+                                placeholder="Explain why you are a good fit for this position..."
+                            ></textarea>
 
-                            <form method="POST">
-                                {% csrf_token %}
+                            <div class="form-text">
+                                Enter your cover letter here, or upload it below.
+                            </div>
+                        </div>
+
+                        <!-- Uploaded cover letter -->
+                        <div class="mb-4">
+                            <label for="cover_letter_file"
+                                   class="form-label fw-semibold">
+                                Cover Letter File (Optional)
+                            </label>
+
+                            <input
+                                type="file"
+                                name="cover_letter_file"
+                                id="cover_letter_file"
+                                class="form-control"
+                                accept=".pdf,application/pdf"
+                            >
+                        </div>
+
+                        <!-- Portfolio -->
+                        <div class="mb-4">
+                            <label for="portfolio_url"
+                                   class="form-label fw-semibold">
+                                Portfolio or GitHub URL (Optional)
+                            </label>
+
+                            <input
+                                type="url"
+                                name="portfolio_url"
+                                id="portfolio_url"
+                                class="form-control"
+                                placeholder="https://github.com/your-username"
+                            >
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Optional supporting documents -->
+                        <h5 class="fw-bold mb-2">
+                            Certificates and Supporting Documents
+                        </h5>
+
+                        <p class="text-muted small">
+                            You can attach professional certificates,
+                            academic certificates, training certificates,
+                            or other relevant supporting documents.
+                            These are optional.
+                        </p>
+
+                        {% for number in "123" %}
+                            <div class="border rounded-3 p-3 mb-3">
+                                <h6 class="fw-semibold">
+                                    Supporting Document {{ forloop.counter }}
+                                </h6>
 
                                 <div class="mb-3">
-                                    <label for="cover_letter" class="form-label">
-                                        Cover letter
-                                        <span class="text-danger">*</span>
+                                    <label
+                                        for="document_type_{{ forloop.counter }}"
+                                        class="form-label">
+                                        Document Type
                                     </label>
 
-                                    <textarea
-                                        id="cover_letter"
-                                        name="cover_letter"
+                                    <select
+                                        name="document_type"
+                                        id="document_type_{{ forloop.counter }}"
+                                        class="form-select">
+                                        <option value="professional_certificate">
+                                            Professional Certificate
+                                        </option>
+                                        <option value="academic_certificate">
+                                            Academic Certificate
+                                        </option>
+                                        <option value="training_certificate">
+                                            Training Certificate
+                                        </option>
+                                        <option value="supporting_document">
+                                            Other Supporting Document
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label
+                                        for="document_title_{{ forloop.counter }}"
+                                        class="form-label">
+                                        Document Title
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="document_title"
+                                        id="document_title_{{ forloop.counter }}"
                                         class="form-control"
-                                        rows="8"
-                                        placeholder="Dear Hiring Manager,&#10;&#10;I am interested in this position because..."
-                                        aria-describedby="cover-letter-help"
-                                        required
-                                    ></textarea>
-
-                                    <div id="cover-letter-help" class="form-text">
-                                        Explain why you're interested in the role
-                                        and what you can contribute.
-                                    </div>
-                                </div>
-
-                                <div class="application-tips">
-                                    <h3>
-                                        <i class="bi bi-lightbulb text-primary me-2"></i>
-                                        Tips for a strong application
-                                    </h3>
-
-                                    <ul>
-                                        <li>Address the employer professionally.</li>
-                                        <li>Highlight relevant skills and projects.</li>
-                                        <li>Explain how you can contribute to the role.</li>
-                                        <li>Review your letter before submitting.</li>
-                                    </ul>
-                                </div>
-
-                                <div class="application-actions d-flex flex-column flex-sm-row gap-3">
-                                    <a
-                                        href="{% url 'job-detail' job.id %}"
-                                        class="btn btn-outline-secondary"
+                                        placeholder="e.g. Backend Development Certificate"
                                     >
-                                        <i class="bi bi-arrow-left me-1"></i>
-                                        Back to Job
-                                    </a>
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-primary flex-grow-1"
-                                    >
-                                        <i class="bi bi-send-check me-2"></i>
-                                        Submit Application
-                                    </button>
                                 </div>
-                            </form>
 
-                            <p class="privacy-note">
-                                <i class="bi bi-shield-check me-1"></i>
-                                Please ensure your application is accurate before submitting.
-                            </p>
+                                <div>
+                                    <label
+                                        for="document_{{ forloop.counter }}"
+                                        class="form-label">
+                                        Upload File
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="documents"
+                                        id="document_{{ forloop.counter }}"
+                                        class="form-control"
+                                        accept=".pdf,application/pdf"
+                                    >
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <button type="submit"
+                                    class="btn btn-primary px-4">
+                                <i class="bi bi-send me-1"></i>
+                                Submit Application
+                            </button>
+
+                            <a href="{% url 'job-detail' job.id %}"
+                               class="btn btn-outline-secondary px-4">
+                                Cancel
+                            </a>
                         </div>
 
-                    </div>
-                </section>
-
+                    </form>
+                </div>
             </div>
+
         </div>
     </div>
 </div>

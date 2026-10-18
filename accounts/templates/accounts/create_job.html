@@ -142,13 +142,22 @@
                                 Salary
                             </label>
 
+                            
                             <input
-                                type="text"
+                                type="number"
                                 class="form-control"
                                 id="salary"
                                 name="salary"
-                                placeholder="e.g. ₦200,000 - ₦300,000"
+                                min="0"
+                                step="1"
+                                placeholder="e.g. 250000"
+                                value="{{ salary|default:'' }}"
+                                required
                             >
+                            <div class="form-text">
+                                Enter one salary amount in Nigerian naira, without commas or symbols.
+                            </div>
+
                         </div>
 
                         <!-- Deadline -->
@@ -157,12 +166,16 @@
                                 Application Deadline
                             </label>
 
-                            <input
-                                type="date"
-                                class="form-control"
-                                id="application_deadline"
-                                name="application_deadline"
-                            >
+                            
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    id="application_deadline"
+                                    name="application_deadline"
+                                    value="{{ deadline|default:'' }}"
+                                    required
+                                >
+
                         </div>
 
                         <!-- Submit -->
