@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ resource.title }} | JobHub Career Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+.resource-detail-wrap{max-width:900px;margin:auto}
+.resource-detail-hero{padding:clamp(24px,5vw,45px);border-radius:24px;background:linear-gradient(125deg,#172554,#4338ca);color:white}
+.resource-detail-body{background:white;border:1px solid #e5eaf2;border-radius:20px;padding:clamp(22px,4vw,42px);overflow-wrap:anywhere}
+.resource-content{font-size:1.04rem;line-height:1.9;color:#334155}
+.resource-content h2,.resource-content h3{color:#172554}
+.resource-content a{overflow-wrap:anywhere}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="resource-detail-wrap">
+    <a href="{% url 'career-hub' %}" class="text-decoration-none small fw-semibold">
+        <i class="bi bi-arrow-left me-1"></i> Back to Career Hub
+    </a>
+
+    <header class="resource-detail-hero my-3">
+        <span class="badge bg-light text-primary mb-3">{{ resource.get_category_display }}</span>
+        <div class="small text-white-50 mb-2">{{ resource.get_resource_type_display }}</div>
+        <h1 class="display-6 fw-bold">{{ resource.title }}</h1>
+        <p class="mb-3 text-white-50">{{ resource.description }}</p>
+        <div class="small text-white-50">
+            <i class="bi bi-calendar3 me-1"></i>{{ resource.created_at|date:"F j, Y" }}
+        </div>
+    </header>
+
+    <article class="resource-detail-body mt-4">
+        {% if resource.resource_type == "article" %}
+            <div class="resource-content">{{ resource.content|linebreaks }}</div>
+        {% else %}
+            <div class="text-center py-4">
+                <div class="display-4 text-primary mb-3"><i class="bi bi-play-circle"></i></div>
+                <h2 class="h4 fw-bold">Continue learning</h2>
+                <p class="text-muted">This resource is hosted externally. Open it to continue to the course or tutorial.</p>
+                <a href="{{ resource.resource_url }}" target="_blank" rel="noopener noreferrer nofollow"
+                   class="btn btn-primary btn-lg">
+                    Open learning resource <i class="bi bi-box-arrow-up-right ms-1"></i>
+                </a>
+            </div>
+        {% endif %}
+    </article>
+</div>
+{% endblock %}

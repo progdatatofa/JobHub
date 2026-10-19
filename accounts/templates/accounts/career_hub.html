@@ -1,0 +1,257 @@
+
+{% extends "base.html" %}
+
+{% block title %}Career Development Hub | JobHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.career-page { --career-ink:#172554; --career-muted:#64748b; --career-line:#e6eaf2; }
+.career-hero {
+    position:relative; overflow:hidden; border-radius:28px;
+    padding:clamp(28px,5vw,58px);
+    color:white; background:linear-gradient(125deg,#111b48,#3730a3 60%,#6366f1);
+    box-shadow:0 22px 55px rgba(49,46,129,.20);
+}
+.career-hero:after {
+    content:""; position:absolute; width:260px; height:260px; border-radius:50%;
+    right:-75px; top:-95px; background:rgba(255,255,255,.09);
+    box-shadow:0 0 0 35px rgba(255,255,255,.035),0 0 0 70px rgba(255,255,255,.025);
+}
+.career-hero-content { position:relative; z-index:1; max-width:720px; }
+.career-eyebrow { text-transform:uppercase; letter-spacing:2px; font-size:.76rem; font-weight:800; opacity:.8; }
+.career-hero h1 { font-size:clamp(2rem,4vw,3.25rem); line-height:1.12; font-weight:850; letter-spacing:-1.5px; }
+.career-hero p { color:#e0e7ff; max-width:610px; font-size:1.05rem; }
+.career-stat { background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.17); border-radius:15px; padding:14px 18px; min-width:130px; }
+.career-stat strong { display:block; font-size:1.5rem; }
+.career-stat span { font-size:.82rem; color:#e0e7ff; }
+.career-section-title { color:#172554; font-weight:800; letter-spacing:-.5px; }
+.career-resource-card,.career-path-card {
+    background:#fff; border:1px solid var(--career-line); border-radius:20px;
+    height:100%; padding:23px; transition:transform .22s ease,box-shadow .22s ease;
+}
+.career-resource-card:hover,.career-path-card:hover {
+    transform:translateY(-4px); box-shadow:0 16px 38px rgba(23,37,84,.09);
+}
+.career-icon {
+    width:48px;height:48px;border-radius:15px;display:flex;align-items:center;
+    justify-content:center;background:#eef2ff;color:#4338ca;font-size:1.35rem;
+}
+.career-tag { display:inline-block; background:#f1f5f9;color:#475569;border-radius:99px;padding:5px 10px;font-size:.75rem;font-weight:700; }
+.career-resource-card h3,.career-path-card h3 { font-size:1.12rem; font-weight:800; color:#172554; line-height:1.4; }
+.career-description { color:#64748b; font-size:.92rem; }
+.career-filter { background:white; border:1px solid var(--career-line); border-radius:18px; padding:18px; }
+.career-search { min-height:48px; }
+.career-path-card { background:linear-gradient(145deg,#fff,#f8faff); }
+.career-path-icon { width:42px;height:42px;border-radius:13px;background:#e0e7ff;color:#3730a3;display:flex;align-items:center;justify-content:center;font-size:1.2rem; }
+.career-empty { background:#fff;border:1px dashed #cbd5e1;border-radius:20px;padding:42px 20px;text-align:center; }
+.career-empty i { font-size:2.4rem;color:#94a3b8; }
+.career-btn { border-radius:11px;font-weight:700;padding:10px 16px; }
+.career-pagination .page-link { border-radius:9px;margin:0 3px;border:1px solid #e2e8f0;color:#3730a3; }
+.career-pagination .active .page-link { background:#4338ca;border-color:#4338ca; }
+@media(max-width:576px) {
+    .career-hero { border-radius:20px; }
+    .career-stat { min-width:0; flex:1; padding:12px; }
+    .career-resource-card,.career-path-card { padding:19px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="career-page">
+
+    <section class="career-hero mb-5">
+        <div class="career-hero-content">
+            <div class="career-eyebrow mb-3">
+                <i class="bi bi-stars me-1"></i> Your next chapter starts here
+            </div>
+            <h1 class="mb-3">Build skills.<br>Grow with purpose.</h1>
+            <p class="mb-4">
+                Explore practical guides, discover trusted learning resources,
+                and follow structured paths to move your career forward.
+            </p>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <a href="#career-resources" class="btn btn-light career-btn">
+                    Explore resources <i class="bi bi-arrow-down-right ms-1"></i>
+                </a>
+                <a href="{% url 'career-resource-submit' %}" class="btn btn-outline-light career-btn">
+                    <i class="bi bi-plus-lg me-1"></i> Share a resource
+                </a>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <div class="career-stat">
+                    <strong>{{ resource_count }}</strong><span>Approved resources</span>
+                </div>
+                <div class="career-stat">
+                    <strong>{{ path_count }}</strong><span>Learning paths</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <section class="mb-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+            <div>
+                <div class="text-primary fw-bold small text-uppercase mb-1">Learn with direction</div>
+                <h2 class="career-section-title mb-1">Guided learning paths</h2>
+                <p class="text-muted mb-0">Follow a structured route from the basics to practical skills.</p>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            {% for path in learning_paths %}
+                <div class="col-md-6 col-xl-4">
+                    <article class="career-path-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="career-path-icon"><i class="bi bi-signpost-split"></i></div>
+                            <span class="career-tag">{{ path.get_level_display }}</span>
+                        </div>
+                        <h3>{{ path.title }}</h3>
+                        <p class="career-description">{{ path.description|truncatechars:135 }}</p>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span class="career-tag"><i class="bi bi-clock me-1"></i>{{ path.estimated_duration }}</span>
+                            <span class="career-tag"><i class="bi bi-list-check me-1"></i>{{ path.items.count }} steps</span>
+                        </div>
+                        <a href="{% url 'career-learning-path-detail' path.slug %}" class="btn btn-outline-primary career-btn w-100">
+                            View learning path <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </article>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="career-empty">
+                        <i class="bi bi-signpost-split"></i>
+                        <h3 class="h5 mt-3">Learning paths are coming soon</h3>
+                        <p class="text-muted mb-0">Check back as JobHub adds structured career journeys.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="career-resources" class="mb-4">
+        <div class="mb-3">
+            <div class="text-primary fw-bold small text-uppercase mb-1">Explore and improve</div>
+            <h2 class="career-section-title mb-1">Career resources</h2>
+            <p class="text-muted mb-0">Find guides, tutorials, and courses selected to help you progress.</p>
+        </div>
+
+        <form method="get" class="career-filter mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-5">
+                    <label for="career-search" class="form-label">Search resources</label>
+                    <input id="career-search" type="search" name="search" value="{{ search }}"
+                           class="form-control career-search" placeholder="Try Python, interviews, CV writing...">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <label for="career-category" class="form-label">Category</label>
+                    <select id="career-category" name="category" class="form-select career-search">
+                        <option value="">All categories</option>
+                        {% for value,label in categories %}
+                            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 col-lg-2">
+                    <label for="career-type" class="form-label">Resource type</label>
+                    <select id="career-type" name="type" class="form-select career-search">
+                        <option value="">All types</option>
+                        {% for value,label in resource_types %}
+                            <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary career-btn flex-grow-1">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+                    <a href="{% url 'career-hub' %}" class="btn btn-light border career-btn" title="Clear filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted small">
+                {% if page_obj.paginator.count %}
+                    Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} resources
+                {% else %}
+                    No matching resources
+                {% endif %}
+            </span>
+            <a href="{% url 'career-resource-submit' %}" class="small fw-bold text-decoration-none">
+                <i class="bi bi-plus-circle me-1"></i>Submit a resource
+            </a>
+        </div>
+
+        <div class="row g-3">
+            {% for resource in resources %}
+                <div class="col-md-6 col-xl-4">
+                    <article class="career-resource-card d-flex flex-column">
+                        <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
+                            <div class="career-icon">
+                                {% if resource.resource_type == "article" %}
+                                    <i class="bi bi-journal-richtext"></i>
+                                {% else %}
+                                    <i class="bi bi-play-circle"></i>
+                                {% endif %}
+                            </div>
+                            <span class="career-tag">{{ resource.get_category_display }}</span>
+                        </div>
+                        <h3>{{ resource.title }}</h3>
+                        <p class="career-description flex-grow-1">{{ resource.description|truncatechars:145 }}</p>
+                        <div class="small text-muted mb-3">
+                            <i class="bi bi-calendar3 me-1"></i>{{ resource.created_at|date:"M j, Y" }}
+                            <span class="mx-1">·</span>
+                            {{ resource.get_resource_type_display }}
+                        </div>
+                        <a href="{% url 'career-resource-detail' resource.pk %}" class="btn btn-outline-primary career-btn w-100">
+                            Explore resource <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </article>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="career-empty">
+                        <i class="bi bi-search"></i>
+                        <h3 class="h5 mt-3">No resources found</h3>
+                        <p class="text-muted mb-3">Try a different search or category, or share a useful resource with the community.</p>
+                        <a href="{% url 'career-resource-submit' %}" class="btn btn-primary career-btn">Share a resource</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav class="career-pagination mt-4" aria-label="Career resources pagination">
+                <ul class="pagination justify-content-center flex-wrap">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?search={{ search|urlencode }}&category={{ selected_category|urlencode }}&type={{ selected_type|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for number in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == number %}active{% endif %}">
+                            <a class="page-link" href="?search={{ search|urlencode }}&category={{ selected_category|urlencode }}&type={{ selected_type|urlencode }}&page={{ number }}">{{ number }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?search={{ search|urlencode }}&category={{ selected_category|urlencode }}&type={{ selected_type|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

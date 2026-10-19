@@ -16,7 +16,10 @@ from django.http import FileResponse, Http404
 from django.core.paginator import Paginator
 from django.utils import timezone
 
-from .models import Profile, Job, ApplyJob, ApplicationDocument, IndustryUpdate
+from .models import Profile, Job, ApplyJob, ApplicationDocument, IndustryUpdate, CareerResource,LearningPath,LearningPathItem, LearningProgress
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+
 
 
 # --------------------------------------------------
@@ -1054,4 +1057,291 @@ def custom_404(request, exception):
         request,
         "accounts/404.html",
         status=404,
+    )
+
+
+
+
+# --------------------------------------------------
+# CAREER DEVELOPMENT HUB
+# --------------------------------------------------
+
+@login_required
+def career_hub(request):
+    resources = CareerResource.objects.filter(
+        is_approved=True
+    ).select_related("submitted_by")
+
+    search = (request.GET.get("search") or "").strip()
+    category = (request.GET.get("category") or "").strip()
+    resource_type = (request.GET.get("type") or "").strip()
+
+    valid_categories = {
+        value for value, label in CareerResource.CATEGORIES
+    }
+    valid_types = {
+        value for value, label in CareerResource.RESOURCE_TYPES
+    }
+
+    if category not in valid_categories:
+        category = ""
+
+    if resource_type not in valid_types:
+        resource_type = ""
+
+    if search:
+        resources = resources.filter(
+            Q(title__icontains=search)
+            | Q(description__icontains=search)
+            | Q(content__icontains=search)
+        )
+
+    if category:
+        resources = resources.filter(category=category)
+
+    if resource_type:
+        resources = resources.filter(resource_type=resource_type)
+
+    paginator = Paginator(resources, 9)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    learning_paths = (
+        LearningPath.objects.filter(is_published=True)
+        .prefetch_related("items")
+    )
+
+    return render(
+        request,
+        "accounts/career_hub.html",
+        {
+            "page_obj": page_obj,
+            "resources": page_obj.object_list,
+            "learning_paths": learning_paths,
+            "search": search,
+            "selected_category": category,
+            "selected_type": resource_type,
+            "categories": CareerResource.CATEGORIES,
+            "resource_types": CareerResource.RESOURCE_TYPES,
+            "resource_count": CareerResource.objects.filter(
+                is_approved=True
+            ).count(),
+            "path_count": learning_paths.count(),
+        },
+    )
+
+
+@login_required
+def career_resource_detail(request, pk):
+    resource = get_object_or_404(
+        CareerResource,
+        pk=pk,
+        is_approved=True,
+    )
+
+    return render(
+        request,
+        "accounts/career_resource_detail.html",
+        {"resource": resource},
+    )
+
+
+@login_required
+def submit_career_resource(request):
+    form_data = {
+        "title": "",
+        "description": "",
+        "category": "",
+        "resource_type": "article",
+        "content": "",
+        "resource_url": "",
+    }
+
+    if request.method == "POST":
+        form_data = {
+            "title": (request.POST.get("title") or "").strip(),
+            "description": (
+                request.POST.get("description") or ""
+            ).strip(),
+            "category": (request.POST.get("category") or "").strip(),
+            "resource_type": (
+                request.POST.get("resource_type") or ""
+            ).strip(),
+            "content": (request.POST.get("content") or "").strip(),
+            "resource_url": (
+                request.POST.get("resource_url") or ""
+            ).strip(),
+        }
+
+        errors = []
+
+        valid_categories = {
+            value for value, label in CareerResource.CATEGORIES
+        }
+        valid_types = {
+            value for value, label in CareerResource.RESOURCE_TYPES
+        }
+
+        if not form_data["title"]:
+            errors.append("Please enter a title.")
+
+        if len(form_data["title"]) > 200:
+            errors.append("The title cannot exceed 200 characters.")
+
+        if not form_data["description"]:
+            errors.append("Please enter a short description.")
+
+        if len(form_data["description"]) > 350:
+            errors.append("The description cannot exceed 350 characters.")
+
+        if form_data["category"] not in valid_categories:
+            errors.append("Please select a valid category.")
+
+        if form_data["resource_type"] not in valid_types:
+            errors.append("Please select a valid resource type.")
+
+        if (
+            form_data["resource_type"] == "article"
+            and not form_data["content"]
+        ):
+            errors.append("Please provide the article content.")
+
+        if (
+            form_data["resource_type"] == "external"
+            and not form_data["resource_url"]
+        ):
+            errors.append("Please provide the external resource URL.")
+
+        if form_data["resource_type"] == "external" and form_data["resource_url"]:
+            try:
+                URLValidator(schemes=["http", "https"])(
+                    form_data["resource_url"]
+                )
+            except ValidationError:
+                errors.append("Enter a valid HTTP or HTTPS URL.")
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            resource = CareerResource(
+                title=form_data["title"],
+                description=form_data["description"],
+                category=form_data["category"],
+                resource_type=form_data["resource_type"],
+                content=form_data["content"],
+                resource_url=form_data["resource_url"],
+                submitted_by=request.user,
+                is_approved=False,
+            )
+
+            try:
+                resource.full_clean()
+                resource.save()
+            except ValidationError as error:
+                for field_errors in error.message_dict.values():
+                    for error_message in field_errors:
+                        messages.error(request, error_message)
+            else:
+                messages.success(
+                    request,
+                    "Your resource has been submitted for admin review.",
+                )
+                return redirect("career-hub")
+
+    return render(
+        request,
+        "accounts/career_resource_form.html",
+        {
+            "form_data": form_data,
+            "categories": CareerResource.CATEGORIES,
+            "resource_types": CareerResource.RESOURCE_TYPES,
+        },
+    )
+
+
+
+@login_required
+def career_learning_path_detail(request, slug):
+    learning_path = get_object_or_404(
+        LearningPath,
+        slug=slug,
+        is_published=True,
+    )
+
+    items = list(
+        learning_path.items
+        .filter(resource__is_approved=True)
+        .select_related("resource")
+        .order_by("order")
+    )
+
+    progress_records = {
+        record.path_item_id: record
+        for record in LearningProgress.objects.filter(
+            user=request.user,
+            path_item__learning_path=learning_path,
+        )
+    }
+
+    completed_count = 0
+
+    for item in items:
+        record = progress_records.get(item.pk)
+        item.is_completed = bool(record and record.is_completed)
+
+        if item.is_completed:
+            completed_count += 1
+
+    total_count = len(items)
+
+    progress_percentage = (
+        round(completed_count / total_count * 100)
+        if total_count else 0
+    )
+
+    return render(
+        request,
+        "accounts/career_learning_path_detail.html",
+        {
+            "learning_path": learning_path,
+            "items": items,
+            "completed_count": completed_count,
+            "total_count": total_count,
+            "progress_percentage": progress_percentage,
+        },
+    )
+
+
+
+
+@login_required
+@require_POST
+def toggle_learning_progress(request, slug, item_id):
+    learning_path = get_object_or_404(
+        LearningPath,
+        slug=slug,
+        is_published=True,
+    )
+
+    path_item = get_object_or_404(
+        LearningPathItem,
+        pk=item_id,
+        learning_path=learning_path,
+        resource__is_approved=True,
+    )
+
+    completed = request.POST.get("completed") == "true"
+
+    LearningProgress.objects.update_or_create(
+        user=request.user,
+        path_item=path_item,
+        defaults={
+            "is_completed": completed,
+            "completed_at": timezone.now() if completed else None,
+        },
+    )
+
+    return redirect(
+        "career-learning-path-detail",
+        slug=learning_path.slug,
     )

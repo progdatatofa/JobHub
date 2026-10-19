@@ -1,0 +1,365 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ learning_path.title }} | JobHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.path-wrap {
+    max-width: 900px;
+    margin: auto;
+}
+
+.path-hero {
+    border-radius: 25px;
+    padding: clamp(25px, 5vw, 48px);
+    background: linear-gradient(125deg, #172554, #4338ca);
+    color: white;
+}
+
+.path-hero p {
+    line-height: 1.7;
+}
+
+.path-progress {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 28px;
+    color: #172554;
+}
+
+.path-progress .progress {
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.path-progress .progress-bar {
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+.path-step {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 16px;
+    background: white;
+    border: 1px solid #e5eaf2;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 14px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.path-step:hover {
+    box-shadow: 0 10px 28px rgba(23, 37, 84, 0.07);
+}
+
+.path-step.is-completed {
+    border-color: #86efac;
+    background: #fbfffc;
+}
+
+.path-number {
+    height: 42px;
+    width: 42px;
+    border-radius: 14px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.path-step.is-completed .path-number {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.path-step h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #172554;
+    overflow-wrap: anywhere;
+}
+
+.path-notes {
+    color: #64748b;
+    font-size: 0.92rem;
+}
+
+.path-step-description {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.path-complete-button {
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.path-section-title {
+    color: #172554;
+    font-weight: 800;
+}
+
+@media (max-width: 480px) {
+    .path-step {
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .path-number {
+        width: 36px;
+        height: 36px;
+    }
+
+    .path-progress {
+        padding: 16px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="path-wrap">
+
+    <a href="{% url 'career-hub' %}"
+       class="text-decoration-none small fw-semibold">
+        <i class="bi bi-arrow-left me-1"></i>
+        Back to Career Hub
+    </a>
+
+    <!-- Learning path introduction -->
+    <header class="path-hero my-3">
+
+        <div class="small text-uppercase fw-bold text-white-50 mb-2"
+             style="letter-spacing: 1.5px;">
+            <i class="bi bi-signpost-split me-1"></i>
+            Your guided learning journey
+        </div>
+
+        <h1 class="display-6 fw-bold">
+            {{ learning_path.title }}
+        </h1>
+
+        <p class="text-white-50 mb-3">
+            {{ learning_path.description }}
+        </p>
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <span class="badge bg-light text-primary">
+                {{ learning_path.get_level_display }}
+            </span>
+
+            <span class="badge bg-light text-primary">
+                {{ learning_path.get_category_display }}
+            </span>
+
+            <span class="badge bg-light text-primary">
+                <i class="bi bi-clock me-1"></i>
+                {{ learning_path.estimated_duration }}
+            </span>
+        </div>
+
+        <!-- Learning progress -->
+        <section class="path-progress">
+
+            <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="bi bi-graph-up-arrow me-2"></i>
+                    Your learning progress
+                </h2>
+
+                <span class="fw-bold text-primary fs-5">
+                    {{ progress_percentage }}%
+                </span>
+            </div>
+
+            <div
+                class="progress"
+                role="progressbar"
+                aria-label="Learning path completion"
+                aria-valuenow="{{ progress_percentage }}"
+                aria-valuemin="0"
+                aria-valuemax="100"
+            >
+                <div
+                    class="progress-bar bg-primary"
+                    style="width: {{ progress_percentage }}%;"
+                ></div>
+            </div>
+
+            <div class="d-flex justify-content-between flex-wrap gap-2 mt-2">
+                <span class="text-muted small">
+                    {{ completed_count }} of {{ total_count }} steps completed
+                </span>
+
+                {% if total_count > 0 and completed_count == total_count %}
+                    <span class="text-success small fw-bold">
+                        <i class="bi bi-trophy-fill me-1"></i>
+                        Path completed!
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if total_count > 0 and completed_count == total_count %}
+                <div class="alert alert-success mt-3 mb-0">
+                    <i class="bi bi-award-fill me-2"></i>
+                    Congratulations! You've completed every step in this
+                    learning path. Keep building and practicing your skills!
+                </div>
+            {% elif total_count == 0 %}
+                <p class="text-muted small mt-3 mb-0">
+                    Learning materials will be added to this path soon.
+                </p>
+            {% else %}
+                <p class="text-muted small mt-3 mb-0">
+                    Keep going! Complete each step as you progress through
+                    your learning journey.
+                </p>
+            {% endif %}
+
+        </section>
+    </header>
+
+    <!-- Learning steps -->
+    <section class="mt-4">
+
+        <div class="mb-3">
+            <h2 class="h4 path-section-title mb-1">
+                <i class="bi bi-list-check me-2"></i>
+                Your learning steps
+            </h2>
+
+            <p class="text-muted mb-0">
+                Open each resource, study the material, and mark the step
+                complete when you're ready.
+            </p>
+        </div>
+
+        {% for item in items %}
+
+            <article class="path-step {% if item.is_completed %}is-completed{% endif %}">
+
+                <div class="path-number">
+                    {% if item.is_completed %}
+                        <i class="bi bi-check-lg"></i>
+                    {% else %}
+                        {{ forloop.counter }}
+                    {% endif %}
+                </div>
+
+                <div>
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+
+                        <div class="small text-uppercase fw-bold text-primary">
+                            Step {{ forloop.counter }}
+                        </div>
+
+                        {% if item.is_completed %}
+                            <span class="badge rounded-pill bg-success-subtle text-success-emphasis">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                Completed
+                            </span>
+                        {% else %}
+                            <span class="badge rounded-pill bg-light text-secondary">
+                                <i class="bi bi-circle me-1"></i>
+                                Not completed
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                    <h2>{{ item.resource.title }}</h2>
+
+                    <p class="path-step-description">
+                        {{ item.resource.description }}
+                    </p>
+
+                    {% if item.notes %}
+                        <p class="path-notes">
+                            <i class="bi bi-lightbulb me-1"></i>
+                            {{ item.notes }}
+                        </p>
+                    {% endif %}
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+
+                        <a
+                            href="{% url 'career-resource-detail' item.resource.pk %}"
+                            class="btn btn-outline-primary btn-sm path-complete-button"
+                        >
+                            <i class="bi bi-book-half me-1"></i>
+                            Open resource
+                        </a>
+
+                        <form
+                            method="post"
+                            action="{% url 'toggle-learning-progress' learning_path.slug item.pk %}"
+                        >
+                            {% csrf_token %}
+
+                            {% if item.is_completed %}
+                                <input
+                                    type="hidden"
+                                    name="completed"
+                                    value="false"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-success btn-sm path-complete-button"
+                                >
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                                    Mark incomplete
+                                </button>
+                            {% else %}
+                                <input
+                                    type="hidden"
+                                    name="completed"
+                                    value="true"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary btn-sm path-complete-button"
+                                >
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Mark as completed
+                                </button>
+                            {% endif %}
+                        </form>
+
+                    </div>
+                </div>
+            </article>
+
+        {% empty %}
+
+            <div class="alert alert-info rounded-4 p-4">
+                <i class="bi bi-info-circle me-2"></i>
+                Learning materials for this path will be available soon.
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- Return to Career Hub -->
+    <div class="text-center my-5">
+        <a href="{% url 'career-hub' %}"
+           class="btn btn-outline-primary px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i>
+            Explore more career resources
+        </a>
+    </div>
+
+</div>
+{% endblock %}

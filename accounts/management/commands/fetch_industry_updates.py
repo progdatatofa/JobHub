@@ -22,3 +22,4 @@ class Command(BaseCommand):
         self.stdout.write(
             f"Feed errors: {results['errors']}"
         )
+        

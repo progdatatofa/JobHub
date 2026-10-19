@@ -1,0 +1,116 @@
+
+{% extends "base.html" %}
+
+{% block title %}Share a Career Resource | JobHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.submit-shell{max-width:850px;margin:auto}
+.submit-hero{border-radius:24px;padding:30px;background:linear-gradient(120deg,#172554,#4338ca);color:white}
+.submit-card{background:white;border:1px solid #e5eaf2;border-radius:22px;padding:clamp(20px,4vw,36px);box-shadow:0 12px 35px rgba(23,37,84,.06)}
+.submit-note{background:#eef2ff;border:1px solid #c7d2fe;border-radius:13px;padding:14px;color:#3730a3}
+.submit-label{font-weight:700;color:#172554}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="submit-shell">
+    <a href="{% url 'career-hub' %}" class="text-decoration-none small fw-semibold">
+        <i class="bi bi-arrow-left me-1"></i> Back to Career Hub
+    </a>
+
+    <section class="submit-hero my-3">
+        <div class="small text-uppercase fw-bold mb-2" style="letter-spacing:1.5px">Community contribution</div>
+        <h1 class="h2 fw-bold">Share something valuable.</h1>
+        <p class="mb-0 text-white-50">Help another person learn a skill, prepare for an interview, or take their next career step.</p>
+    </section>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="submit-card mt-4">
+        {% csrf_token %}
+        <div class="submit-note mb-4">
+            <i class="bi bi-shield-check me-2"></i>
+            Every submission is reviewed by a JobHub administrator before it appears in the Career Hub.
+        </div>
+
+        <div class="mb-3">
+            <label for="resource-title" class="form-label submit-label">Resource title</label>
+            <input id="resource-title" name="title" maxlength="200" required class="form-control"
+                   value="{{ form_data.title }}" placeholder="e.g. A practical guide to preparing for backend interviews">
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="resource-type" class="form-label submit-label">Resource type</label>
+                <select id="resource-type" name="resource_type" class="form-select" required>
+                    {% for value,label in resource_types %}
+                        <option value="{{ value }}" {% if form_data.resource_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="resource-category" class="form-label submit-label">Category</label>
+                <select id="resource-category" name="category" class="form-select" required>
+                    <option value="">Choose a category</option>
+                    {% for value,label in categories %}
+                        <option value="{{ value }}" {% if form_data.category == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="resource-description" class="form-label submit-label">Short description</label>
+            <textarea id="resource-description" name="description" maxlength="350" rows="3" required
+                      class="form-control" placeholder="Explain what someone will learn and why it is useful.">{{ form_data.description }}</textarea>
+            <div class="form-text">Maximum 350 characters.</div>
+        </div>
+
+        <div class="mb-3" id="article-content-wrap">
+            <label for="resource-content" class="form-label submit-label">Article content</label>
+            <textarea id="resource-content" name="content" rows="10" class="form-control"
+                      placeholder="Write your guide or article here...">{{ form_data.content }}</textarea>
+        </div>
+
+        <div class="mb-3" id="external-url-wrap">
+            <label for="resource-url" class="form-label submit-label">External course or tutorial URL</label>
+            <input id="resource-url" type="url" name="resource_url" class="form-control"
+                   value="{{ form_data.resource_url }}" placeholder="https://example.com/course">
+            <div class="form-text">Submit a trusted HTTP or HTTPS link.</div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
+            <span class="text-muted small"><i class="bi bi-clock me-1"></i>Pending administrator review</span>
+            <button type="submit" class="btn btn-primary px-4 py-2">
+                Submit for review <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+(function () {
+    const type = document.getElementById("resource-type");
+    const articleWrap = document.getElementById("article-content-wrap");
+    const content = document.getElementById("resource-content");
+    const urlWrap = document.getElementById("external-url-wrap");
+    const url = document.getElementById("resource-url");
+
+    function updateFields() {
+        const article = type.value === "article";
+        articleWrap.hidden = !article;
+        urlWrap.hidden = article;
+        content.required = article;
+        url.required = !article;
+    }
+
+    type.addEventListener("change", updateFields);
+    updateFields();
+})();
+</script>
+{% endblock %}

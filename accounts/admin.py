@@ -1,6 +1,7 @@
 
 from django.contrib import admin
-from .models import Profile, Job, ApplyJob, IndustryUpdate
+from .models import Profile, Job, ApplyJob, IndustryUpdate, CareerResource,LearningPath,LearningPathItem
+
 
 
 @admin.register(Profile)
@@ -71,3 +72,63 @@ class IndustryUpdateAdmin(admin.ModelAdmin):
             "classes": ("collapse",),
         }),
     )
+
+
+
+@admin.register(CareerResource)
+class CareerResourceAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "resource_type",
+        "category",
+        "submitted_by",
+        "is_approved",
+        "created_at",
+    )
+    list_filter = ("resource_type", "category", "is_approved")
+    search_fields = (
+        "title",
+        "description",
+        "content",
+        "submitted_by__username",
+    )
+    list_editable = ("is_approved",)
+    readonly_fields = ("created_at", "updated_at")
+    actions = ("approve_resources", "unapprove_resources")
+
+    @admin.action(description="Approve selected resources")
+    def approve_resources(self, request, queryset):
+        queryset.update(is_approved=True)
+
+    @admin.action(description="Unapprove selected resources")
+    def unapprove_resources(self, request, queryset):
+        queryset.update(is_approved=False)
+
+
+class LearningPathItemInline(admin.TabularInline):
+    model = LearningPathItem
+    extra = 1
+    autocomplete_fields = ("resource",)
+
+
+@admin.register(LearningPath)
+class LearningPathAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "category",
+        "level",
+        "estimated_duration",
+        "is_published",
+    )
+    list_filter = ("category", "level", "is_published")
+    search_fields = ("title", "description")
+    prepopulated_fields = {"slug": ("title",)}
+    inlines = (LearningPathItemInline,)
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(LearningPathItem)
+class LearningPathItemAdmin(admin.ModelAdmin):
+    list_display = ("learning_path", "order", "resource")
+    list_filter = ("learning_path",)
+    autocomplete_fields = ("learning_path", "resource")

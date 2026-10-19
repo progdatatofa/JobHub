@@ -244,3 +244,193 @@ class IndustryUpdate(models.Model):
     def __str__(self):
         return self.title
 
+
+
+
+from django.utils.text import slugify
+
+
+class CareerResource(models.Model):
+    RESOURCE_TYPES = [
+        ("article", "Career Article"),
+        ("external", "External Course or Tutorial"),
+    ]
+
+    CATEGORIES = [
+        ("career", "Career Development"),
+        ("cv", "CV and Resume"),
+        ("interview", "Interview Preparation"),
+        ("python", "Python"),
+        ("django", "Django"),
+        ("backend", "Backend Development"),
+        ("frontend", "Frontend Development"),
+        ("fullstack", "Full-Stack Development"),
+        ("data", "Data and Analytics"),
+        ("cloud", "Cloud and DevOps"),
+        ("soft-skills", "Soft Skills"),
+        ("other", "Other"),
+    ]
+
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=350)
+    category = models.CharField(max_length=30, choices=CATEGORIES)
+    resource_type = models.CharField(
+        max_length=20,
+        choices=RESOURCE_TYPES,
+        default="article",
+    )
+
+    # Used for articles written directly on JobHub.
+    content = models.TextField(blank=True)
+
+    # Used for external courses, tutorials, and learning materials.
+    resource_url = models.URLField(max_length=500, blank=True)
+
+    submitted_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="career_resources",
+    )
+
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["is_approved", "category"],
+                name="career_approved_cat_idx",
+            ),
+            models.Index(
+                fields=["is_approved", "resource_type"],
+                name="career_approved_type_idx",
+            ),
+        ]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        if self.resource_type == "article" and not self.content.strip():
+            raise ValidationError({
+                "content": "Articles must contain written content."
+            })
+
+        if self.resource_type == "external" and not self.resource_url.strip():
+            raise ValidationError({
+                "resource_url": "External resources must have a URL."
+            })
+
+    def __str__(self):
+        return self.title
+
+
+class LearningPath(models.Model):
+    LEVEL_CHOICES = [
+        ("beginner", "Beginner"),
+        ("intermediate", "Intermediate"),
+        ("advanced", "Advanced"),
+    ]
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220, unique=True, blank=True)
+    description = models.TextField()
+    category = models.CharField(
+        max_length=30,
+        choices=CareerResource.CATEGORIES,
+    )
+    estimated_duration = models.CharField(
+        max_length=100,
+        help_text="Example: 8 weeks or 3 months",
+    )
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES)
+    is_published = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title) or "learning-path"
+            candidate = base_slug
+            number = 2
+
+            while LearningPath.objects.filter(
+                slug=candidate
+            ).exclude(pk=self.pk).exists():
+                candidate = f"{base_slug}-{number}"
+                number += 1
+
+            self.slug = candidate
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+
+class LearningPathItem(models.Model):
+    learning_path = models.ForeignKey(
+        LearningPath,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
+    resource = models.ForeignKey(
+        CareerResource,
+        on_delete=models.PROTECT,
+        related_name="learning_path_items",
+    )
+    order = models.PositiveIntegerField(default=1)
+    notes = models.CharField(max_length=300, blank=True)
+
+    class Meta:
+        ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["learning_path", "order"],
+                name="unique_learning_path_order",
+            ),
+            models.UniqueConstraint(
+                fields=["learning_path", "resource"],
+                name="unique_learning_path_resource",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.learning_path.title} — Step {self.order}"
+
+
+
+from django.conf import settings
+
+
+class LearningProgress(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="learning_progress",
+    )
+    path_item = models.ForeignKey(
+        LearningPathItem,
+        on_delete=models.CASCADE,
+        related_name="user_progress",
+    )
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "path_item"],
+                name="unique_user_learning_progress",
+            )
+        ]
+        ordering = ["path_item__order"]
+
+    def __str__(self):
+        status = "Completed" if self.is_completed else "In progress"
+        return f"{self.user} - {self.path_item} ({status})"

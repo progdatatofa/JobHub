@@ -31,4 +31,25 @@ urlpatterns = [
     views.update_application_status,
     name='update-status',
 ),
+path("career-hub/", views.career_hub, name="career-hub"),
+path(
+    "career-hub/submit/",
+    views.submit_career_resource,
+    name="career-resource-submit",
+),
+path(
+    "career-hub/resource/<int:pk>/",
+    views.career_resource_detail,
+    name="career-resource-detail",
+),
+path(
+    "career-hub/learning-path/<slug:slug>/",
+    views.career_learning_path_detail,
+    name="career-learning-path-detail",
+),
+path(
+    "career-hub/learning-path/<slug:slug>/item/<int:item_id>/progress/",
+    views.toggle_learning_progress,
+    name="toggle-learning-progress",
+),
 ]
