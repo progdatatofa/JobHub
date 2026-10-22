@@ -16,9 +16,12 @@ from django.http import FileResponse, Http404
 from django.core.paginator import Paginator
 from django.utils import timezone
 
-from .models import Profile, Job, ApplyJob, ApplicationDocument, IndustryUpdate, CareerResource,LearningPath,LearningPathItem, LearningProgress
+from .models import Profile, Job, ApplyJob, ApplicationDocument, IndustryUpdate, CareerResource,LearningPath,LearningPathItem, LearningProgress, SavedJob, JobAlert,  JobNotification
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.core.mail import send_mail
+
+
 
 
 
@@ -562,6 +565,7 @@ def job_detail(request, id):
 # CREATE JOB
 # --------------------------------------------------
 
+
 @login_required
 def create_job(request):
     if (
@@ -584,7 +588,7 @@ def create_job(request):
                 },
             )
 
-        Job.objects.create(
+        job = Job.objects.create(
             title=data["title"],
             company=data["company"],
             description=data["description"],
@@ -594,6 +598,13 @@ def create_job(request):
             salary=salary,
             deadline=deadline,
             posted_by=request.user,
+        )
+
+        notify_matching_job_alerts(job)
+
+        messages.success(
+            request,
+            "Job posted successfully. Matching job seekers have been notified.",
         )
 
         return redirect("all-jobs")
@@ -1345,3 +1356,320 @@ def toggle_learning_progress(request, slug, item_id):
         "career-learning-path-detail",
         slug=learning_path.slug,
     )
+
+
+# Save Jobs
+
+@login_required
+@require_POST
+def save_job(request, id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(request, "Only job seekers can save jobs.")
+        return redirect("all-jobs")
+
+    job = get_object_or_404(Job, id=id)
+
+    saved_job, created = SavedJob.objects.get_or_create(
+        user=request.user,
+        job=job,
+    )
+
+    if created:
+        messages.success(request, "Job saved successfully.")
+    else:
+        messages.info(request, "You have already saved this job.")
+
+    return redirect(request.POST.get("next") or "job-detail", id=job.id)
+
+
+@login_required
+@require_POST
+def remove_saved_job(request, id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(request, "Only job seekers can remove saved jobs.")
+        return redirect("all-jobs")
+
+    saved_job = get_object_or_404(
+        SavedJob,
+        user=request.user,
+        job_id=id,
+    )
+    saved_job.delete()
+
+    messages.success(request, "Job removed from your saved jobs.")
+    return redirect(request.POST.get("next") or "saved-jobs")
+
+
+@login_required
+def saved_jobs(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(request, "Saved jobs are available to job seekers only.")
+        return redirect("all-jobs")
+
+    saved_jobs_list = (
+        SavedJob.objects
+        .filter(user=request.user)
+        .select_related("job", "job__posted_by")
+    )
+
+   
+
+    return render(
+    request,
+    "accounts/saved_jobs.html",
+    {
+        "saved_jobs": saved_jobs_list,
+        "now": timezone.now(),
+    },
+)
+
+
+# Job Alert
+
+@login_required
+def job_alerts(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(
+            request,
+            "Job alerts are available to job seekers only."
+        )
+        return redirect("all-jobs")
+
+    alerts = JobAlert.objects.filter(user=request.user)
+
+    return render(
+        request,
+        "accounts/job_alerts.html",
+        {"alerts": alerts},
+    )
+
+
+@login_required
+def job_alerts(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(
+            request,
+            "Job alerts are available to job seekers only.",
+        )
+        return redirect("all-jobs")
+
+    alerts = JobAlert.objects.filter(user=request.user)
+
+    return render(
+        request,
+        "accounts/job_alerts.html",
+        {
+            "alerts": alerts,
+            "industry_choices": Profile.INDUSTRY_CHOICES,
+        },
+    )
+
+
+def notify_matching_job_alerts(job):
+    """Notify job seekers about a newly posted matching job."""
+
+    alerts = JobAlert.objects.filter(
+        is_active=True,
+        user__profile__role="job_seeker",
+    ).select_related("user")
+
+    job_text = " ".join([
+        job.title or "",
+        job.description or "",
+        job.skills or "",
+    ]).casefold()
+
+    for alert in alerts:
+        # Industry matching is not supported yet.
+        if alert.industry:
+            continue
+
+        if alert.keyword and alert.keyword.casefold() not in job_text:
+            continue
+
+        if (
+            alert.location
+            and alert.location.casefold() not in
+            (job.location or "").casefold()
+        ):
+            continue
+
+        if (
+            alert.job_type
+            and alert.job_type.casefold() not in
+            (job.job_type or "").casefold()
+        ):
+            continue
+
+        # Ignore alerts without usable matching preferences.
+        if not any([alert.keyword, alert.location, alert.job_type]):
+            continue
+
+        # Create an in-app notification.
+        notification, created = JobNotification.objects.get_or_create(
+            user=alert.user,
+            job=job,
+        )
+
+        # Send an email only for a newly created notification.
+        if created and alert.user.email:
+            send_mail(
+                subject=f"New Job Alert: {job.title}",
+                message=(
+                    f"Hello {alert.user.username},\n\n"
+                    "A new job matching your preferences has been posted.\n\n"
+                    f"Job Title: {job.title}\n"
+                    f"Company: {job.company}\n"
+                    f"Location: {job.location}\n"
+                    f"Job Type: {job.job_type}\n\n"
+                    "Log in to JobHub to view the job and apply."
+                ),
+                from_email=None,
+                recipient_list=[alert.user.email],
+                fail_silently=False,
+            )
+
+
+
+
+@login_required
+@require_POST
+
+def create_job_alert(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(
+            request,
+            "Only job seekers can create job alerts.",
+        )
+        return redirect("all-jobs")
+
+    keyword = request.POST.get("keyword", "").strip()
+    location = request.POST.get("location", "").strip()
+    job_type = request.POST.get("job_type", "").strip()
+    industry = request.POST.get("industry", "").strip()
+
+    valid_industries = dict(Profile.INDUSTRY_CHOICES)
+
+    if industry and industry not in valid_industries:
+        messages.error(request, "Please select a valid industry.")
+        return redirect("job-alerts")
+
+    if not any([keyword, location, job_type, industry]):
+        messages.error(
+            request,
+            "Enter at least one preference for your job alert.",
+        )
+        return redirect("job-alerts")
+
+    JobAlert.objects.create(
+        user=request.user,
+        keyword=keyword,
+        location=location,
+        job_type=job_type,
+        industry=industry,
+    )
+
+    messages.success(request, "Your job alert has been created.")
+    return redirect("job-alerts")
+
+
+@login_required
+@require_POST
+def toggle_job_alert(request, id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(request, "Job alerts are for job seekers only.")
+        return redirect("all-jobs")
+
+    alert = get_object_or_404(
+        JobAlert,
+        id=id,
+        user=request.user,
+    )
+
+    alert.is_active = not alert.is_active
+    alert.save(update_fields=["is_active", "updated_at"])
+
+    if alert.is_active:
+        messages.success(request, "Job alert activated.")
+    else:
+        messages.success(request, "Job alert paused.")
+
+    return redirect("job-alerts")
+
+
+@login_required
+@require_POST
+def delete_job_alert(request, id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "job_seeker":
+        messages.error(request, "Job alerts are for job seekers only.")
+        return redirect("all-jobs")
+
+    alert = get_object_or_404(
+        JobAlert,
+        id=id,
+        user=request.user,
+    )
+
+    alert.delete()
+
+    messages.success(request, "Job alert deleted successfully.")
+    return redirect("job-alerts")
+
+
+    
+
+
+# Job Notification 
+
+@login_required
+def job_notifications(request):
+    notifications = (
+        JobNotification.objects
+        .filter(user=request.user)
+        .select_related("job")
+        .order_by("-created_at")
+    )
+
+    unread_count = notifications.filter(is_read=False).count()
+
+    return render(
+        request,
+        "accounts/job_notifications.html",
+        {
+            "notifications": notifications,
+            "unread_count": unread_count,
+        },
+    )
+
+
+@login_required
+@require_POST
+def mark_job_notification_read(request, id):
+    notification = get_object_or_404(
+        JobNotification,
+        id=id,
+        user=request.user,
+    )
+
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save(update_fields=["is_read"])
+
+    return redirect("job-detail", id=notification.job_id)
+

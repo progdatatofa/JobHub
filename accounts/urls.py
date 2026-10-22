@@ -52,4 +52,28 @@ path(
     views.toggle_learning_progress,
     name="toggle-learning-progress",
 ),
+
+
+#Save Jobs 
+path("jobs/<int:id>/save/", views.save_job, name="save-job"),
+path("jobs/<int:id>/remove-saved/", views.remove_saved_job, name="remove-saved-job"),
+path("saved-jobs/", views.saved_jobs, name="saved-jobs"),
+
+# Job Alert
+
+path("job-alerts/", views.job_alerts, name="job-alerts"),
+path("job-alerts/create/", views.create_job_alert, name="create-job-alert"),
+path("job-alerts/<int:id>/toggle/", views.toggle_job_alert, name="toggle-job-alert"),
+path("job-alerts/<int:id>/delete/", views.delete_job_alert, name="delete-job-alert"),
+path(
+    "notifications/",
+    views.job_notifications,
+    name="job-notifications",
+),
+
+path(
+    "notifications/<int:id>/read/",
+    views.mark_job_notification_read,
+    name="mark-job-notification-read",
+),
 ]

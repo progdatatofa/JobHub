@@ -1,0 +1,433 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Job Alerts | JobHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alerts-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px 70px;
+        color: #172033;
+    }
+
+    .alerts-hero {
+        background: linear-gradient(135deg, #10213a, #1d4ed8);
+        color: white;
+        padding: 35px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+    }
+
+    .alerts-hero h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .alerts-hero p {
+        max-width: 650px;
+        color: #dbeafe;
+        margin: 0;
+        line-height: 1.7;
+    }
+
+    .alerts-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 25px;
+        align-items: start;
+    }
+
+    .alert-panel {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+    }
+
+    .alert-panel h2 {
+        font-size: 1.3rem;
+        font-weight: 750;
+        margin-bottom: 8px;
+    }
+
+    .panel-description {
+        color: #64748b;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        margin-bottom: 22px;
+    }
+
+    .alert-form .form-label {
+        display: block;
+        font-weight: 650;
+        font-size: 0.9rem;
+        margin-bottom: 7px;
+        color: #334155;
+    }
+
+    .alert-form .form-control,
+    .alert-form .form-select {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 18px;
+        background: #fff;
+        color: #172033;
+    }
+
+    .alert-form .form-control:focus,
+    .alert-form .form-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        outline: none;
+    }
+
+    .create-alert-button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        padding: 13px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+    .create-alert-button:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    .alerts-list {
+        display: grid;
+        gap: 15px;
+    }
+
+    .alert-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 19px;
+        background: #fff;
+    }
+
+    .alert-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 13px;
+    }
+
+    .alert-card h3 {
+        font-size: 1.05rem;
+        font-weight: 750;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .alert-status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-size: 0.76rem;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .alert-status.active {
+        color: #166534;
+        background: #dcfce7;
+    }
+
+    .alert-status.inactive {
+        color: #475569;
+        background: #e2e8f0;
+    }
+
+    .alert-preferences {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .preference-tag {
+        display: inline-block;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        overflow-wrap: anywhere;
+    }
+
+    .alert-date {
+        color: #64748b;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    .empty-alerts {
+        text-align: center;
+        padding: 40px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        color: #64748b;
+    }
+
+    .empty-alerts i {
+        font-size: 2.5rem;
+        color: #94a3b8;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .empty-alerts h3 {
+        color: #334155;
+        font-size: 1.1rem;
+        font-weight: 750;
+    }
+
+    .alert-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 16px;
+    }
+
+    .alert-action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        color: #334155;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: 650;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .alert-action-button:hover {
+        background: #f8fafc;
+    }
+
+    .alert-action-button.delete {
+        color: #b91c1c;
+        border-color: #fecaca;
+    }
+
+    .alert-action-button.delete:hover {
+        background: #fef2f2;
+    }
+
+    @media (max-width: 760px) {
+        .alerts-page {
+            padding: 25px 14px 45px;
+        }
+
+        .alerts-hero {
+            padding: 25px 20px;
+        }
+
+        .alerts-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .alert-panel {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="alerts-page">
+
+    <section class="alerts-hero">
+        <h1><i class="bi bi-bell-fill"></i> Your Job Alerts</h1>
+        <p>
+            Tell JobHub what opportunities you're looking for.
+            Create personalized alerts and manage your preferences
+            in one place.
+        </p>
+    </section>
+
+    <div class="alerts-layout">
+
+        <section class="alert-panel">
+            <h2><i class="bi bi-plus-circle"></i> Create a Job Alert</h2>
+            <p class="panel-description">
+                Choose at least one preference. Leave the other fields
+                blank if you want them to match any value.
+            </p>
+
+            <form method="post"
+                  action="{% url 'create-job-alert' %}"
+                  class="alert-form">
+                {% csrf_token %}
+
+                <label class="form-label" for="keyword">
+                    Job title or keyword
+                </label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="keyword"
+                    name="keyword"
+                    maxlength="100"
+                    placeholder="e.g. Python Developer"
+                >
+
+                <label class="form-label" for="location">
+                    Preferred location
+                </label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="location"
+                    name="location"
+                    maxlength="100"
+                    placeholder="e.g. Remote or Ilorin"
+                >
+
+                <label class="form-label" for="job_type">
+                    Job type
+                </label>
+                <select class="form-select" id="job_type" name="job_type">
+                    <option value="">Any job type</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Volunteer">Volunteer</option>
+                </select>
+
+                <label class="form-label" for="industry">
+                    Preferred industry
+                </label>
+                <select class="form-select" id="industry" name="industry">
+                    <option value="">Any industry</option>
+                    {% for value, label in industry_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="create-alert-button">
+                    <i class="bi bi-bell"></i>
+                    Create Alert
+                </button>
+            </form>
+        </section>
+
+        <section class="alert-panel">
+            <h2>
+                <i class="bi bi-list-check"></i>
+                Your Alert Preferences
+            </h2>
+            <p class="panel-description">
+                You currently have {{ alerts|length }} job alert{{ alerts|length|pluralize }}.
+            </p>
+
+            <div class="alerts-list">
+                {% for alert in alerts %}
+                    <article class="alert-card">
+                        <div class="alert-card-header">
+                            <h3>
+                                {{ alert.keyword|default:"All matching jobs" }}
+                            </h3>
+
+                            {% if alert.is_active %}
+                                <span class="alert-status active">Active</span>
+                            {% else %}
+                                <span class="alert-status inactive">Paused</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert-preferences">
+                            {% if alert.location %}
+                                <span class="preference-tag">
+                                    <i class="bi bi-geo-alt"></i>
+                                    {{ alert.location }}
+                                </span>
+                            {% endif %}
+
+                            {% if alert.job_type %}
+                                <span class="preference-tag">
+                                    <i class="bi bi-briefcase"></i>
+                                    {{ alert.job_type }}
+                                </span>
+                            {% endif %}
+
+                            {% if alert.industry %}
+                                <span class="preference-tag">
+                                    {{ alert.get_industry_display }}
+                                </span>
+                            {% endif %}
+
+                            {% if not alert.location and not alert.job_type and not alert.industry and not alert.keyword %}
+                                <span class="preference-tag">
+                                    All jobs
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <p class="alert-date">
+                            Created {{ alert.created_at|date:"M d, Y" }}
+                        </p>
+
+                        <div class="alert-actions">
+                            <form method="post"
+                                  action="{% url 'toggle-job-alert' alert.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="alert-action-button">
+                                    {% if alert.is_active %}
+                                        <i class="bi bi-pause-circle"></i> Pause
+                                    {% else %}
+                                        <i class="bi bi-play-circle"></i> Activate
+                                    {% endif %}
+                                </button>
+                            </form>
+
+                            <form method="post"
+                                  action="{% url 'delete-job-alert' alert.id %}"
+                                  onsubmit="return confirm('Are you sure you want to delete this job alert?');">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="alert-action-button delete">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty-alerts">
+                        <i class="bi bi-bell-slash"></i>
+                        <h3>No job alerts yet</h3>
+                        <p>
+                            Create your first alert using the form.
+                            Your preferences will appear here.
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Notifications | JobHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Your Notifications</h2>
+            <p class="text-muted mb-0">
+                Discover new jobs matching your preferences.
+            </p>
+        </div>
+
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            {{ unread_count }} unread
+        </span>
+    </div>
+
+    {% if notifications %}
+        <div class="row g-3">
+            {% for notification in notifications %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm
+                        {% if not notification.is_read %}
+                            border-start border-primary border-4
+                        {% endif %}">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between
+                                align-items-start gap-3">
+
+                                <div>
+                                    {% if not notification.is_read %}
+                                        <span class="badge bg-primary mb-2">
+                                            New
+                                        </span>
+                                    {% endif %}
+
+                                    <h5 class="fw-bold mb-1">
+                                        {{ notification.job.title }}
+                                    </h5>
+
+                                    <p class="text-muted mb-2">
+                                        {{ notification.job.company }}
+                                        &bull;
+                                        {{ notification.job.location }}
+                                    </p>
+
+                                    <p class="mb-3">
+                                        A new job may match your job alert
+                                        preferences.
+                                    </p>
+
+                                    <small class="text-muted">
+                                        Received:
+                                        {{ notification.created_at|date:"M d, Y - g:i A" }}
+                                    </small>
+
+                                    <form
+                                        method="post"
+                                        action="{% url 'mark-job-notification-read' notification.id %}"
+                                    >
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            View Job
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {% if not notification.is_read %}
+                                    <span class="text-primary"
+                                        title="Unread notification">
+                                        <i class="bi bi-bell-fill fs-4"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-bell display-3 text-muted"></i>
+            <h4 class="mt-3">No notifications yet</h4>
+            <p class="text-muted">
+                When a newly posted job matches your active alerts,
+                it will appear here.
+            </p>
+            <a href="{% url 'job-alerts' %}" class="btn btn-outline-primary">
+                Manage Job Alerts
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

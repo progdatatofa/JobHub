@@ -434,3 +434,103 @@ class LearningProgress(models.Model):
     def __str__(self):
         status = "Completed" if self.is_completed else "In progress"
         return f"{self.user} - {self.path_item} ({status})"
+
+#Save Jobs
+
+class SavedJob(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="saved_jobs",
+    )
+    job = models.ForeignKey(
+        Job,
+        on_delete=models.CASCADE,
+        related_name="saved_by_users",
+    )
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "job"],
+                name="unique_saved_job_per_user",
+            )
+        ]
+        ordering = ["-saved_at"]
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.job.title}"
+
+
+# Job Alert
+
+# Job Alerts
+
+class JobAlert(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="job_alerts",
+    )
+
+    keyword = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    location = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    job_type = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    industry = models.CharField(
+        max_length=50,
+        choices=Profile.INDUSTRY_CHOICES,
+        blank=True,
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Job Alert: {self.user.username} - {self.keyword or 'All jobs'}"
+
+
+# Job Notifications
+
+class JobNotification(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="job_notifications",
+    )
+    job = models.ForeignKey(
+        Job,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "job"],
+                name="unique_job_notification_per_user",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.job.title}"

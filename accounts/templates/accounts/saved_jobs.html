@@ -1,0 +1,298 @@
+
+{% extends 'base.html' %}
+
+{% block title %}My Saved Jobs | JobHub{% endblock %}
+
+{% block content %}
+<style>
+    .saved-jobs-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .saved-header {
+        margin-bottom: 30px;
+    }
+
+    .saved-header h1 {
+        color: #10213a;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .saved-header p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .saved-count {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 7px 14px;
+        background: #e0e7ff;
+        color: #3730a3;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .saved-job-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        padding: 24px;
+        margin-bottom: 18px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .saved-job-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    .saved-job-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .saved-job-info h2 {
+        margin: 0 0 8px;
+        font-size: 1.25rem;
+        color: #10213a;
+    }
+
+    .saved-job-info h2 a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .saved-job-info h2 a:hover {
+        color: #2563eb;
+    }
+
+    .saved-company {
+        color: #475569;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .saved-job-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .saved-job-meta span {
+        background: #f1f5f9;
+        color: #334155;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    .saved-date {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .job-status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .status-open {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-expired {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .saved-job-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 145px;
+    }
+
+    .saved-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+    }
+
+    .apply-btn {
+        background: #2563eb;
+        color: white;
+    }
+
+    .apply-btn:hover {
+        background: #1d4ed8;
+        color: white;
+    }
+
+    .remove-btn {
+        background: #fff1f2;
+        color: #be123c;
+        border: 1px solid #fecdd3;
+    }
+
+    .remove-btn:hover {
+        background: #ffe4e6;
+    }
+
+    .empty-saved {
+        text-align: center;
+        padding: 65px 20px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 16px;
+        background: #f8fafc;
+    }
+
+    .empty-saved h2 {
+        color: #10213a;
+        margin-bottom: 10px;
+    }
+
+    .empty-saved p {
+        color: #64748b;
+        margin-bottom: 22px;
+    }
+
+    .browse-btn {
+        display: inline-block;
+        background: #2563eb;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+        .saved-job-card {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .saved-job-actions {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .saved-job-actions > * {
+            flex: 1;
+        }
+
+        .saved-header h1 {
+            font-size: 1.65rem;
+        }
+    }
+</style>
+
+<div class="saved-jobs-page">
+    <div class="saved-header">
+        <h1>My Saved Jobs</h1>
+        <p>Keep track of opportunities you want to explore and apply for.</p>
+
+        <span class="saved-count">
+            {{ saved_jobs|length }} saved opportunity{{ saved_jobs|length|pluralize }}
+        </span>
+    </div>
+
+    {% if saved_jobs %}
+        {% for saved in saved_jobs %}
+            <article class="saved-job-card">
+                <div class="saved-job-info">
+                    <h2>
+                        <a href="{% url 'job-detail' saved.job.id %}">
+                            {{ saved.job.title }}
+                        </a>
+                    </h2>
+
+                    <div class="saved-company">
+                        {{ saved.job.company }}
+                    </div>
+
+                    <div class="saved-job-meta">
+                        <span>{{ saved.job.location }}</span>
+                        <span>{{ saved.job.job_type }}</span>
+                        <span>₦{{ saved.job.salary }}</span>
+                    </div>
+
+                    {% if saved.job.deadline < now %}
+                        <span class="job-status status-expired">
+                            Application Deadline Passed
+                        </span>
+                    {% else %}
+                        <span class="job-status status-open">
+                            Accepting Applications
+                        </span>
+                    {% endif %}
+
+                    <div class="saved-date">
+                        Saved on {{ saved.saved_at|date:"M d, Y" }}
+                    </div>
+                </div>
+
+                <div class="saved-job-actions">
+                    {% if saved.job.deadline >= now %}
+                        <a
+                            href="{% url 'job-detail' saved.job.id %}"
+                            class="saved-btn apply-btn"
+                        >
+                            View & Apply
+                        </a>
+                    {% else %}
+                        <a
+                            href="{% url 'job-detail' saved.job.id %}"
+                            class="saved-btn apply-btn"
+                        >
+                            View Job
+                        </a>
+                    {% endif %}
+
+                    <form
+                        method="post"
+                        action="{% url 'remove-saved-job' saved.job.id %}"
+                    >
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'saved-jobs' %}">
+                        <button type="submit" class="saved-btn remove-btn">
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="empty-saved">
+            <h2>No saved jobs yet</h2>
+            <p>When you find an interesting opportunity, save it here for later.</p>
+            <a href="{% url 'all-jobs' %}" class="browse-btn">
+                Browse Available Jobs
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

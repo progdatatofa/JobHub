@@ -369,6 +369,28 @@
                 scroll-behavior: auto !important;
             }
         }
+
+        /* Keep job seeker navigation links on one line */
+        @media (min-width: 992px) {
+            .navbar-nav {
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 2px;
+            }
+
+            .navbar-nav .nav-link {
+                white-space: nowrap;
+                font-size: 0.88rem;
+                padding-left: 0.4rem;
+                padding-right: 0.4rem;
+            }
+
+            .navbar .container,
+            .navbar .container-fluid {
+                flex-wrap: nowrap;
+            }
+        }
+
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -427,9 +449,9 @@
                             My Profile
                         </a>
                     </li>
-                    
 
-                    
+
+
                         {% if user.profile.role == "employer" %}
                             <li class="nav-item ms-lg-2">
                                 <a
@@ -441,15 +463,42 @@
                                 </a>
                             </li>
                         {% endif %}
-                        
 
 
+
+
+                {% if user.profile.role == "job_seeker" %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'my-applications' %}">
-                            <i class="bi bi-file-earmark-person"></i>
-                            My Applications
+                        <a class="nav-link" href="{% url 'job-alerts' %}">
+                            <i class="bi bi-bell"></i>
+                            Job Alerts
                         </a>
                     </li>
+                {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'my-applications' %}">
+                        <i class="bi bi-file-earmark-person"></i>
+                        My Applications
+                    </a>
+                </li>
+
+                {% if user.is_authenticated and user.profile.role == "job_seeker" %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'job-notifications' %}">
+                            <i class="bi bi-bell"></i>
+                            Notifications
+
+                            {% if unread_job_notification_count > 0 %}
+                                <span class="badge bg-danger rounded-pill">
+                                    {{ unread_job_notification_count }}
+                                </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endif %}
+
+
 
                     <li class="nav-item ms-lg-2">
                         <form method="POST" action="{% url 'logout' %}">
