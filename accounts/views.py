@@ -1543,13 +1543,22 @@ def job_alerts(request):
     )
 
 
-def notify_matching_job_alerts(job):
-    """Notify job seekers about a newly posted matching job."""
 
-    alerts = JobAlert.objects.filter(
-        is_active=True,
-        user__profile__role="job_seeker",
-    ).select_related("user")
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def notify_matching_job_alerts(job):
+    """Create in-app notifications and attempt email delivery safely."""
+
+    alerts = (
+        JobAlert.objects.filter(
+            is_active=True,
+            user__profile__role="job_seeker",
+        )
+        .select_related("user")
+    )
 
     job_text = " ".join([
         job.title or "",
@@ -1562,50 +1571,68 @@ def notify_matching_job_alerts(job):
         if alert.industry:
             continue
 
-        if alert.keyword and alert.keyword.casefold() not in job_text:
+        if (
+            alert.keyword
+            and alert.keyword.casefold() not in job_text
+        ):
             continue
 
         if (
             alert.location
-            and alert.location.casefold() not in
-            (job.location or "").casefold()
+            and alert.location.casefold()
+            not in (job.location or "").casefold()
         ):
             continue
 
         if (
             alert.job_type
-            and alert.job_type.casefold() not in
-            (job.job_type or "").casefold()
+            and alert.job_type.casefold()
+            not in (job.job_type or "").casefold()
         ):
             continue
 
         # Ignore alerts without usable matching preferences.
-        if not any([alert.keyword, alert.location, alert.job_type]):
+        if not any([
+            alert.keyword,
+            alert.location,
+            alert.job_type,
+        ]):
             continue
 
-        # Create an in-app notification.
-        notification, created = JobNotification.objects.get_or_create(
-            user=alert.user,
-            job=job,
+        # Create the in-app notification first.
+        notification, created = (
+            JobNotification.objects.get_or_create(
+                user=alert.user,
+                job=job,
+            )
         )
 
-        # Send an email only for a newly created notification.
+        # Attempt email delivery without breaking in-app notifications.
         if created and alert.user.email:
-            send_mail(
-                subject=f"New Job Alert: {job.title}",
-                message=(
-                    f"Hello {alert.user.username},\n\n"
-                    "A new job matching your preferences has been posted.\n\n"
-                    f"Job Title: {job.title}\n"
-                    f"Company: {job.company}\n"
-                    f"Location: {job.location}\n"
-                    f"Job Type: {job.job_type}\n\n"
-                    "Log in to JobHub to view the job and apply."
-                ),
-                from_email=None,
-                recipient_list=[alert.user.email],
-                fail_silently=False,
-            )
+            try:
+                send_mail(
+                    subject=f"New Job Alert: {job.title}",
+                    message=(
+                        f"Hello {alert.user.username},\n\n"
+                        "A new job matching your preferences "
+                        "has been posted.\n\n"
+                        f"Job Title: {job.title}\n"
+                        f"Company: {job.company}\n"
+                        f"Location: {job.location}\n"
+                        f"Job Type: {job.job_type}\n\n"
+                        "Log in to JobHub to view the job and apply."
+                    ),
+                    from_email=None,
+                    recipient_list=[alert.user.email],
+                    fail_silently=False,
+                )
+            except Exception:
+                logger.exception(
+                    "Email delivery failed for JobNotification "
+                    "id=%s, job_id=%s",
+                    notification.pk,
+                    job.pk,
+                )
 
 
 
