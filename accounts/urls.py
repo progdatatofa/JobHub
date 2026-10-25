@@ -1,10 +1,15 @@
 
 from django.urls import path
 from . import views
+from .views import recruiter_dashboard
+    
 
+    # Keep all your existing routes below this line.
 
 urlpatterns = [
-    path('', views.profile_list, name='profile-list'),
+    
+    path('', views.home, name='home'),
+    path('professionals/', views.profile_list, name='profile-list'),
     path('profile/<int:id>/', views.profile_detail, name='profile-detail'),
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
@@ -71,9 +76,24 @@ path(
     name="job-notifications",
 ),
 
+
+# Secure application document downloads
 path(
-    "notifications/<int:id>/read/",
-    views.mark_job_notification_read,
-    name="mark-job-notification-read",
+    "myapplications/<int:id>/download/<str:document_type>/",
+    views.download_application_document,
+    name="download-application-document",
+),
+
+# Download the logged-in user's profile CV
+path(
+    "profile/download-cv/",
+    views.download_profile_cv,
+    name="download-profile-cv",
+),
+#Recruiters Dashboard
+path(
+    "recruiter-dashboard/",
+    recruiter_dashboard,
+    name="recruiter-dashboard",
 ),
 ]

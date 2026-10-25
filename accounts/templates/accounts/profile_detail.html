@@ -1,256 +1,579 @@
+
 {% extends 'base.html' %}
 
 {% block title %}
     {{ profile.user.first_name }} {{ profile.user.last_name }} | JobHub
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    .profile-page {
+        background: #f5f7fb;
+        min-height: 100vh;
+        padding: 40px 0 70px;
+    }
+
+    .profile-wrapper {
+        max-width: 1050px;
+        margin: 0 auto;
+    }
+
+    .profile-cover {
+        height: 190px;
+        background: linear-gradient(120deg, #102a56, #245bd6 60%, #7c8df4);
+        border-radius: 22px 22px 0 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-cover::before,
+    .profile-cover::after {
+        content: "";
+        position: absolute;
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 50%;
+    }
+
+    .profile-cover::before {
+        width: 300px;
+        height: 300px;
+        right: 8%;
+        top: -170px;
+    }
+
+    .profile-cover::after {
+        width: 220px;
+        height: 220px;
+        right: -20px;
+        bottom: -150px;
+    }
+
+    .profile-main-card {
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 12px 45px rgba(28, 43, 75, .08);
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+
+    .profile-heading {
+        padding: 0 38px 32px;
+        position: relative;
+    }
+
+    .profile-avatar {
+        width: 145px;
+        height: 145px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 6px solid #fff;
+        background: #e8edff;
+        box-shadow: 0 5px 20px rgba(16, 42, 86, .12);
+        margin-top: -72px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .profile-avatar-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #245bd6;
+        font-size: 65px;
+    }
+
+    .profile-name {
+        color: #17243d;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin: 14px 0 5px;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-username {
+        color: #778198;
+        font-size: 1rem;
+    }
+
+    .profile-location {
+        color: #5d6980;
+        margin-top: 14px;
+        font-size: .95rem;
+    }
+
+    .profile-heading-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .profile-action {
+        border-radius: 10px;
+        padding: 10px 17px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+    .profile-action-primary {
+        color: #fff;
+        background: #245bd6;
+        border: 1px solid #245bd6;
+    }
+
+    .profile-action-primary:hover {
+        background: #1948b4;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .profile-action-secondary {
+        color: #35435c;
+        background: #fff;
+        border: 1px solid #dce3ef;
+    }
+
+    .profile-action-secondary:hover {
+        background: #f2f5fb;
+        color: #245bd6;
+    }
+
+    .profile-content-card {
+        background: #fff;
+        border: 1px solid #e9edf5;
+        border-radius: 18px;
+        padding: 28px;
+        margin-bottom: 22px;
+        box-shadow: 0 5px 20px rgba(28, 43, 75, .035);
+    }
+
+    .profile-section-heading {
+        color: #17243d;
+        font-size: 1.12rem;
+        font-weight: 750;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .profile-section-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #edf2ff;
+        color: #245bd6;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .profile-bio {
+        color: #657087;
+        line-height: 1.9;
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+        margin-bottom: 0;
+        white-space: pre-line;
+    }
+
+    .profile-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .profile-info-item {
+        padding: 18px;
+        border: 1px solid #edf0f6;
+        background: #fafbfe;
+        border-radius: 13px;
+        min-width: 0;
+    }
+
+    .profile-info-label {
+        display: block;
+        color: #818ba0;
+        font-size: .82rem;
+        margin-bottom: 8px;
+    }
+
+    .profile-info-value {
+        display: block;
+        color: #263550;
+        font-weight: 650;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-info-value a {
+        color: #245bd6;
+        text-decoration: none;
+    }
+
+    .profile-info-value a:hover {
+        text-decoration: underline;
+    }
+
+    .profile-skill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .profile-skill {
+        display: inline-block;
+        background: #edf2ff;
+        border: 1px solid #dce6ff;
+        color: #2450b5;
+        border-radius: 30px;
+        padding: 9px 15px;
+        font-size: .9rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-social-link {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 15px 17px;
+        border: 1px solid #e8edf5;
+        border-radius: 13px;
+        text-decoration: none;
+        color: #263550;
+        transition: .2s ease;
+        min-width: 0;
+    }
+
+    .profile-social-link:hover {
+        border-color: #b9cbff;
+        background: #f7f9ff;
+        color: #245bd6;
+        transform: translateY(-2px);
+    }
+
+    .profile-social-icon {
+        width: 43px;
+        height: 43px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #edf2ff;
+        color: #245bd6;
+        border-radius: 12px;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .profile-social-text {
+        min-width: 0;
+    }
+
+    .profile-social-text strong {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .profile-social-text small {
+        color: #8490a4;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-empty {
+        color: #8791a5;
+        background: #f8faff;
+        border: 1px dashed #dce3ef;
+        padding: 18px;
+        border-radius: 12px;
+        margin: 0;
+    }
+
+    .profile-back-link {
+        color: #5f6d84;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .profile-back-link:hover {
+        color: #245bd6;
+    }
+
+    @media (max-width: 767px) {
+        .profile-page {
+            padding: 22px 0 45px;
+        }
+
+        .profile-cover {
+            height: 145px;
+            border-radius: 18px 18px 0 0;
+        }
+
+        .profile-heading {
+            padding: 0 22px 25px;
+        }
+
+        .profile-avatar {
+            width: 115px;
+            height: 115px;
+            margin-top: -58px;
+        }
+
+        .profile-avatar-placeholder {
+            font-size: 52px;
+        }
+
+        .profile-content-card {
+            padding: 22px 18px;
+            border-radius: 15px;
+        }
+
+        .profile-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-heading-actions > a {
+            flex: 1 1 auto;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-
-<div class="row justify-content-center">
-
-    <div class="col-lg-9">
-
-        <div class="card detail-card shadow-sm overflow-hidden">
-
-            <div class="bg-primary text-white p-4">
-
-                <div class="row align-items-center">
-
-                    <div class="col-md-3 text-center">
-
-                        {% if profile.profile_image %}
-
-                            <img
-                                src="{{ profile.profile_image.url }}"
-                                alt="{{ profile.user.first_name }} profile image"
-                                class="profile-image"
-                            >
-
-                        {% else %}
-
-                            <div class="default-avatar">
-                                <i class="bi bi-person"></i>
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="col-md-9 text-center text-md-start mt-3 mt-md-0">
-
-                        <h1 class="fw-bold">
-
-                            {{ profile.user.first_name }}
-                            {{ profile.user.last_name }}
-
-                        </h1>
-
-                        <p class="mb-1">
-                            @{{ profile.user.username }}
-                        </p>
-
-                        {% if profile.location %}
-
-                            <p class="mb-0">
-
-                                <i class="bi bi-geo-alt-fill"></i>
-                                {{ profile.location }}
-
-                            </p>
-
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card-body p-4 p-md-5">
-
-                <h4 class="section-title mb-3">
-                    About
-                </h4>
-
-                <p class="text-muted">
-                    {{ profile.bio|default:"No bio provided." }}
-                </p>
-
-
-                <hr class="my-4">
-
-
-                <h4 class="section-title mb-3">
-                    Professional Information
-                </h4>
-
-
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-
-                        <div class="p-3 bg-light rounded">
-
-                            <small class="text-muted">
-                                Username
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ profile.user.username }}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <div class="p-3 bg-light rounded">
-
-                            <small class="text-muted">
-                                Date Joined
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ profile.created_at|date:"F j, Y" }}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <div class="p-3 bg-light rounded">
-
-                            <small class="text-muted">
-                                Email
-                            </small>
-
-                            <div class="fw-semibold text-break">
-                                {{ profile.user.email }}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <div class="p-3 bg-light rounded">
-
-                            <small class="text-muted">
-                                Phone Number
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ profile.phone_number|default:"Not provided" }}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <hr class="my-4">
-
-
-                <h4 class="section-title mb-3">
-                    Skills
-                </h4>
-
-                {% if profile.skills %}
-
-                    <div class="bg-light rounded p-3">
-                        {{ profile.skills }}
-                    </div>
-
+<div class="profile-page">
+    <div class="container profile-wrapper">
+
+        <a href="{% url 'profile-list' %}" class="profile-back-link">
+            <i class="bi bi-arrow-left"></i>
+            Back to professionals
+        </a>
+
+        <div class="profile-main-card">
+            <div class="profile-cover"></div>
+
+            <div class="profile-heading">
+                {% if profile.profile_image %}
+                    <img
+                        src="{{ profile.profile_image.url }}"
+                        alt="{{ profile.user.first_name }} profile image"
+                        class="profile-avatar"
+                    >
                 {% else %}
-
-                    <p class="text-muted">
-                        No skills provided.
-                    </p>
-
+                    <div class="profile-avatar profile-avatar-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
                 {% endif %}
 
+                <h1 class="profile-name">
+                    {{ profile.user.first_name }}
+                    {{ profile.user.last_name }}
+                </h1>
 
-                <hr class="my-4">
+                <div class="profile-username">
+                    <i class="bi bi-at"></i>{{ profile.user.username }}
+                </div>
 
+                {% if profile.location %}
+                    <div class="profile-location">
+                        <i class="bi bi-geo-alt-fill me-1"></i>
+                        {{ profile.location }}
+                    </div>
+                {% endif %}
 
-                <h4 class="section-title mb-3">
-                    Professional Links
-                </h4>
-
-                <div class="d-flex flex-wrap gap-2">
+                <div class="profile-heading-actions">
+                    {% if user.is_authenticated and profile.user == user %}
+                        <a href="{% url 'profile-edit' %}"
+                           class="profile-action profile-action-primary">
+                            <i class="bi bi-pencil-square me-1"></i>
+                            Edit my profile
+                        </a>
+                    {% endif %}
 
                     {% if profile.linkedin %}
-
-                        <a
-                            href="{{ profile.linkedin }}"
-                            target="_blank"
-                            class="btn btn-outline-primary"
-                        >
-                            <i class="bi bi-linkedin"></i>
+                        <a href="{{ profile.linkedin }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="profile-action profile-action-secondary">
+                            <i class="bi bi-linkedin me-1"></i>
                             LinkedIn
                         </a>
-
                     {% endif %}
-
 
                     {% if profile.github %}
-
-                        <a
-                            href="{{ profile.github }}"
-                            target="_blank"
-                            class="btn btn-outline-dark"
-                        >
-                            <i class="bi bi-github"></i>
+                        <a href="{{ profile.github }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="profile-action profile-action-secondary">
+                            <i class="bi bi-github me-1"></i>
                             GitHub
                         </a>
-
                     {% endif %}
-
                 </div>
+            </div>
+        </div>
 
+        <div class="row g-4">
+            <div class="col-lg-7">
 
-                <div class="d-flex flex-wrap gap-2 mt-4">
+                <section class="profile-content-card">
+                    <h2 class="profile-section-heading">
+                        <span class="profile-section-icon">
+                            <i class="bi bi-person-lines-fill"></i>
+                        </span>
+                        About
+                    </h2>
 
-                    <a
-                        href="{% url 'profile-list' %}"
-                        class="btn btn-secondary"
-                    >
-                        <i class="bi bi-arrow-left"></i>
-                        Back to Profiles
-                    </a>
-
-
-                    {% if user.is_authenticated and profile.user == user %}
-
-                        <a
-                            href="{% url 'profile-edit' %}"
-                            class="btn btn-primary"
-                        >
-                            <i class="bi bi-pencil-square"></i>
-                            Edit Profile
-                        </a>
-
+                    {% if profile.bio %}
+                        <p class="profile-bio">{{ profile.bio }}</p>
+                    {% else %}
+                        <p class="profile-empty">
+                            This professional has not added an introduction yet.
+                        </p>
                     {% endif %}
+                </section>
 
-                </div>
+                <section class="profile-content-card">
+                    <h2 class="profile-section-heading">
+                        <span class="profile-section-icon">
+                            <i class="bi bi-lightbulb"></i>
+                        </span>
+                        Skills & Expertise
+                    </h2>
+
+                    {% if profile.skills %}
+                        <div class="profile-skill-list">
+                            {% for skill in profile.skills.split %}
+                                <span class="profile-skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                        <p class="text-muted small mt-3 mb-0">
+                            Skills listed on this profile.
+                        </p>
+                    {% else %}
+                        <p class="profile-empty">
+                            No skills have been added yet.
+                        </p>
+                    {% endif %}
+                </section>
 
             </div>
 
+            <div class="col-lg-5">
+
+                <section class="profile-content-card">
+                    <h2 class="profile-section-heading">
+                        <span class="profile-section-icon">
+                            <i class="bi bi-person-vcard"></i>
+                        </span>
+                        Professional Details
+                    </h2>
+
+                    <div class="profile-info-grid">
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Username</span>
+                            <span class="profile-info-value">
+                                @{{ profile.user.username }}
+                            </span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Member Since</span>
+                            <span class="profile-info-value">
+                                {{ profile.created_at|date:"M j, Y" }}
+                            </span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Location</span>
+                            <span class="profile-info-value">
+                                {{ profile.location|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Email</span>
+                            <span class="profile-info-value">
+                                {% if user.is_authenticated and profile.user == user %}
+                                    {{ profile.user.email|default:"Not provided" }}
+                                {% else %}
+                                    Hidden for privacy
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Phone Number</span>
+                            <span class="profile-info-value">
+                                {% if user.is_authenticated and profile.user == user %}
+                                    {{ profile.phone_number|default:"Not provided" }}
+                                {% else %}
+                                    Hidden for privacy
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-content-card">
+                    <h2 class="profile-section-heading">
+                        <span class="profile-section-icon">
+                            <i class="bi bi-link-45deg"></i>
+                        </span>
+                        Find Me Online
+                    </h2>
+
+                    <div class="d-grid gap-3">
+                        {% if profile.linkedin %}
+                            <a href="{{ profile.linkedin }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="profile-social-link">
+                                <span class="profile-social-icon">
+                                    <i class="bi bi-linkedin"></i>
+                                </span>
+                                <span class="profile-social-text">
+                                    <strong>LinkedIn</strong>
+                                    <small>Professional network</small>
+                                </span>
+                                <i class="bi bi-arrow-up-right ms-auto"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if profile.github %}
+                            <a href="{{ profile.github }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="profile-social-link">
+                                <span class="profile-social-icon">
+                                    <i class="bi bi-github"></i>
+                                </span>
+                                <span class="profile-social-text">
+                                    <strong>GitHub</strong>
+                                    <small>Projects and code</small>
+                                </span>
+                                <i class="bi bi-arrow-up-right ms-auto"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if not profile.linkedin and not profile.github %}
+                            <p class="profile-empty">
+                                No professional links have been added yet.
+                            </p>
+                        {% endif %}
+                    </div>
+                </section>
+
+            </div>
         </div>
 
     </div>
-
 </div>
-
 {% endblock %}

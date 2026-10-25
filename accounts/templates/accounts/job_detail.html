@@ -6,279 +6,587 @@
 {% block extra_css %}
 <style>
     .job-detail-page {
-        --detail-blue: #2563eb;
-        --detail-navy: #10213a;
-        --detail-muted: #64748b;
-        --detail-border: #e5eaf2;
-        color: var(--detail-navy);
-        padding: 36px 0 64px;
+        --jd-blue: #3563e9;
+        --jd-blue-dark: #2149bf;
+        --jd-navy: #142440;
+        --jd-text: #35435a;
+        --jd-muted: #7b879b;
+        --jd-border: #e8edf5;
+        --jd-bg: #f5f7fc;
+        background: var(--jd-bg);
+        color: var(--jd-navy);
+        min-height: 100vh;
+        padding: 30px 0 70px;
     }
 
-    .job-detail-page .detail-hero {
+    .job-detail-page *,
+    .job-detail-page *::before,
+    .job-detail-page *::after {
+        box-sizing: border-box;
+    }
+
+    .job-detail-page a {
+        text-decoration: none;
+    }
+
+    .job-detail-page .jd-container {
+        max-width: 1240px;
+    }
+
+    /* Breadcrumb navigation */
+
+    .job-detail-page .jd-breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 23px;
+        color: var(--jd-muted);
+        font-size: .88rem;
+    }
+
+    .job-detail-page .jd-breadcrumb a {
+        color: #52617a;
+        transition: color .2s ease;
+    }
+
+    .job-detail-page .jd-breadcrumb a:hover {
+        color: var(--jd-blue);
+    }
+
+    .job-detail-page .jd-breadcrumb .jd-current {
+        color: var(--jd-navy);
+        font-weight: 650;
+        overflow-wrap: anywhere;
+    }
+
+    /* Hero section */
+
+    .job-detail-page .jd-hero {
         position: relative;
+        isolation: isolate;
         overflow: hidden;
-        background: linear-gradient(135deg, #ffffff 0%, #f0f6ff 100%);
-        border: 1px solid var(--detail-border);
-        border-radius: 24px;
-        padding: 36px;
-        margin-bottom: 28px;
-        box-shadow: 0 12px 35px rgba(16, 33, 58, 0.05);
-        animation: detailFadeIn 0.5s ease both;
+        padding: 37px;
+        margin-bottom: 27px;
+        color: #fff;
+        border-radius: 25px;
+        background:
+            radial-gradient(ellipse at 100% 0%, rgba(112, 145, 255, .4), transparent 38%),
+            linear-gradient(125deg, #122544 0%, #1d3d75 57%, #315ed0 100%);
+        box-shadow: 0 18px 42px rgba(25, 55, 112, .16);
+        animation: jd-appear .55s ease both;
     }
 
-    .job-detail-page .detail-hero::after {
+    .job-detail-page .jd-hero::before {
         content: "";
         position: absolute;
-        width: 220px;
-        height: 220px;
-        right: -75px;
-        top: -100px;
+        z-index: -1;
+        width: 330px;
+        height: 330px;
+        right: -95px;
+        top: -180px;
+        border: 1px solid rgba(255,255,255,.14);
         border-radius: 50%;
-        background: rgba(37, 99, 235, 0.06);
+        box-shadow:
+            0 0 0 35px rgba(255,255,255,.035),
+            0 0 0 75px rgba(255,255,255,.025);
         pointer-events: none;
     }
 
-    .job-detail-page .job-type-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        background: #e8f0ff;
-        color: #1d4ed8;
-        border: 1px solid #d5e3ff;
-        border-radius: 30px;
-        padding: 8px 13px;
-        font-size: 0.82rem;
-        font-weight: 700;
-        margin-bottom: 16px;
+    .job-detail-page .jd-hero::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        width: 190px;
+        height: 190px;
+        right: 18%;
+        bottom: -155px;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 50%;
+        pointer-events: none;
     }
 
-    .job-detail-page .job-title {
-        color: var(--detail-navy);
-        font-size: clamp(1.8rem, 4vw, 2.65rem);
-        font-weight: 800;
-        letter-spacing: -1.1px;
-        line-height: 1.2;
-        overflow-wrap: anywhere;
-        margin-bottom: 14px;
+    .job-detail-page .jd-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: start;
     }
 
-    .job-detail-page .company-name {
-        color: var(--detail-blue);
-        font-size: 1.12rem;
-        font-weight: 700;
-        margin-bottom: 18px;
-    }
-
-    .job-detail-page .hero-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px 22px;
-        color: var(--detail-muted);
-        font-size: 0.94rem;
-    }
-
-    .job-detail-page .hero-meta span {
+    .job-detail-page .jd-eyebrow {
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        color: #d9e5ff;
+        font-size: .78rem;
+        font-weight: 750;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
     }
 
-    .job-detail-page .hero-meta i {
-        color: var(--detail-blue);
+    .job-detail-page .jd-job-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 30px;
+        background: rgba(255,255,255,.11);
+        color: #fff;
+        font-size: .82rem;
+        font-weight: 650;
+        margin-bottom: 17px;
+        backdrop-filter: blur(8px);
+    }
+
+    .job-detail-page .jd-title {
+        color: #fff;
+        font-size: clamp(2rem, 4vw, 3.15rem);
+        font-weight: 850;
+        line-height: 1.13;
+        letter-spacing: -1.5px;
+        overflow-wrap: anywhere;
+        margin: 0 0 17px;
+    }
+
+    .job-detail-page .jd-company {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        color: #e1e9ff;
         font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 23px;
     }
 
-    .job-detail-page .detail-actions {
+    .job-detail-page .jd-company-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        border-radius: 11px;
+        background: rgba(255,255,255,.14);
+        color: #fff;
+        font-size: 1.15rem;
+    }
+
+    .job-detail-page .jd-meta {
         display: flex;
         flex-wrap: wrap;
+        gap: 11px;
+    }
+
+    .job-detail-page .jd-meta-item {
+        display: inline-flex;
         align-items: center;
+        gap: 9px;
+        padding: 10px 13px;
+        border: 1px solid rgba(255,255,255,.13);
+        border-radius: 11px;
+        background: rgba(255,255,255,.075);
+        color: #edf2ff;
+        font-size: .88rem;
+        overflow-wrap: anywhere;
+    }
+
+    .job-detail-page .jd-meta-item i {
+        color: #a9c2ff;
+        font-size: 1rem;
+    }
+
+    .job-detail-page .jd-hero-side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+        min-width: 145px;
+        padding-top: 8px;
+    }
+
+    .job-detail-page .jd-salary-label {
+        color: #cfdbf6;
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+    }
+
+    .job-detail-page .jd-salary-value {
+        color: #fff;
+        font-size: clamp(1.25rem, 2vw, 1.8rem);
+        font-weight: 800;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .job-detail-page .jd-salary-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        border-radius: 17px;
+        background: rgba(255,255,255,.13);
+        border: 1px solid rgba(255,255,255,.18);
+        font-size: 1.45rem;
+        margin-bottom: 5px;
+    }
+
+    /* Buttons */
+
+    .job-detail-page .jd-actions {
+        display: flex;
+        flex-wrap: wrap;
         gap: 10px;
-        margin-top: 28px;
-        position: relative;
-        z-index: 1;
+        margin-top: 27px;
     }
 
-    .job-detail-page .btn {
-        border-radius: 10px;
-        padding: 10px 15px;
-        font-weight: 600;
-        transition: transform 0.2s ease, box-shadow 0.2s ease,
-                    background-color 0.2s ease;
+    .job-detail-page .jd-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 9px;
+        min-height: 43px;
+        padding: 11px 17px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        font-size: .88rem;
+        font-weight: 700;
+        transition: transform .2s ease, background .2s ease,
+                    box-shadow .2s ease, border-color .2s ease;
     }
 
-    .job-detail-page .btn:hover {
+    .job-detail-page .jd-btn:hover {
         transform: translateY(-2px);
     }
 
-    .job-detail-page .btn-primary {
-        background: var(--detail-blue);
-        border-color: var(--detail-blue);
-        box-shadow: 0 5px 14px rgba(37, 99, 235, 0.15);
+    .job-detail-page .jd-btn-light {
+        color: #fff;
+        border-color: rgba(255,255,255,.27);
+        background: rgba(255,255,255,.1);
     }
 
-    .job-detail-page .btn-primary:hover {
-        background: #1d4ed8;
-        border-color: #1d4ed8;
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    .job-detail-page .jd-btn-light:hover {
+        color: #fff;
+        background: rgba(255,255,255,.19);
     }
 
-    .job-detail-page .detail-card {
-        background: #ffffff;
-        border: 1px solid var(--detail-border);
-        border-radius: 18px;
-        box-shadow: 0 8px 26px rgba(16, 33, 58, 0.045);
-        margin-bottom: 22px;
+    .job-detail-page .jd-btn-edit {
+        color: #fff;
+        background: #3977ff;
+        border-color: #3977ff;
+    }
+
+    .job-detail-page .jd-btn-edit:hover {
+        color: #fff;
+        background: #2864e6;
+    }
+
+    .job-detail-page .jd-btn-applications {
+        color: #fff;
+        background: #0f9f91;
+        border-color: #0f9f91;
+    }
+
+    .job-detail-page .jd-btn-applications:hover {
+        color: #fff;
+        background: #0d8277;
+    }
+
+    .job-detail-page .jd-btn-delete {
+        color: #ffe2e5;
+        border-color: rgba(255,255,255,.25);
+        background: rgba(164, 35, 55, .18);
+    }
+
+    .job-detail-page .jd-btn-delete:hover {
+        color: #fff;
+        background: rgba(164, 35, 55, .4);
+    }
+
+    /* Main layout */
+
+    .job-detail-page .jd-layout {
+        align-items: start;
+    }
+
+    .job-detail-page .jd-panel {
+        background: #fff;
+        border: 1px solid var(--jd-border);
+        border-radius: 19px;
+        box-shadow: 0 7px 25px rgba(23, 42, 79, .035);
         overflow: hidden;
-        animation: detailFadeIn 0.55s ease both;
+        margin-bottom: 22px;
+        animation: jd-appear .55s ease both;
     }
 
-    .job-detail-page .detail-card:nth-child(2) {
-        animation-delay: 0.08s;
+    .job-detail-page .jd-panel:nth-child(2) {
+        animation-delay: .07s;
     }
 
-    .job-detail-page .detail-card-header {
-        padding: 22px 25px 0;
-    }
-
-    .job-detail-page .detail-card-body {
-        padding: 22px 25px 26px;
-    }
-
-    .job-detail-page .section-heading {
+    .job-detail-page .jd-panel-heading {
         display: flex;
         align-items: center;
-        gap: 12px;
-        color: var(--detail-navy);
-        font-size: 1.15rem;
+        gap: 14px;
+        padding: 24px 26px 0;
+    }
+
+    .job-detail-page .jd-section-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: var(--jd-blue);
+        background: #edf2ff;
+        font-size: 1.25rem;
+    }
+
+    .job-detail-page .jd-section-title {
+        color: var(--jd-navy);
+        font-size: 1.12rem;
         font-weight: 800;
+        line-height: 1.4;
         margin: 0;
     }
 
-    .job-detail-page .section-icon {
+    .job-detail-page .jd-section-subtitle {
+        color: var(--jd-muted);
+        font-size: .83rem;
+        margin: 4px 0 0;
+    }
+
+    .job-detail-page .jd-panel-body {
+        padding: 22px 26px 28px;
+    }
+
+    .job-detail-page .jd-description {
+        color: #4d5a70;
+        font-size: .97rem;
+        line-height: 2;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+
+    .job-detail-page .jd-skills {
+        color: #4d5a70;
+        line-height: 1.95;
+        overflow-wrap: anywhere;
+        white-space: pre-line;
+        margin: 0;
+    }
+
+    .job-detail-page .jd-content-divider {
+        height: 1px;
+        background: #edf0f6;
+        margin: 0 26px;
+    }
+
+    .job-detail-page .jd-info-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 16px 18px;
+        color: #586982;
+        background: #f0f5ff;
+        border: 1px solid #e0eaff;
+        border-radius: 13px;
+        font-size: .88rem;
+        line-height: 1.7;
+        margin-bottom: 22px;
+    }
+
+    .job-detail-page .jd-info-note i {
+        color: var(--jd-blue);
+        font-size: 1.1rem;
+        margin-top: 2px;
+    }
+
+    /* Sidebar summary */
+
+    .job-detail-page .jd-sidebar {
+        position: sticky;
+        top: 22px;
+    }
+
+    .job-detail-page .jd-summary-top {
+        padding: 26px 25px 23px;
+        background: linear-gradient(140deg, #f8faff, #eef3ff);
+        border-bottom: 1px solid var(--jd-border);
+    }
+
+    .job-detail-page .jd-summary-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--jd-blue);
+        font-size: .77rem;
+        font-weight: 800;
+        letter-spacing: 1.3px;
+        text-transform: uppercase;
+        margin-bottom: 11px;
+    }
+
+    .job-detail-page .jd-summary-title {
+        color: var(--jd-navy);
+        font-size: 1.42rem;
+        font-weight: 850;
+        letter-spacing: -.5px;
+        margin: 0;
+    }
+
+    .job-detail-page .jd-summary-intro {
+        color: var(--jd-muted);
+        font-size: .87rem;
+        line-height: 1.75;
+        margin: 10px 0 0;
+    }
+
+    .job-detail-page .jd-summary-body {
+        padding: 8px 25px 25px;
+    }
+
+    .job-detail-page .jd-summary-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        padding: 17px 0;
+        border-bottom: 1px solid #edf0f6;
+    }
+
+    .job-detail-page .jd-summary-item:last-child {
+        border-bottom: 0;
+    }
+
+    .job-detail-page .jd-summary-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         width: 42px;
         height: 42px;
         flex-shrink: 0;
+        color: var(--jd-blue);
+        background: #edf2ff;
         border-radius: 12px;
-        color: var(--detail-blue);
-        background: #edf4ff;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
     }
 
-    .job-detail-page .detail-description {
-        color: #475569;
-        line-height: 1.9;
-        overflow-wrap: anywhere;
-        margin: 0;
-    }
-
-    .job-detail-page .skills-content {
-        color: #475569;
-        line-height: 1.85;
-        overflow-wrap: anywhere;
-        white-space: pre-line;
-        margin: 0;
-    }
-
-    .job-detail-page .summary-card {
-        position: sticky;
-        top: 24px;
-    }
-
-    .job-detail-page .summary-heading {
-        color: var(--detail-navy);
-        font-size: 1.2rem;
-        font-weight: 800;
-        margin: 0;
-    }
-
-    .job-detail-page .summary-intro {
-        color: var(--detail-muted);
-        font-size: 0.9rem;
-        line-height: 1.7;
-        margin: 10px 0 22px;
-    }
-
-    .job-detail-page .summary-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 13px;
-        padding: 16px 0;
-        border-bottom: 1px solid #edf0f5;
-    }
-
-    .job-detail-page .summary-item:last-of-type {
-        border-bottom: 0;
-    }
-
-    .job-detail-page .summary-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        flex-shrink: 0;
-        background: #edf4ff;
-        color: var(--detail-blue);
-        border-radius: 11px;
-        font-size: 1.05rem;
-    }
-
-    .job-detail-page .summary-label {
-        color: var(--detail-muted);
+    .job-detail-page .jd-summary-label {
         display: block;
-        font-size: 0.8rem;
+        color: var(--jd-muted);
+        font-size: .79rem;
         margin-bottom: 5px;
     }
 
-    .job-detail-page .summary-value {
-        color: var(--detail-navy);
-        font-weight: 700;
+    .job-detail-page .jd-summary-value {
+        display: block;
+        color: var(--jd-navy);
+        font-size: .93rem;
+        font-weight: 750;
+        line-height: 1.55;
         overflow-wrap: anywhere;
         margin: 0;
     }
 
-    .job-detail-page .apply-panel {
-        margin-top: 22px;
-        padding-top: 22px;
-        border-top: 1px solid var(--detail-border);
+    .job-detail-page .jd-apply-area {
+        padding: 20px 25px 25px;
+        background: #fbfcff;
+        border-top: 1px solid var(--jd-border);
     }
 
-    .job-detail-page .apply-panel .btn {
-        padding: 13px 16px;
-        font-size: 0.98rem;
-    }
-
-    .job-detail-page .apply-note {
-        color: var(--detail-muted);
-        font-size: 0.82rem;
-        line-height: 1.6;
-        margin-top: 12px;
-        margin-bottom: 0;
-        text-align: center;
-    }
-
-    .job-detail-page .status-alert {
+    .job-detail-page .jd-apply-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 51px;
+        padding: 14px 17px;
+        border: 0;
         border-radius: 12px;
-        padding: 14px;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        margin-bottom: 0;
+        color: #fff;
+        background: linear-gradient(115deg, #3563e9, #4e78f0);
+        box-shadow: 0 8px 18px rgba(53, 99, 233, .2);
+        font-size: .95rem;
+        font-weight: 800;
+        transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    .job-detail-page .detail-footer-note {
-        color: var(--detail-muted);
+    .job-detail-page .jd-apply-btn:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 11px 24px rgba(53, 99, 233, .28);
+    }
+
+    .job-detail-page .jd-apply-note {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 7px;
+        color: var(--jd-muted);
+        font-size: .79rem;
+        line-height: 1.65;
         text-align: center;
-        font-size: 0.88rem;
-        margin-top: 8px;
+        margin: 13px 0 0;
     }
 
-    @keyframes detailFadeIn {
+    .job-detail-page .jd-apply-note i {
+        color: #239579;
+        margin-top: 2px;
+    }
+
+    .job-detail-page .jd-status {
+        border: 1px solid transparent;
+        border-radius: 12px;
+        padding: 15px;
+        font-size: .88rem;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .job-detail-page .jd-status strong {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .job-detail-page .jd-status-danger {
+        color: #9c2635;
+        background: #fff1f2;
+        border-color: #ffd8dd;
+    }
+
+    .job-detail-page .jd-status-info {
+        color: #1d5984;
+        background: #eff8ff;
+        border-color: #d5edff;
+    }
+
+    .job-detail-page .jd-bottom-note {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        color: #8590a4;
+        text-align: center;
+        font-size: .83rem;
+        line-height: 1.7;
+        padding: 5px 12px 0;
+    }
+
+    .job-detail-page .jd-bottom-note i {
+        color: #239579;
+    }
+
+    @keyframes jd-appear {
         from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(12px);
         }
         to {
             opacity: 1;
@@ -286,30 +594,110 @@
         }
     }
 
-    @media (max-width: 767.98px) {
-        .job-detail-page {
+    @media (max-width: 991.98px) {
+        .job-detail-page .jd-hero-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .job-detail-page .jd-hero-side {
+            align-items: flex-start;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 14px;
             padding-top: 22px;
+            border-top: 1px solid rgba(255,255,255,.17);
         }
 
-        .job-detail-page .detail-hero {
-            padding: 24px 20px;
-            border-radius: 18px;
+        .job-detail-page .jd-salary-value {
+            text-align: left;
         }
 
-        .job-detail-page .detail-card-header {
-            padding: 20px 20px 0;
+        .job-detail-page .jd-salary-icon {
+            margin: 0;
         }
 
-        .job-detail-page .detail-card-body {
-            padding: 20px;
-        }
-
-        .job-detail-page .summary-card {
+        .job-detail-page .jd-sidebar {
             position: static;
         }
+    }
 
-        .job-detail-page .detail-actions .btn {
-            flex: 1 1 auto;
+    @media (max-width: 767.98px) {
+        .job-detail-page {
+            padding: 21px 0 45px;
+        }
+
+        .job-detail-page .jd-hero {
+            padding: 25px 21px;
+            border-radius: 19px;
+        }
+
+        .job-detail-page .jd-title {
+            font-size: clamp(1.8rem, 8vw, 2.4rem);
+            letter-spacing: -.8px;
+        }
+
+        .job-detail-page .jd-eyebrow {
+            margin-bottom: 15px;
+        }
+
+        .job-detail-page .jd-meta {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .job-detail-page .jd-meta-item {
+            align-items: flex-start;
+        }
+
+        .job-detail-page .jd-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .job-detail-page .jd-actions .jd-btn {
+            width: 100%;
+            text-align: center;
+            padding: 11px 9px;
+            font-size: .82rem;
+        }
+
+        .job-detail-page .jd-panel {
+            border-radius: 16px;
+        }
+
+        .job-detail-page .jd-panel-heading {
+            padding: 21px 19px 0;
+        }
+
+        .job-detail-page .jd-panel-body {
+            padding: 20px 19px 23px;
+        }
+
+        .job-detail-page .jd-content-divider {
+            margin: 0 19px;
+        }
+
+        .job-detail-page .jd-summary-top {
+            padding: 22px 20px;
+        }
+
+        .job-detail-page .jd-summary-body {
+            padding: 7px 20px 20px;
+        }
+
+        .job-detail-page .jd-apply-area {
+            padding: 18px 20px 22px;
+        }
+
+        .job-detail-page .jd-section-icon {
+            width: 42px;
+            height: 42px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .job-detail-page .jd-actions {
+            grid-template-columns: 1fr;
         }
     }
 
@@ -317,10 +705,8 @@
         .job-detail-page *,
         .job-detail-page *::before,
         .job-detail-page *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-            scroll-behavior: auto !important;
+            animation: none !important;
+            transition: none !important;
         }
     }
 </style>
@@ -328,236 +714,316 @@
 
 {% block content %}
 <div class="job-detail-page">
-    <div class="container">
+    <div class="container jd-container">
 
-        <!-- Job Header -->
-        <section class="detail-hero">
-            <span class="job-type-badge">
-                <i class="bi bi-briefcase-fill"></i>
-                {{ job.job_type }}
-            </span>
+        <!-- Breadcrumb -->
+        <nav class="jd-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">
+                <i class="bi bi-house-door me-1"></i> Home
+            </a>
+            <i class="bi bi-chevron-right"></i>
+            <a href="{% url 'all-jobs' %}">Find Jobs</a>
+            <i class="bi bi-chevron-right"></i>
+            <span class="jd-current">{{ job.title }}</span>
+        </nav>
 
-            <h1 class="job-title">{{ job.title }}</h1>
-
-            <div class="company-name">
-                <i class="bi bi-building me-2"></i>
-                {{ job.company }}
-            </div>
-
-            <div class="hero-meta">
-                <span>
-                    <i class="bi bi-geo-alt-fill"></i>
-                    {{ job.location }}
-                </span>
-
-                {% if job.salary %}
-                    <span>
-                        <i class="bi bi-cash-stack"></i>
-                        {{ job.salary }}
-                    </span>
-                {% endif %}
-
-                {% if job.deadline %}
-                    <span>
-                        <i class="bi bi-calendar-event"></i>
-                        Deadline: {{ job.deadline|date:"M d, Y" }}
-                    </span>
-                {% endif %}
-            </div>
-
-            <!-- Navigation and Owner Actions -->
-            <div class="detail-actions">
-                <a href="{% url 'all-jobs' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i>
-                    Back to Jobs
-                </a>
-
-                {% if user == job.posted_by %}
-                    <a href="{% url 'job-applications' job.id %}"
-                       class="btn btn-info text-white">
-                        <i class="bi bi-people-fill me-1"></i>
-                        View Applications
-                    </a>
-
-                    <a href="{% url 'edit-job' job.id %}" class="btn btn-primary">
-                        <i class="bi bi-pencil-square me-1"></i>
-                        Edit Job
-                    </a>
-
-                    <a href="{% url 'delete-job' job.id %}" class="btn btn-outline-danger">
-                        <i class="bi bi-trash me-1"></i>
-                        Delete Job
-                    </a>
-                {% endif %}
-            </div>
-        </section>
-
-        <div class="row g-4">
-
-            <!-- Main Job Information -->
-            <div class="col-lg-8">
-
-                <!-- Description -->
-                <section class="detail-card">
-                    <div class="detail-card-header">
-                        <h2 class="section-heading">
-                            <span class="section-icon">
-                                <i class="bi bi-file-text"></i>
-                            </span>
-                            Job Description
-                        </h2>
+        <!-- Job Hero -->
+        <header class="jd-hero">
+            <div class="jd-hero-grid">
+                <div>
+                    <div class="jd-eyebrow">
+                        <i class="bi bi-stars"></i>
+                        YOUR NEXT OPPORTUNITY
                     </div>
 
-                    <div class="detail-card-body">
-                        <p class="detail-description">{{ job.description|linebreaksbr }}</p>
+                    <div>
+                        <span class="jd-job-type">
+                            <i class="bi bi-briefcase-fill"></i>
+                            {{ job.job_type }}
+                        </span>
+                    </div>
+
+                    <h1 class="jd-title">{{ job.title }}</h1>
+
+                    <div class="jd-company">
+                        <span class="jd-company-icon">
+                            <i class="bi bi-buildings"></i>
+                        </span>
+                        <span>{{ job.company }}</span>
+                    </div>
+
+                    <div class="jd-meta">
+                        <span class="jd-meta-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            {{ job.location }}
+                        </span>
+
+                        {% if job.deadline %}
+                            <span class="jd-meta-item">
+                                <i class="bi bi-calendar-event"></i>
+                                Apply by {{ job.deadline|date:"M d, Y" }}
+                            </span>
+                        {% endif %}
+
+                        <span class="jd-meta-item">
+                            <i class="bi bi-shield-check"></i>
+                            JobHub opportunity
+                        </span>
+                    </div>
+
+                    <div class="jd-actions">
+                        <a href="{% url 'all-jobs' %}" class="jd-btn jd-btn-light">
+                            <i class="bi bi-arrow-left"></i>
+                            All jobs
+                        </a>
+
+                        {% if user == job.posted_by %}
+                            <a href="{% url 'job-applications' job.id %}"
+                               class="jd-btn jd-btn-applications">
+                                <i class="bi bi-people-fill"></i>
+                                Applications
+                            </a>
+
+                            <a href="{% url 'edit-job' job.id %}"
+                               class="jd-btn jd-btn-edit">
+                                <i class="bi bi-pencil-square"></i>
+                                Edit job
+                            </a>
+
+                            <a href="{% url 'delete-job' job.id %}"
+                               class="jd-btn jd-btn-delete">
+                                <i class="bi bi-trash3"></i>
+                                Delete job
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="jd-hero-side">
+                    <span class="jd-salary-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </span>
+                    <div>
+                        <div class="jd-salary-label">Salary / Compensation</div>
+                        <div class="jd-salary-value">
+                            {% if job.salary %}
+                                {{ job.salary }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="row g-4 jd-layout">
+
+            <!-- Main content -->
+            <main class="col-lg-8">
+
+                <section class="jd-panel">
+                    <div class="jd-panel-heading">
+                        <span class="jd-section-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </span>
+                        <div>
+                            <h2 class="jd-section-title">About this role</h2>
+                            <p class="jd-section-subtitle">
+                                Understand the opportunity and what the employer needs.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="jd-panel-body">
+                        {% if job.description %}
+                            <p class="jd-description">{{ job.description|linebreaksbr }}</p>
+                        {% else %}
+                            <p class="jd-description text-muted">
+                                No job description has been provided.
+                            </p>
+                        {% endif %}
                     </div>
                 </section>
 
-                <!-- Required Skills -->
-                <section class="detail-card">
-                    <div class="detail-card-header">
-                        <h2 class="section-heading">
-                            <span class="section-icon">
-                                <i class="bi bi-lightning-charge"></i>
-                            </span>
-                            Required Skills
-                        </h2>
+                <section class="jd-panel">
+                    <div class="jd-panel-heading">
+                        <span class="jd-section-icon">
+                            <i class="bi bi-lightning-charge"></i>
+                        </span>
+                        <div>
+                            <h2 class="jd-section-title">Skills and qualifications</h2>
+                            <p class="jd-section-subtitle">
+                                The skills listed for this opportunity.
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="detail-card-body">
-                        <p class="skills-content">{{ job.skills }}</p>
+                    <div class="jd-panel-body">
+                        {% if job.skills %}
+                            <p class="jd-skills">{{ job.skills }}</p>
+                        {% else %}
+                            <p class="jd-skills text-muted">
+                                Specific skills have not been listed for this job.
+                            </p>
+                        {% endif %}
                     </div>
                 </section>
 
-                <p class="detail-footer-note">
-                    <i class="bi bi-shield-check me-1"></i>
-                    Review the job details carefully before applying.
-                </p>
-            </div>
+                <div class="jd-info-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <div>
+                        <strong>Before you apply</strong><br>
+                        Review the job description, location, requirements and
+                        application deadline. Make sure your professional profile
+                        is up to date.
+                    </div>
+                </div>
 
-            <!-- Job Summary -->
-            <div class="col-lg-4">
-                <aside class="detail-card summary-card">
-                    <div class="detail-card-body">
+                <div class="jd-bottom-note">
+                    <i class="bi bi-shield-check"></i>
+                    Take the next step in your professional journey with JobHub.
+                </div>
 
-                        <h2 class="summary-heading">Job Summary</h2>
-                        <p class="summary-intro">
-                            Review the key details of this opportunity before you apply.
+            </main>
+
+            <!-- Job summary sidebar -->
+            <aside class="col-lg-4">
+                <div class="jd-panel jd-sidebar">
+
+                    <div class="jd-summary-top">
+                        <div class="jd-summary-label">
+                            <i class="bi bi-card-checklist"></i>
+                            Opportunity overview
+                        </div>
+                        <h2 class="jd-summary-title">Job at a glance</h2>
+                        <p class="jd-summary-intro">
+                            Everything important about this opportunity,
+                            gathered in one place.
                         </p>
+                    </div>
 
-                        <!-- Job Type -->
-                        <div class="summary-item">
-                            <span class="summary-icon">
+                    <div class="jd-summary-body">
+
+                        <div class="jd-summary-item">
+                            <span class="jd-summary-icon">
                                 <i class="bi bi-briefcase"></i>
                             </span>
                             <div>
-                                <span class="summary-label">Employment Type</span>
-                                <p class="summary-value">{{ job.job_type }}</p>
+                                <span class="jd-summary-label">Employment type</span>
+                                <p class="jd-summary-value">{{ job.job_type }}</p>
                             </div>
                         </div>
 
-                        <!-- Location -->
-                        <div class="summary-item">
-                            <span class="summary-icon">
+                        <div class="jd-summary-item">
+                            <span class="jd-summary-icon">
                                 <i class="bi bi-geo-alt"></i>
                             </span>
                             <div>
-                                <span class="summary-label">Location</span>
-                                <p class="summary-value">{{ job.location }}</p>
+                                <span class="jd-summary-label">Work location</span>
+                                <p class="jd-summary-value">
+                                    {{ job.location|default:"Not specified" }}
+                                </p>
                             </div>
                         </div>
 
-                        <!-- Salary -->
-                        {% if job.salary %}
-                            <div class="summary-item">
-                                <span class="summary-icon">
-                                    <i class="bi bi-cash-stack"></i>
-                                </span>
-                                <div>
-                                    <span class="summary-label">Salary</span>
-                                    <p class="summary-value">{{ job.salary }}</p>
-                                </div>
+                        <div class="jd-summary-item">
+                            <span class="jd-summary-icon">
+                                <i class="bi bi-cash-stack"></i>
+                            </span>
+                            <div>
+                                <span class="jd-summary-label">Salary / Compensation</span>
+                                <p class="jd-summary-value">
+                                    {{ job.salary|default:"Not specified" }}
+                                </p>
                             </div>
-                        {% endif %}
+                        </div>
 
-                        <!-- Deadline -->
                         {% if job.deadline %}
-                            <div class="summary-item">
-                                <span class="summary-icon">
-                                    <i class="bi bi-calendar-event"></i>
+                            <div class="jd-summary-item">
+                                <span class="jd-summary-icon">
+                                    <i class="bi bi-calendar2-check"></i>
                                 </span>
                                 <div>
-                                    <span class="summary-label">Application Deadline</span>
-                                    <p class="summary-value">
+                                    <span class="jd-summary-label">Application deadline</span>
+                                    <p class="jd-summary-value">
                                         {{ job.deadline|date:"M d, Y" }}
                                     </p>
                                 </div>
                             </div>
                         {% endif %}
 
-                        <!-- Job Poster -->
-                        <div class="summary-item">
-                            <span class="summary-icon">
-                                <i class="bi bi-person"></i>
+                        <div class="jd-summary-item">
+                            <span class="jd-summary-icon">
+                                <i class="bi bi-person-badge"></i>
                             </span>
                             <div>
-                                <span class="summary-label">Posted By</span>
-                                <p class="summary-value">{{ job.posted_by }}</p>
+                                <span class="jd-summary-label">Posted by</span>
+                                <p class="jd-summary-value">{{ job.posted_by }}</p>
                             </div>
                         </div>
 
-                        <!-- Apply Button -->
-                        <div class="apply-panel">
+                    </div>
 
-                            {% if user.is_authenticated and user != job.posted_by %}
+                    <div class="jd-apply-area">
 
-                                {% if job.deadline and job.deadline < today %}
+                        {% if user.is_authenticated and user != job.posted_by %}
 
-                                    <div class="alert alert-danger status-alert">
+                            {% if job.deadline and job.deadline < today %}
+
+                                <div class="jd-status jd-status-danger">
+                                    <strong>
                                         <i class="bi bi-lock-fill me-1"></i>
-                                        <strong>Applications Closed</strong>
-                                        <div>This job's application deadline has passed.</div>
-                                    </div>
-
-                                {% else %}
-
-                                    <a href="{% url 'apply-job' job.id %}"
-                                       class="btn btn-primary w-100">
-                                        <i class="bi bi-send me-2"></i>
-                                        Apply for This Job
-                                    </a>
-
-                                    <p class="apply-note">
-                                        Make sure your profile is up to date before applying.
-                                    </p>
-
-                                {% endif %}
-
-                            {% elif user == job.posted_by %}
-
-                                <div class="alert alert-info status-alert">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    <strong>Your job posting</strong>
-                                    <div>You cannot apply for a job you posted.</div>
+                                        Applications closed
+                                    </strong>
+                                    The application deadline for this job has passed.
                                 </div>
 
                             {% else %}
 
-                                <a href="{% url 'login' %}" class="btn btn-primary w-100">
-                                    <i class="bi bi-box-arrow-in-right me-2"></i>
-                                    Login to Apply
+                                <a href="{% url 'apply-job' job.id %}"
+                                   class="jd-apply-btn">
+                                    <i class="bi bi-send-fill"></i>
+                                    Apply for this job
+                                    <i class="bi bi-arrow-right"></i>
                                 </a>
 
-                                <p class="apply-note">
-                                    Sign in to continue with your application.
+                                <p class="jd-apply-note">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Update your profile before submitting your application.
                                 </p>
 
                             {% endif %}
 
-                        </div>
+                        {% elif user == job.posted_by %}
+
+                            <div class="jd-status jd-status-info">
+                                <strong>
+                                    <i class="bi bi-info-circle-fill me-1"></i>
+                                    Your job posting
+                                </strong>
+                                You are the owner of this listing. Use the management
+                                options above to review applications or edit the job.
+                            </div>
+
+                        {% else %}
+
+                            <a href="{% url 'login' %}" class="jd-apply-btn">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                Login to apply
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+
+                            <p class="jd-apply-note">
+                                <i class="bi bi-shield-check"></i>
+                                Sign in to continue with your application.
+                            </p>
+
+                        {% endif %}
+
                     </div>
-                </aside>
-            </div>
+                </div>
+            </aside>
 
         </div>
     </div>

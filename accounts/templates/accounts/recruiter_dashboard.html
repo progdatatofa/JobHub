@@ -1,0 +1,954 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Dashboard | JobHub{% endblock %}
+
+{% block content %}
+<style>
+    .recruiter-dashboard {
+        --rd-navy: #172554;
+        --rd-purple: #6d5dfc;
+        --rd-blue: #3b82f6;
+        --rd-teal: #0d9488;
+        --rd-pink: #e64980;
+        --rd-orange: #f59e0b;
+        --rd-muted: #64748b;
+        background: #f5f7fc;
+        min-height: 100vh;
+        padding: 30px 0 55px;
+    }
+
+    .recruiter-dashboard .rd-container {
+        max-width: 1400px;
+    }
+
+    .recruiter-dashboard .rd-hero {
+        background: linear-gradient(125deg, #172554 0%, #4338ca 58%, #7658f5 100%);
+        color: #fff;
+        padding: 34px;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(49, 46, 129, .18);
+    }
+
+    .recruiter-dashboard .rd-hero::after {
+        content: "";
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        right: -65px;
+        top: -105px;
+        border: 35px solid rgba(255,255,255,.09);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .recruiter-dashboard .rd-eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: .75rem;
+        font-weight: 800;
+        color: #c7d2fe;
+    }
+
+    .recruiter-dashboard .rd-hero h1 {
+        font-weight: 850;
+        letter-spacing: -.8px;
+        font-size: clamp(1.8rem, 4vw, 2.7rem);
+        margin: 10px 0;
+    }
+
+    .recruiter-dashboard .rd-hero p {
+        color: #e0e7ff;
+        max-width: 600px;
+        margin-bottom: 0;
+        line-height: 1.7;
+    }
+
+    .recruiter-dashboard .rd-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 19px;
+        border-radius: 12px;
+        background: #fff;
+        color: #4338ca;
+        text-decoration: none;
+        font-weight: 750;
+        transition: .2s ease;
+        border: 1px solid rgba(255,255,255,.6);
+        position: relative;
+        z-index: 1;
+    }
+
+    .recruiter-dashboard .rd-btn-primary:hover {
+        background: #eef2ff;
+        color: #312e81;
+        transform: translateY(-2px);
+    }
+
+    .recruiter-dashboard .rd-section-title {
+        color: #172554;
+        font-weight: 800;
+        letter-spacing: -.3px;
+    }
+
+    .recruiter-dashboard .rd-section-subtitle {
+        color: var(--rd-muted);
+        font-size: .92rem;
+    }
+
+    .recruiter-dashboard .rd-stat-card {
+        background: #fff;
+        padding: 23px;
+        height: 100%;
+        border-radius: 19px;
+        border: 1px solid #edf0f7;
+        box-shadow: 0 5px 18px rgba(23, 37, 84, .035);
+        transition: transform .22s ease, box-shadow .22s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .recruiter-dashboard .rd-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 13px 28px rgba(23, 37, 84, .09);
+    }
+
+    .recruiter-dashboard .rd-stat-card::after {
+        content: "";
+        height: 4px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--rd-accent);
+    }
+
+    .recruiter-dashboard .rd-stat-icon {
+        width: 49px;
+        height: 49px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        background: var(--rd-tint);
+        color: var(--rd-accent);
+        margin-bottom: 18px;
+    }
+
+    .recruiter-dashboard .rd-stat-label {
+        font-size: .88rem;
+        color: #64748b;
+        font-weight: 650;
+        margin-bottom: 7px;
+    }
+
+    .recruiter-dashboard .rd-stat-number {
+        font-size: clamp(1.8rem, 3vw, 2.35rem);
+        line-height: 1.2;
+        font-weight: 850;
+        color: #172554;
+        margin-bottom: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .recruiter-dashboard .rd-stat-note {
+        font-size: .78rem;
+        color: #8490a5;
+    }
+
+    .recruiter-dashboard .rd-panel {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #edf0f7;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 5px 18px rgba(23, 37, 84, .035);
+    }
+
+    .recruiter-dashboard .rd-chart-wrap {
+        position: relative;
+        height: 285px;
+        max-width: 100%;
+    }
+
+    .recruiter-dashboard .rd-chart-wrap canvas {
+        max-width: 100%;
+    }
+
+    .recruiter-dashboard .rd-chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 18px;
+        margin-top: 17px;
+    }
+
+    .recruiter-dashboard .rd-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #64748b;
+        font-size: .8rem;
+    }
+
+    .recruiter-dashboard .rd-legend-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+    }
+
+    .recruiter-dashboard .rd-job-card {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #e9edf5;
+        border-radius: 19px;
+        padding: 23px;
+        transition: transform .2s ease, box-shadow .2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .recruiter-dashboard .rd-job-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 28px rgba(23, 37, 84, .08);
+    }
+
+    .recruiter-dashboard .rd-job-card::before {
+        content: "";
+        height: 5px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: var(--job-accent, #6d5dfc);
+    }
+
+    .recruiter-dashboard .rd-job-title {
+        color: #172554;
+        font-weight: 800;
+        font-size: 1.12rem;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .recruiter-dashboard .rd-company {
+        color: #64748b;
+        font-size: .9rem;
+        overflow-wrap: anywhere;
+    }
+
+    .recruiter-dashboard .rd-job-tag {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: .76rem;
+        font-weight: 650;
+        overflow-wrap: anywhere;
+    }
+
+    .recruiter-dashboard .rd-application-count {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 15px;
+        background: #f3f0ff;
+        border-radius: 12px;
+        color: #5140c9;
+        font-size: .88rem;
+        font-weight: 700;
+    }
+
+    .recruiter-dashboard .rd-action {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: .8rem;
+        font-weight: 700;
+        transition: .2s ease;
+    }
+
+    .recruiter-dashboard .rd-action:hover {
+        transform: translateY(-1px);
+        filter: brightness(.96);
+    }
+
+    .recruiter-dashboard .rd-action-applicants {
+        color: #fff;
+        background: #5145cd;
+    }
+
+    .recruiter-dashboard .rd-action-edit {
+        color: #087f8c;
+        background: #e3faf7;
+    }
+
+    .recruiter-dashboard .rd-action-view {
+        color: #475569;
+        background: #f1f5f9;
+    }
+
+    .recruiter-dashboard .rd-empty {
+        padding: 50px 20px;
+        border: 2px dashed #d9dff0;
+        border-radius: 20px;
+        background: #fff;
+        text-align: center;
+    }
+
+    .recruiter-dashboard .rd-empty-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        height: 75px;
+        border-radius: 24px;
+        background: #ede9fe;
+        color: #6d5dfc;
+        font-size: 2rem;
+        margin-bottom: 18px;
+    }
+
+    .recruiter-dashboard .rd-empty h4 {
+        font-weight: 800;
+        color: #172554;
+    }
+
+    .recruiter-dashboard .rd-empty p {
+        color: #64748b;
+    }
+
+    .recruiter-dashboard .rd-btn-post {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(120deg, #5145cd, #7c3aed);
+        color: #fff;
+        border: 0;
+        border-radius: 11px;
+        padding: 11px 17px;
+        font-weight: 750;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+    .recruiter-dashboard .rd-btn-post:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 18px rgba(109, 93, 252, .25);
+    }
+
+    @media (max-width: 767px) {
+        .recruiter-dashboard {
+            padding: 18px 0 35px;
+        }
+
+        .recruiter-dashboard .rd-hero {
+            padding: 25px 21px;
+            border-radius: 19px;
+        }
+
+        .recruiter-dashboard .rd-panel {
+            padding: 19px;
+        }
+
+        .recruiter-dashboard .rd-chart-wrap {
+            height: 250px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .recruiter-dashboard *,
+        .recruiter-dashboard *::before,
+        .recruiter-dashboard *::after {
+            transition: none !important;
+            animation: none !important;
+        }
+    }
+</style>
+
+<div class="recruiter-dashboard">
+    <div class="container rd-container">
+
+        <!-- Welcome Banner -->
+        <section class="rd-hero mb-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="rd-eyebrow">JobHub · Recruiter Workspace</div>
+                    <h1>Welcome to your hiring hub.</h1>
+                    <p>
+                        Your recruitment journey, all in one place.
+                        Manage your vacancies, discover candidates, and
+                        monitor your hiring progress with ease.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{% url 'create-job' %}" class="rd-btn-primary">
+                        <span aria-hidden="true">＋</span> Post a New Job
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="mb-5">
+            <div class="mb-3">
+                <h2 class="rd-section-title h4 mb-1">Recruitment Overview</h2>
+                <p class="rd-section-subtitle mb-0">
+                    A summary of your job listings and candidate applications.
+                </p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6 col-xl-4">
+                    <div class="rd-stat-card"
+                         style="--rd-accent:#6d5dfc;--rd-tint:#eeebff;">
+                        <div class="rd-stat-icon" aria-hidden="true">▣</div>
+                        <div class="rd-stat-label">Jobs Posted</div>
+                        <div class="rd-stat-number">{{ total_jobs|default:0 }}</div>
+                        <div class="rd-stat-note">Your published job records</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-xl-4">
+                    <div class="rd-stat-card"
+                         style="--rd-accent:#2878ee;--rd-tint:#e8f1ff;">
+                        <div class="rd-stat-icon" aria-hidden="true">♙</div>
+                        <div class="rd-stat-label">Total Applications</div>
+                        <div class="rd-stat-number">{{ statistics.total|default:0 }}</div>
+                        <div class="rd-stat-note">Applications across your jobs</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-xl-4">
+                    <div class="rd-stat-card"
+                         style="--rd-accent:#e99a13;--rd-tint:#fff4d9;">
+                        <div class="rd-stat-icon" aria-hidden="true">◷</div>
+                        <div class="rd-stat-label">Pending</div>
+                        <div class="rd-stat-number">{{ statistics.pending|default:0 }}</div>
+                        <div class="rd-stat-note">Awaiting review</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-xl-4">
+                    <div class="rd-stat-card"
+                         style="--rd-accent:#0891b2;--rd-tint:#dff8ff;">
+                        <div class="rd-stat-icon" aria-hidden="true">◉</div>
+                        <div class="rd-stat-label">Reviewed</div>
+                        <div class="rd-stat-number">{{ statistics.reviewed|default:0 }}</div>
+                        <div class="rd-stat-note">Applications reviewed</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-xl-4">
+                    <div class="rd-stat-card"
+                         style="--rd-accent:#0d9488;--rd-tint:#d9faf2;">
+                        <div class="rd-stat-icon" aria-hidden="true">✓</div>
+                        <div class="rd-stat-label">Accepted</div>
+                        <div class="rd-stat-number">{{ statistics.accepted|default:0 }}</div>
+                        <div class="rd-stat-note">Successful applications</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-xl-4">
+                    <div class="rd-stat-card"
+                         style="--rd-accent:#e64980;--rd-tint:#ffe5ef;">
+                        <div class="rd-stat-icon" aria-hidden="true">×</div>
+                        <div class="rd-stat-label">Rejected</div>
+                        <div class="rd-stat-number">{{ statistics.rejected|default:0 }}</div>
+                        <div class="rd-stat-note">Unsuccessful applications</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Charts -->
+        <section class="mb-5">
+            <div class="mb-3">
+                <h2 class="rd-section-title h4 mb-1">Hiring Analytics</h2>
+                <p class="rd-section-subtitle mb-0">
+                    Explore your application statuses and hiring trends over time.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Applications by Status -->
+                <div class="col-12 col-lg-7">
+                    <div class="rd-panel">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h3 class="h5 fw-bold mb-1">Applications by Status</h3>
+                                <p class="rd-section-subtitle mb-0">
+                                    Compare candidate application counts.
+                                </p>
+                            </div>
+                            <span class="badge rounded-pill text-bg-light">Live data</span>
+                        </div>
+
+                        <div class="rd-chart-wrap">
+                            <canvas id="applicationBarChart"
+                                    role="img"
+                                    aria-label="Bar chart of applications by status">
+                                Applications by status chart.
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Application Breakdown -->
+                <div class="col-12 col-lg-5">
+                    <div class="rd-panel">
+                        <div class="mb-3">
+                            <h3 class="h5 fw-bold mb-1">Application Breakdown</h3>
+                            <p class="rd-section-subtitle mb-0">
+                                The share of applications in each status.
+                            </p>
+                        </div>
+
+                        <div class="rd-chart-wrap">
+                            <canvas id="applicationDoughnutChart"
+                                    role="img"
+                                    aria-label="Doughnut chart of application status distribution">
+                                Application status breakdown chart.
+                            </canvas>
+                        </div>
+
+                        <div class="rd-chart-legend">
+                            <div class="rd-legend-item">
+                                <span class="rd-legend-dot" style="background:#f5ad32"></span>
+                                Pending
+                            </div>
+                            <div class="rd-legend-item">
+                                <span class="rd-legend-dot" style="background:#3b82f6"></span>
+                                Reviewed
+                            </div>
+                            <div class="rd-legend-item">
+                                <span class="rd-legend-dot" style="background:#0d9488"></span>
+                                Accepted
+                            </div>
+                            <div class="rd-legend-item">
+                                <span class="rd-legend-dot" style="background:#e64980"></span>
+                                Rejected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Application Trends -->
+            <div class="row g-4 mt-1">
+                <div class="col-12">
+                    <div class="rd-panel">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                            <div>
+                                <h3 class="h5 fw-bold mb-1">Monthly Application Trends</h3>
+                                <p class="rd-section-subtitle mb-0">
+                                    Applications received over the last 12 months.
+                                </p>
+                            </div>
+                            <span class="badge rounded-pill text-bg-light">
+                                12-month overview
+                            </span>
+                        </div>
+
+                        <div class="rd-chart-wrap" style="height:320px;">
+                            <canvas id="monthlyApplicationsChart"
+                                    role="img"
+                                    aria-label="Line chart showing monthly job applications">
+                                Monthly application trends chart.
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Job Listings -->
+        <section>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                <div>
+                    <h2 class="rd-section-title h4 mb-1">My Job Listings</h2>
+                    <p class="rd-section-subtitle mb-0">
+                        Manage your vacancies and review their applicants.
+                    </p>
+                </div>
+
+                <a href="{% url 'create-job' %}" class="rd-btn-post">
+                    <span aria-hidden="true">＋</span> Post a Job
+                </a>
+            </div>
+
+            {% if jobs %}
+                <div class="row g-4">
+                    {% for job in jobs %}
+                        <div class="col-12 col-lg-6">
+                            <article class="rd-job-card"
+                                style="--job-accent:{% cycle '#6d5dfc' '#0d9488' '#f59e0b' '#e64980' '#3b82f6' %};">
+
+                                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                    <div class="flex-grow-1">
+                                        <h3 class="rd-job-title mb-2">{{ job.title }}</h3>
+                                        <div class="rd-company">
+                                            {{ job.company }} · {{ job.location }}
+                                        </div>
+                                    </div>
+                                    <span class="rd-job-tag">{{ job.job_type }}</span>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="rd-job-tag">
+                                        Posted {{ job.created_at|date:"M d, Y" }}
+                                    </span>
+                                    <span class="rd-job-tag">
+                                        Deadline {{ job.deadline|date:"M d, Y" }}
+                                    </span>
+                                </div>
+
+                                <div class="rd-application-count mb-3">
+                                    <span>Candidate applications</span>
+                                    <span>{{ job.application_count|default:0 }}</span>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="{% url 'job-applications' job.id %}"
+                                       class="rd-action rd-action-applicants">
+                                        View Applicants
+                                    </a>
+
+                                    <a href="{% url 'edit-job' job.id %}"
+                                       class="rd-action rd-action-edit">
+                                        Edit Job
+                                    </a>
+
+                                    <a href="{% url 'job-detail' job.id %}"
+                                       class="rd-action rd-action-view">
+                                        View Job
+                                    </a>
+                                </div>
+                            </article>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="rd-empty">
+                    <div class="rd-empty-icon" aria-hidden="true">▣</div>
+                    <h4>You haven't posted a job yet</h4>
+                    <p class="mx-auto mb-4" style="max-width:480px;">
+                        Your recruitment journey starts here. Publish your first
+                        vacancy and let suitable candidates discover your opportunity.
+                    </p>
+                    <a href="{% url 'create-job' %}" class="rd-btn-post">
+                        ＋ Post Your First Job
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+        <footer class="text-center mt-5">
+            <p class="small mb-0" style="color:#94a3b8;">
+                JobHub Recruiter Workspace · Helping you find the right talent.
+            </p>
+        </footer>
+
+    </div>
+</div>
+
+<!-- Safely pass monthly trend data from Django to JavaScript -->
+{{ monthly_trend|json_script:"monthly-trend-data" }}
+
+<!-- Chart.js powers the interactive charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const barCanvas = document.getElementById("applicationBarChart");
+    const doughnutCanvas = document.getElementById("applicationDoughnutChart");
+    const monthlyCanvas = document.getElementById("monthlyApplicationsChart");
+
+    if (typeof Chart === "undefined") {
+        const chartSection = document.querySelector(".recruiter-dashboard");
+
+        if (chartSection) {
+            const notice = document.createElement("p");
+            notice.className = "alert alert-warning mt-3";
+            notice.textContent =
+                "The charts could not load. Check your internet connection and refresh the page.";
+
+            chartSection.prepend(notice);
+        }
+
+        return;
+    }
+
+    const labels = ["Pending", "Reviewed", "Accepted", "Rejected"];
+
+    const values = [
+        Number("{{ statistics.pending|default:0 }}"),
+        Number("{{ statistics.reviewed|default:0 }}"),
+        Number("{{ statistics.accepted|default:0 }}"),
+        Number("{{ statistics.rejected|default:0 }}")
+    ];
+
+    const colors = ["#f5ad32", "#3b82f6", "#0d9488", "#e64980"];
+    const numberFormat = new Intl.NumberFormat();
+
+    // Chart 1: Applications by status.
+    if (barCanvas) {
+        new Chart(barCanvas, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Applications",
+                    data: values,
+                    backgroundColor: colors,
+                    borderRadius: 9,
+                    borderSkipped: false,
+                    maxBarThickness: 58
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 900,
+                    easing: "easeOutQuart"
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: "#172554",
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                const value = Number(context.raw);
+
+                                return " " + numberFormat.format(value) +
+                                    (value === 1 ? " application" : " applications");
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#64748b",
+                            font: {
+                                family: "system-ui",
+                                weight: "600"
+                            }
+                        },
+                        border: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(1, ...values),
+                        ticks: {
+                            precision: 0,
+                            color: "#64748b"
+                        },
+                        grid: {
+                            color: "#edf0f7"
+                        },
+                        border: {
+                            display: false,
+                            dash: [4, 4]
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Chart 2: Application status breakdown.
+    if (doughnutCanvas) {
+        const total = values.reduce((sum, value) => sum + value, 0);
+
+        new Chart(doughnutCanvas, {
+            type: "doughnut",
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: total > 0 ? values : [1, 1, 1, 1],
+                    backgroundColor: total > 0
+                        ? colors
+                        : ["#f1f5f9", "#e2e8f0", "#cbd5e1", "#94a3b8"],
+                    borderWidth: 3,
+                    borderColor: "#ffffff",
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "70%",
+                animation: {
+                    animateRotate: true,
+                    duration: 900
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: total > 0,
+                        backgroundColor: "#172554",
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                const value = Number(context.raw);
+                                const percentage = total
+                                    ? ((value / total) * 100).toFixed(1)
+                                    : "0.0";
+
+                                return " " + context.label + ": " +
+                                    numberFormat.format(value) +
+                                    " (" + percentage + "%)";
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [{
+                id: "centerTotal",
+                afterDraw: function (chart) {
+                    const area = chart.chartArea;
+                    if (!area) return;
+
+                    const ctx = chart.ctx;
+                    const centerX = (area.left + area.right) / 2;
+                    const centerY = (area.top + area.bottom) / 2;
+
+                    ctx.save();
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+
+                    ctx.fillStyle = "#172554";
+                    ctx.font = "800 29px system-ui, sans-serif";
+                    ctx.fillText(numberFormat.format(total), centerX, centerY - 7);
+
+                    ctx.fillStyle = "#64748b";
+                    ctx.font = "600 11px system-ui, sans-serif";
+                    ctx.fillText("APPLICATIONS", centerX, centerY + 17);
+
+                    ctx.restore();
+                }
+            }]
+        });
+    }
+
+    // Chart 3: Monthly application trends.
+    const trendElement = document.getElementById("monthly-trend-data");
+
+    if (monthlyCanvas && trendElement) {
+        let monthlyData = [];
+
+        try {
+            monthlyData = JSON.parse(trendElement.textContent);
+        } catch (error) {
+            console.error("Could not read monthly application trend data:", error);
+        }
+
+        if (Array.isArray(monthlyData)) {
+            new Chart(monthlyCanvas, {
+                type: "line",
+                data: {
+                    labels: monthlyData.map(item => item.label),
+                    datasets: [{
+                        label: "Applications",
+                        data: monthlyData.map(item => Number(item.total)),
+                        borderColor: "#6d5dfc",
+                        backgroundColor: "rgba(109, 93, 252, 0.13)",
+                        pointBackgroundColor: "#0d9488",
+                        pointBorderColor: "#ffffff",
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: "index"
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: "easeOutQuart"
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: "#172554",
+                            padding: 12,
+                            callbacks: {
+                                label: function (context) {
+                                    const value = Number(context.parsed.y);
+
+                                    return " " + numberFormat.format(value) +
+                                        (value === 1
+                                            ? " application"
+                                            : " applications");
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: "#64748b",
+                                maxRotation: 45,
+                                minRotation: 0
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                color: "#64748b"
+                            },
+                            grid: {
+                                color: "#edf0f7"
+                            },
+                            border: {
+                                display: false,
+                                dash: [4, 4]
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,947 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to JobHub | Find Jobs & Talent{% endblock %}
+
+{% block extra_css %}
+<style>
+    .jobhub-home {
+        --jh-navy: #14264a;
+        --jh-blue: #3156c9;
+        --jh-purple: #7357db;
+        --jh-muted: #64748b;
+        --jh-border: #e5eaf3;
+        color: var(--jh-navy);
+        overflow: hidden;
+    }
+
+    .jobhub-home * {
+        box-sizing: border-box;
+    }
+
+    .jh-container {
+        width: min(1160px, calc(100% - 36px));
+        margin: 0 auto;
+    }
+
+    .jh-hero {
+        position: relative;
+        isolation: isolate;
+        padding: 76px 0 70px;
+        background:
+            radial-gradient(circle at 85% 15%, rgba(133, 112, 255, .22), transparent 30%),
+            radial-gradient(circle at 5% 90%, rgba(67, 119, 255, .12), transparent 28%),
+            linear-gradient(135deg, #f7f9ff 0%, #eef2ff 55%, #f8f7ff 100%);
+    }
+
+    .jh-hero::before,
+    .jh-hero::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        border: 1px solid rgba(49, 86, 201, .12);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .jh-hero::before {
+        width: 330px;
+        height: 330px;
+        top: -180px;
+        right: 8%;
+    }
+
+    .jh-hero::after {
+        width: 230px;
+        height: 230px;
+        bottom: -150px;
+        left: 8%;
+    }
+
+    .jh-hero-content {
+        max-width: 850px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .jh-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #dce4ff;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .8);
+        color: var(--jh-blue);
+        font-size: .82rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+    }
+
+    .jh-hero h1 {
+        margin: 22px 0 17px;
+        color: var(--jh-navy);
+        font-size: clamp(2.3rem, 5vw, 4.25rem);
+        font-weight: 800;
+        letter-spacing: -.055em;
+        line-height: 1.1;
+    }
+
+    .jh-hero h1 span {
+        color: var(--jh-blue);
+    }
+
+    .jh-hero-description {
+        max-width: 650px;
+        margin: 0 auto;
+        color: #5c6981;
+        font-size: 1.08rem;
+        line-height: 1.85;
+    }
+
+    .jh-search-card {
+        max-width: 790px;
+        margin: 35px auto 0;
+        padding: 12px;
+        border: 1px solid rgba(226, 232, 240, .9);
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 22px 60px rgba(30, 54, 110, .12);
+        text-align: left;
+    }
+
+    .jh-search-tabs {
+        display: flex;
+        gap: 8px;
+        padding: 4px 4px 12px;
+    }
+
+    .jh-search-tab {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 17px;
+        border: 0;
+        border-radius: 11px;
+        background: transparent;
+        color: #66738b;
+        font-weight: 700;
+        transition: background .2s ease, color .2s ease;
+    }
+
+    .jh-search-tab.active {
+        background: #edf1ff;
+        color: var(--jh-blue);
+    }
+
+    .jh-search-fields {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+    }
+
+    .jh-search-field {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+        padding: 10px 12px;
+        color: #8290a7;
+    }
+
+    .jh-search-field + .jh-search-field {
+        border-left: 1px solid var(--jh-border);
+    }
+
+    .jh-search-field input {
+        width: 100%;
+        min-width: 0;
+        padding: 5px 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: var(--jh-navy);
+        font-size: .94rem;
+    }
+
+    .jh-search-field input::placeholder {
+        color: #8a96aa;
+    }
+
+    .jh-search-button,
+    .jh-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 14px 21px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--jh-blue);
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform .2s ease, background .2s ease;
+    }
+
+    .jh-search-button:hover,
+    .jh-btn-primary:hover {
+        transform: translateY(-2px);
+        background: #2446b2;
+        color: #fff;
+    }
+
+    .jh-search-hint {
+        margin: 12px 0 0;
+        color: #758198;
+        font-size: .82rem;
+        text-align: center;
+    }
+
+    .jh-hero-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 23px;
+    }
+
+    .jh-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 19px;
+        border: 1px solid #d8dfed;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, .78);
+        color: var(--jh-navy);
+        font-weight: 700;
+        text-decoration: none;
+        transition: border-color .2s ease, transform .2s ease;
+    }
+
+    .jh-btn-secondary:hover {
+        transform: translateY(-2px);
+        border-color: var(--jh-blue);
+        color: var(--jh-blue);
+    }
+
+    .jh-section {
+        padding: 76px 0;
+    }
+
+    .jh-section-muted {
+        background: #f8faff;
+    }
+
+    .jh-section-heading {
+        max-width: 680px;
+        margin: 0 auto 35px;
+        text-align: center;
+    }
+
+    .jh-section-kicker {
+        margin-bottom: 10px;
+        color: var(--jh-blue);
+        font-size: .8rem;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+
+    .jh-section-heading h2 {
+        margin: 0 0 13px;
+        color: var(--jh-navy);
+        font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+        font-weight: 800;
+        letter-spacing: -.035em;
+    }
+
+    .jh-section-heading p {
+        margin: 0;
+        color: var(--jh-muted);
+        line-height: 1.8;
+    }
+
+    .jh-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .jh-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        min-height: 145px;
+        padding: 25px;
+        border: 1px solid var(--jh-border);
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(20, 38, 74, .035);
+    }
+
+    .jh-stat-icon {
+        display: flex;
+        flex: 0 0 54px;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: #edf1ff;
+        color: var(--jh-blue);
+        font-size: 1.4rem;
+    }
+
+    .jh-stat-icon.purple {
+        background: #f0eaff;
+        color: var(--jh-purple);
+    }
+
+    .jh-stat-icon.teal {
+        background: #e6f8f4;
+        color: #0b9280;
+    }
+
+    .jh-stat-number {
+        margin: 0 0 4px;
+        color: var(--jh-navy);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+    .jh-stat-label {
+        margin: 0;
+        color: #64748b;
+        font-size: .91rem;
+    }
+
+    .jh-stat-note {
+        display: block;
+        margin-top: 6px;
+        color: #8792a6;
+        font-size: .76rem;
+    }
+
+    .jh-feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .jh-feature-card {
+        padding: 29px 25px;
+        border: 1px solid var(--jh-border);
+        border-radius: 19px;
+        background: #fff;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .jh-feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 18px 40px rgba(20, 38, 74, .08);
+    }
+
+    .jh-feature-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        margin-bottom: 22px;
+        border-radius: 16px;
+        background: #edf1ff;
+        color: var(--jh-blue);
+        font-size: 1.35rem;
+    }
+
+    .jh-feature-card:nth-child(2) .jh-feature-icon {
+        background: #f0eaff;
+        color: var(--jh-purple);
+    }
+
+    .jh-feature-card:nth-child(3) .jh-feature-icon {
+        background: #e6f8f4;
+        color: #0b9280;
+    }
+
+    .jh-feature-card h3 {
+        margin: 0 0 11px;
+        color: var(--jh-navy);
+        font-size: 1.15rem;
+        font-weight: 800;
+    }
+
+    .jh-feature-card p {
+        margin: 0;
+        color: var(--jh-muted);
+        font-size: .94rem;
+        line-height: 1.8;
+    }
+
+    .jh-categories {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .jh-category {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 13px 18px;
+        border: 1px solid #e1e7f3;
+        border-radius: 999px;
+        background: #fff;
+        color: #334365;
+        font-size: .9rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: border-color .2s ease, color .2s ease, transform .2s ease;
+    }
+
+    .jh-category:hover {
+        transform: translateY(-2px);
+        border-color: #b8c6ff;
+        color: var(--jh-blue);
+    }
+
+    .jh-cta {
+        padding: 56px 30px;
+        border-radius: 26px;
+        background:
+            radial-gradient(circle at 95% 10%, rgba(155, 143, 255, .35), transparent 28%),
+            linear-gradient(125deg, #172b55, #263f89 62%, #5141a1);
+        color: #fff;
+        text-align: center;
+    }
+
+    .jh-cta h2 {
+        margin: 0 0 13px;
+        color: #fff;
+        font-size: clamp(1.8rem, 3.5vw, 2.65rem);
+        font-weight: 800;
+        letter-spacing: -.035em;
+    }
+
+    .jh-cta p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: #dce5ff;
+        line-height: 1.8;
+    }
+
+    .jh-cta-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .jh-cta .jh-btn-primary {
+        background: #fff;
+        color: #243e8b;
+    }
+
+    .jh-cta .jh-btn-primary:hover {
+        background: #edf1ff;
+    }
+
+    .jh-cta .jh-btn-secondary {
+        border-color: rgba(255, 255, 255, .45);
+        background: transparent;
+        color: #fff;
+    }
+
+    .jh-cta .jh-btn-secondary:hover {
+        border-color: #fff;
+        background: rgba(255, 255, 255, .08);
+    }
+
+    @media (max-width: 900px) {
+        .jh-stats-grid,
+        .jh-feature-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .jh-stat-card {
+            min-height: 115px;
+        }
+
+        .jh-hero {
+            padding: 58px 0;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .jh-container {
+            width: min(100% - 24px, 1160px);
+        }
+
+        .jh-hero {
+            padding: 45px 0 48px;
+        }
+
+        .jh-hero h1 {
+            font-size: clamp(2.15rem, 10vw, 3.1rem);
+        }
+
+        .jh-hero-description {
+            font-size: .97rem;
+        }
+
+        .jh-search-card {
+            padding: 9px;
+            border-radius: 16px;
+        }
+
+        .jh-search-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .jh-search-tab {
+            padding: 11px 7px;
+            font-size: .88rem;
+        }
+
+        .jh-search-fields {
+            grid-template-columns: 1fr;
+            gap: 4px;
+        }
+
+        .jh-search-field {
+            padding: 12px;
+        }
+
+        .jh-search-field + .jh-search-field {
+            border-top: 1px solid var(--jh-border);
+            border-left: 0;
+        }
+
+        .jh-search-button {
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .jh-section {
+            padding: 55px 0;
+        }
+
+        .jh-stat-card {
+            padding: 20px;
+        }
+
+        .jh-cta {
+            padding: 40px 20px;
+            border-radius: 20px;
+        }
+
+        .jh-cta-actions > a {
+            width: 100%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .jobhub-home *,
+        .jobhub-home *::before,
+        .jobhub-home *::after {
+            scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="jobhub-home">
+
+    <!-- HERO / SEARCH -->
+    <section class="jh-hero">
+        <div class="jh-container">
+            <div class="jh-hero-content">
+
+                <div class="jh-eyebrow">
+                    <i class="bi bi-stars"></i>
+                    A better way to discover opportunities
+                </div>
+
+                <h1>
+                    {% if user.is_authenticated %}
+                        Welcome back,
+                        <span>{{ user.first_name|default:user.username }}</span>.
+                    {% else %}
+                        Your next opportunity
+                        <span>starts here.</span>
+                    {% endif %}
+                </h1>
+
+                <p class="jh-hero-description">
+                    Find opportunities that match your ambitions, discover
+                    skilled professionals, and build meaningful connections
+                    that move your career or business forward.
+                </p>
+
+                <div class="jh-search-card">
+                    <div class="jh-search-tabs" role="tablist"
+                         aria-label="Choose what to search for">
+
+                        <button type="button"
+                                class="jh-search-tab active"
+                                data-search-type="jobs"
+                                aria-pressed="true">
+                            <i class="bi bi-briefcase"></i>
+                            Find Jobs
+                        </button>
+
+                        <button type="button"
+                                class="jh-search-tab"
+                                data-search-type="professionals"
+                                aria-pressed="false">
+                            <i class="bi bi-people"></i>
+                            Find Professionals
+                        </button>
+                    </div>
+
+                    <form id="jh-search-form"
+                          method="get"
+                          action="{% url 'all-jobs' %}"
+                          data-jobs-url="{% url 'all-jobs' %}"
+                          data-professionals-url="{% url 'profile-list' %}">
+
+                        <div class="jh-search-fields">
+                            <label class="jh-search-field">
+                                <i class="bi bi-search"></i>
+                                <input type="search"
+                                       name="search"
+                                       id="jh-search-keyword"
+                                       placeholder="Job title, skill, or professional"
+                                       aria-label="Search jobs or professionals">
+                            </label>
+
+                            <label class="jh-search-field">
+                                <i class="bi bi-geo-alt"></i>
+                                <input type="text"
+                                       name="location"
+                                       id="jh-search-location"
+                                       placeholder="City or location"
+                                       aria-label="Location">
+                            </label>
+
+                            <button type="submit" class="jh-search-button">
+                                <i class="bi bi-search"></i>
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <p class="jh-search-hint" id="jh-search-hint">
+                    Explore opportunities by title, skill, company, or location.
+                </p>
+
+                <div class="jh-hero-actions">
+                    <a href="{% url 'all-jobs' %}" class="jh-btn-primary">
+                        Explore Jobs
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'register' %}" class="jh-btn-secondary">
+                            <i class="bi bi-person-plus"></i>
+                            Create Free Account
+                        </a>
+                    {% else %}
+                        <a href="{% url 'profile-list' %}" class="jh-btn-secondary">
+                            <i class="bi bi-people"></i>
+                            Discover Professionals
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- PLATFORM OVERVIEW -->
+    <section class="jh-section">
+        <div class="jh-container">
+
+            <div class="jh-section-heading">
+                <div class="jh-section-kicker">JobHub at a glance</div>
+                <h2>One platform. New possibilities.</h2>
+                <p>
+                    Whether you are searching for your next role or looking
+                    for the right talent, JobHub helps you take the next step.
+                </p>
+            </div>
+
+            <div class="jh-stats-grid">
+
+                <article class="jh-stat-card">
+                    <div class="jh-stat-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <div>
+                        <p class="jh-stat-number">{{ total_jobs }}</p>
+                        <p class="jh-stat-label">Job listings</p>
+                        {% if not user.is_authenticated %}
+                            <span class="jh-stat-note">
+                                Sign in to see your job count.
+                            </span>
+                        {% else %}
+                            <span class="jh-stat-note">
+                                Total jobs currently in JobHub.
+                            </span>
+                        {% endif %}
+                    </div>
+                </article>
+
+                <article class="jh-stat-card">
+                    <div class="jh-stat-icon purple">
+                        <i class="bi bi-person-workspace"></i>
+                    </div>
+                    <div>
+                        <p class="jh-stat-number">Talent</p>
+                        <p class="jh-stat-label">Professional discovery</p>
+                        <span class="jh-stat-note">
+                            Find people by skills and experience.
+                        </span>
+                    </div>
+                </article>
+
+                <article class="jh-stat-card">
+                    <div class="jh-stat-icon teal">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                    <div>
+                        <p class="jh-stat-number">Stay ready</p>
+                        <p class="jh-stat-label">Job alerts and saved jobs</p>
+                        <span class="jh-stat-note">
+                            Keep track of opportunities that matter.
+                        </span>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW JOBHUB WORKS -->
+    <section class="jh-section jh-section-muted">
+        <div class="jh-container">
+
+            <div class="jh-section-heading">
+                <div class="jh-section-kicker">Simple by design</div>
+                <h2>How JobHub works</h2>
+                <p>
+                    Get started in a few simple steps and make the most
+                    of your professional journey.
+                </p>
+            </div>
+
+            <div class="jh-feature-grid">
+
+                <article class="jh-feature-card">
+                    <div class="jh-feature-icon">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <h3>1. Create your profile</h3>
+                    <p>
+                        Set up your account, showcase your skills, and help
+                        employers understand what you bring to the table.
+                    </p>
+                </article>
+
+                <article class="jh-feature-card">
+                    <div class="jh-feature-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3>2. Discover opportunities</h3>
+                    <p>
+                        Search for relevant jobs, explore professional
+                        profiles, and save opportunities worth revisiting.
+                    </p>
+                </article>
+
+                <article class="jh-feature-card">
+                    <div class="jh-feature-icon">
+                        <i class="bi bi-handshake"></i>
+                    </div>
+                    <h3>3. Connect and grow</h3>
+                    <p>
+                        Apply for suitable roles, follow your applications,
+                        or post vacancies and discover potential candidates.
+                    </p>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- POPULAR SKILLS -->
+    <section class="jh-section">
+        <div class="jh-container">
+
+            <div class="jh-section-heading">
+                <div class="jh-section-kicker">Explore possibilities</div>
+                <h2>Start with a skill or career path</h2>
+                <p>
+                    Search JobHub for professionals and opportunities
+                    related to the areas you are interested in.
+                </p>
+            </div>
+
+            <div class="jh-categories">
+                <a href="{% url 'all-jobs' %}?search=Python"
+                   class="jh-category">
+                    <i class="bi bi-code-slash"></i> Python & Django
+                </a>
+
+                <a href="{% url 'all-jobs' %}?search=Web%20Development"
+                   class="jh-category">
+                    <i class="bi bi-globe"></i> Web Development
+                </a>
+
+                <a href="{% url 'all-jobs' %}?search=Data%20Analysis"
+                   class="jh-category">
+                    <i class="bi bi-bar-chart"></i> Data Analysis
+                </a>
+
+                <a href="{% url 'all-jobs' %}?search=Design"
+                   class="jh-category">
+                    <i class="bi bi-palette"></i> Design
+                </a>
+
+                <a href="{% url 'all-jobs' %}?search=Marketing"
+                   class="jh-category">
+                    <i class="bi bi-megaphone"></i> Marketing
+                </a>
+
+                <a href="{% url 'all-jobs' %}?search=Customer%20Service"
+                   class="jh-category">
+                    <i class="bi bi-headset"></i> Customer Service
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL CALL TO ACTION -->
+    <section class="jh-section jh-section-muted">
+        <div class="jh-container">
+            <div class="jh-cta">
+                <h2>Your next chapter begins with one step.</h2>
+                <p>
+                    Build your professional presence, discover new
+                    opportunities, or find people who can help your
+                    organisation move forward.
+                </p>
+
+                <div class="jh-cta-actions">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'register' %}" class="jh-btn-primary">
+                            Get Started
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                        <a href="{% url 'login' %}" class="jh-btn-secondary">
+                            Sign In
+                        </a>
+                    {% else %}
+                        <a href="{% url 'all-jobs' %}" class="jh-btn-primary">
+                            Browse Jobs
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                        <a href="{% url 'profile-list' %}" class="jh-btn-secondary">
+                            Explore Professionals
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+(function () {
+    const form = document.getElementById("jh-search-form");
+    const tabs = document.querySelectorAll(".jh-search-tab");
+    const keywordInput = document.getElementById("jh-search-keyword");
+    const locationInput = document.getElementById("jh-search-location");
+    const hint = document.getElementById("jh-search-hint");
+
+    if (!form) return;
+
+    let searchType = "jobs";
+
+    const descriptions = {
+        jobs: {
+            keyword: "Job title, skill, or company",
+            hint: "Explore opportunities by title, skill, company, or location."
+        },
+        professionals: {
+            keyword: "Name, username, or professional skill",
+            hint: "Discover professionals by name, skill, bio, or location."
+        }
+    };
+
+    function setSearchType(type) {
+        searchType = type;
+
+        tabs.forEach(function (tab) {
+            const active = tab.dataset.searchType === type;
+            tab.classList.toggle("active", active);
+            tab.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+
+        keywordInput.placeholder = descriptions[type].keyword;
+        hint.textContent = descriptions[type].hint;
+
+        form.action = type === "professionals"
+            ? form.dataset.professionalsUrl
+            : form.dataset.jobsUrl;
+
+        if (type === "professionals") {
+            locationInput.disabled = true;
+            locationInput.value = "";
+            locationInput.placeholder = "Search by professional skills instead";
+        } else {
+            locationInput.disabled = false;
+            locationInput.placeholder = "City or location";
+        }
+    }
+
+    tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+            setSearchType(tab.dataset.searchType);
+        });
+    });
+
+    form.addEventListener("submit", function (event) {
+        const keyword = keywordInput.value.trim();
+        const location = locationInput.value.trim();
+
+        if (!keyword && !location) {
+            event.preventDefault();
+            keywordInput.focus();
+            return;
+        }
+
+        if (searchType === "professionals") {
+            form.action = form.dataset.professionalsUrl;
+        } else {
+            form.action = form.dataset.jobsUrl;
+        }
+    });
+})();
+</script>
+{% endblock %}

@@ -11,7 +11,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.db import transaction, IntegrityError
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import FileResponse, Http404
 from django.core.paginator import Paginator
 from django.utils import timezone
@@ -20,6 +20,7 @@ from .models import Profile, Job, ApplyJob, ApplicationDocument, IndustryUpdate,
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
+from django.db.models.functions import TruncMonth
 
 
 
@@ -141,13 +142,37 @@ def validate_job_form(request):
 # --------------------------------------------------
 # PROFILE LIST AND PROFILE DETAILS
 # --------------------------------------------------
+# --------------------------------------------------
+# JOBHUB PUBLIC LANDING PAGE
+# --------------------------------------------------
 
+def home(request):
+    # Visitors who are not logged in see 0, as requested.
+    total_jobs = Job.objects.count() if request.user.is_authenticated else 0
 
-@login_required
+    return render(
+        request,
+        "accounts/home.html",
+        {
+            "total_jobs": total_jobs,
+        },
+    )
+
 def profile_list(request):
     profiles = Profile.objects.select_related("user").all()
 
-    # Preserve the industry filter for professional profiles.
+    search = (request.GET.get("search") or "").strip()
+
+    if search:
+        profiles = profiles.filter(
+            Q(user__first_name__icontains=search)
+            | Q(user__last_name__icontains=search)
+            | Q(user__username__icontains=search)
+            | Q(skills__icontains=search)
+            | Q(bio__icontains=search)
+            | Q(location__icontains=search)
+        ).distinct()
+
     selected_industry = (
         request.GET.get("industry") or ""
     ).strip()
@@ -157,11 +182,17 @@ def profile_list(request):
     ]
 
     if selected_industry in valid_industries:
-        profiles = profiles.filter(
-            industry=selected_industry
-        )
+        profiles = profiles.filter(industry=selected_industry)
     else:
         selected_industry = ""
+
+    # Keep the rest of your existing profile_list function here,
+    # including published_updates, external_updates and render().
+
+    
+
+    # Preserve the industry filter for professional profiles.
+    
 
     # Fetch only updates published by the administrator.
     published_updates = (
@@ -184,12 +215,14 @@ def profile_list(request):
         }
         for update in published_updates
     ]
+   
 
     return render(
         request,
         "accounts/profile_list.html",
         {
             "profiles": profiles,
+            "search": search,
             "industry_choices": Profile.INDUSTRY_CHOICES,
             "selected_industry": selected_industry,
             "external_updates": external_updates,
@@ -892,6 +925,11 @@ def apply_job(request, id):
 # APPLICANT'S APPLICATIONS
 # --------------------------------------------------
 
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
+from django.shortcuts import render
+
 @login_required
 def my_application(request):
     applications = (
@@ -900,10 +938,40 @@ def my_application(request):
         .prefetch_related("documents")
     )
 
+    # Count applications by their current status
+    statistics = applications.aggregate(
+        total=Count("id"),
+        pending=Count("id", filter=Q(status="pending")),
+        reviewed=Count("id", filter=Q(status="reviewed")),
+        accepted=Count("id", filter=Q(status="accepted")),
+        rejected=Count("id", filter=Q(status="rejected")),
+    )
+
+    # Filter applications by status when requested
+    selected_status = request.GET.get("status", "all")
+
+    valid_statuses = [
+        "pending",
+        "reviewed",
+        "accepted",
+        "rejected",
+    ]
+
+    if selected_status in valid_statuses:
+        applications = applications.filter(status=selected_status)
+    else:
+        selected_status = "all"
+
+    context = {
+        "applications": applications,
+        "statistics": statistics,
+        "selected_status": selected_status,
+    }
+
     return render(
         request,
         "accounts/my_applications.html",
-        {"applications": applications},
+        context,
     )
 
 
@@ -1673,3 +1741,96 @@ def mark_job_notification_read(request, id):
 
     return redirect("job-detail", id=notification.job_id)
 
+# Recuiters Dashboard
+
+@login_required
+def recruiter_dashboard(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "employer":
+        messages.error(
+            request,
+            "You must have an employer account to access the recruiter dashboard."
+        )
+        return redirect("home")
+
+    # Only show jobs posted by the logged-in employer.
+    jobs = Job.objects.filter(
+        posted_by=request.user
+    ).annotate(
+        application_count=Count("applications")
+    ).order_by("-created_at")
+
+    # Applications belonging to this employer's jobs.
+    applications = ApplyJob.objects.filter(
+        job__posted_by=request.user
+    )
+
+    statistics = applications.aggregate(
+        total=Count("id"),
+        pending=Count("id", filter=Q(status="pending")),
+        reviewed=Count("id", filter=Q(status="reviewed")),
+        accepted=Count("id", filter=Q(status="accepted")),
+        rejected=Count("id", filter=Q(status="rejected")),
+    )
+
+    # Calculate the first month in the 12-month reporting period.
+    current_month = timezone.now().replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    )
+
+    month_index = (
+        current_month.year * 12 + current_month.month - 1 - 11
+    )
+    start_year, start_month_index = divmod(month_index, 12)
+
+    start_date = current_month.replace(
+        year=start_year,
+        month=start_month_index + 1,
+    )
+
+    # Count applications per month for this employer's jobs.
+    monthly_results = (
+        applications.filter(applied_at__gte=start_date)
+        .annotate(month=TruncMonth("applied_at"))
+        .values("month")
+        .annotate(total=Count("id"))
+        .order_by("month")
+    )
+
+    monthly_totals = {
+        result["month"].strftime("%Y-%m"): result["total"]
+        for result in monthly_results
+    }
+
+    # Build all 12 months, including months with zero applications.
+    monthly_trend = []
+
+    for offset in range(12):
+        month_index = (
+            start_date.year * 12 + start_date.month - 1 + offset
+        )
+        year, month_index = divmod(month_index, 12)
+        month_date = start_date.replace(
+            year=year,
+            month=month_index + 1,
+        )
+        month_key = month_date.strftime("%Y-%m")
+
+        monthly_trend.append({
+            "label": month_date.strftime("%b %Y"),
+            "total": monthly_totals.get(month_key, 0),
+        })
+
+    context = {
+        "jobs": jobs,
+        "statistics": statistics,
+        "total_jobs": jobs.count(),
+        "monthly_trend": monthly_trend,
+    }
+
+    return render(
+        request,
+        "accounts/recruiter_dashboard.html",
+        context,
+    )

@@ -420,6 +420,9 @@
 
         <div class="collapse navbar-collapse" id="jobhubNavbar">
             <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'profile-list' %}">
@@ -440,6 +443,16 @@
                         Career Hub
                     </a>
                 </li>
+                {% if user.is_authenticated %}
+                    {% if user.profile.role == "employer" %}
+                        <li class="nav-item">
+                            <a class="nav-link"
+                            href="{% url 'recruiter-dashboard' %}">
+                                Recruiter Dashboard
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
 
                 {% if user.is_authenticated %}
 
@@ -452,17 +465,7 @@
 
 
 
-                        {% if user.profile.role == "employer" %}
-                            <li class="nav-item ms-lg-2">
-                                <a
-                                    href="{% url 'create-job' %}"
-                                    class="btn btn-light btn-sm"
-                                >
-                                    <i class="bi bi-plus-circle"></i>
-                                    Post a Job
-                                </a>
-                            </li>
-                        {% endif %}
+                        
 
 
 

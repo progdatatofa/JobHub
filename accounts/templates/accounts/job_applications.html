@@ -1,21 +1,19 @@
+
 {% extends 'base.html' %}
 
-{% block title %}Job Applications{% endblock %}
+{% block title %}Job Applications | JobHub{% endblock %}
 
 {% block content %}
 
 <div class="container py-5">
 
-    <!-- Header -->
+    <!-- Page Header -->
     <div class="text-center mb-5">
-
         <div class="mb-3">
             <i class="bi bi-people-fill text-primary fs-1"></i>
         </div>
 
-        <h1 class="fw-bold">
-            Job Applications
-        </h1>
+        <h1 class="fw-bold">Job Applications</h1>
 
         <p class="text-muted mb-2">
             Applications received for
@@ -27,10 +25,23 @@
             {{ job.company }}
         </p>
 
+        <a href="{% url 'job-detail' job.id %}"
+           class="btn btn-outline-secondary btn-sm mt-2">
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to Job
+        </a>
     </div>
 
 
     {% if applications %}
+
+        <!-- Application Count -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">Received Applications</h5>
+            <span class="badge bg-primary rounded-pill">
+                {{ applications|length }} applicant{{ applications|length|pluralize }}
+            </span>
+        </div>
 
         <div class="row g-4">
 
@@ -38,64 +49,56 @@
 
                 <div class="col-lg-6">
 
-                    <div class="card border-0 shadow-sm h-100">
-
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
 
                             <!-- Applicant Header -->
                             <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
 
                                 <div>
-
                                     <h4 class="fw-bold mb-1">
-                                        {{ application.user.first_name }}
-                                        {{ application.user.last_name }}
+                                        {% if application.user.first_name or application.user.last_name %}
+                                            {{ application.user.first_name }}
+                                            {{ application.user.last_name }}
+                                        {% else %}
+                                            {{ application.user.username }}
+                                        {% endif %}
                                     </h4>
 
                                     <p class="text-muted mb-0">
                                         <i class="bi bi-person me-1"></i>
                                         @{{ application.user.username }}
                                     </p>
-
                                 </div>
 
-
-                                <!-- Current Status -->
+                                <!-- Application Status -->
                                 {% if application.status == "pending" %}
-
                                     <span class="badge bg-warning text-dark">
                                         Pending
                                     </span>
-
                                 {% elif application.status == "reviewed" %}
-
                                     <span class="badge bg-info text-dark">
                                         Reviewed
                                     </span>
-
                                 {% elif application.status == "accepted" %}
-
                                     <span class="badge bg-success">
                                         Accepted
                                     </span>
-
                                 {% elif application.status == "rejected" %}
-
                                     <span class="badge bg-danger">
                                         Rejected
                                     </span>
-
                                 {% endif %}
 
                             </div>
 
 
                             <!-- Applicant Information -->
-                            <div class="mb-4">
+                            <div class="bg-light rounded-3 p-3 mb-4">
 
                                 <p class="text-muted mb-2">
                                     <i class="bi bi-envelope me-2"></i>
-                                    {{ application.user.email }}
+                                    {{ application.user.email|default:"Email not provided" }}
                                 </p>
 
                                 <p class="text-muted mb-0">
@@ -104,6 +107,48 @@
                                     {{ application.applied_at|date:"M d, Y" }}
                                 </p>
 
+                                {% if application.reviewed_at %}
+                                    <p class="text-muted mt-2 mb-0">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        Reviewed on
+                                        {{ application.reviewed_at|date:"M d, Y" }}
+                                    </p>
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- Applicant Profile -->
+                            <div class="mb-4">
+                                <a href="{% url 'profile-detail' application.user.profile.id %}"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    View Applicant Profile
+                                </a>
+                            </div>
+
+
+                            <hr>
+
+
+                            <!-- CV Download -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-file-earmark-person me-2"></i>
+                                    Applicant CV
+                                </h6>
+
+                                {% if application.cv %}
+                                    <a href="{% url 'download-application-document' application.id 'cv' %}"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-download me-1"></i>
+                                        Download CV
+                                    </a>
+                                {% else %}
+                                    <p class="text-muted small mb-0">
+                                        No CV was attached to this application.
+                                    </p>
+                                {% endif %}
                             </div>
 
 
@@ -112,118 +157,134 @@
 
                             <!-- Cover Letter -->
                             <div class="mb-4">
-
                                 <h6 class="fw-bold mb-2">
-                                    <i class="bi bi-envelope-paper me-1"></i>
+                                    <i class="bi bi-envelope-paper me-2"></i>
                                     Cover Letter
                                 </h6>
 
-                                <div class="bg-light rounded-3 p-3">
+                                {% if application.cover_letter %}
+                                    <div class="bg-light rounded-3 p-3 mb-2">
+                                        <p class="mb-0 text-break"
+                                           style="white-space: pre-line;">{{ application.cover_letter }}</p>
+                                    </div>
+                                {% endif %}
 
-                                    <p class="text-muted mb-0">
-                                        {{ application.cover_letter }}
+                                {% if application.cover_letter_file %}
+                                    <a href="{% url 'download-application-document' application.id 'cover_letter' %}"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i>
+                                        Download Cover Letter PDF
+                                    </a>
+                                {% endif %}
+
+                                {% if not application.cover_letter and not application.cover_letter_file %}
+                                    <p class="text-muted small mb-0">
+                                        No cover letter was provided.
                                     </p>
-
-                                </div>
-
+                                {% endif %}
                             </div>
 
 
-                            <!-- Update Status -->
-                            <div class="mb-4">
+                            <hr>
 
-                                <h6 class="fw-bold mb-2">
-                                    <i class="bi bi-arrow-repeat me-1"></i>
+
+                            <!-- Supporting Documents -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-folder2-open me-2"></i>
+                                    Supporting Documents
+                                </h6>
+
+                                {% with documents=application.documents.all %}
+                                    {% if documents %}
+                                        <div class="list-group">
+
+                                            {% for document in documents %}
+                                                <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+
+                                                    <div class="text-break">
+                                                        <div class="fw-semibold">
+                                                            {{ document.title|default:document.get_document_type_display }}
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            {{ document.get_document_type_display }}
+                                                        </small>
+                                                    </div>
+
+                                                    <a href="{% url 'download-application-document' application.id 'supporting' %}?document_id={{ document.id }}"
+                                                       class="btn btn-outline-secondary btn-sm flex-shrink-0">
+                                                        <i class="bi bi-download me-1"></i>
+                                                        Download
+                                                    </a>
+
+                                                </div>
+                                            {% endfor %}
+
+                                        </div>
+                                    {% else %}
+                                        <p class="text-muted small mb-0">
+                                            No additional supporting documents were uploaded.
+                                        </p>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+
+
+                            <hr>
+
+
+                            <!-- Update Application Status -->
+                            <div class="mb-2">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-arrow-repeat me-2"></i>
                                     Update Application Status
                                 </h6>
 
-                                <form
-                                    method="POST"
-                                    action="{% url 'update-status' application.id %}"
-                                >
+                                <form method="POST"
+                                      action="{% url 'update-status' application.id %}">
 
                                     {% csrf_token %}
 
                                     <div class="row g-2">
-
                                         <div class="col">
-
-                                            <select
-                                                name="status"
-                                                class="form-select"
-                                                required
-                                            >
-
-                                                <option
-                                                    value="pending"
-                                                    {% if application.status == "pending" %}
-                                                        selected
-                                                    {% endif %}
-                                                >
+                                            <select name="status"
+                                                    class="form-select"
+                                                    required>
+                                                <option value="pending"
+                                                    {% if application.status == "pending" %}selected{% endif %}>
                                                     Pending
                                                 </option>
 
-                                                <option
-                                                    value="reviewed"
-                                                    {% if application.status == "reviewed" %}
-                                                        selected
-                                                    {% endif %}
-                                                >
+                                                <option value="reviewed"
+                                                    {% if application.status == "reviewed" %}selected{% endif %}>
                                                     Reviewed
                                                 </option>
 
-                                                <option
-                                                    value="accepted"
-                                                    {% if application.status == "accepted" %}
-                                                        selected
-                                                    {% endif %}
-                                                >
+                                                <option value="accepted"
+                                                    {% if application.status == "accepted" %}selected{% endif %}>
                                                     Accepted
                                                 </option>
 
-                                                <option
-                                                    value="rejected"
-                                                    {% if application.status == "rejected" %}
-                                                        selected
-                                                    {% endif %}
-                                                >
+                                                <option value="rejected"
+                                                    {% if application.status == "rejected" %}selected{% endif %}>
                                                     Rejected
                                                 </option>
-
                                             </select>
-
                                         </div>
 
                                         <div class="col-auto">
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-primary"
-                                            >
+                                            <button type="submit"
+                                                    class="btn btn-primary">
                                                 <i class="bi bi-check2-circle me-1"></i>
-                                                Update
+                                                Update Status
                                             </button>
-
                                         </div>
-
                                     </div>
 
                                 </form>
-
                             </div>
 
-
-                            <!-- Applicant Profile -->
-                            <a
-                                href="{% url 'profile-detail' application.user.profile.id %}"
-                                class="btn btn-outline-primary w-100"
-                            >
-                                <i class="bi bi-person-circle me-1"></i>
-                                View Applicant Profile
-                            </a>
-
                         </div>
-
                     </div>
 
                 </div>
@@ -232,32 +293,25 @@
 
         </div>
 
-
     {% else %}
 
-        <!-- No Applications -->
+        <!-- Empty State -->
         <div class="text-center py-5">
-
             <div class="mb-3">
-                <i class="bi bi-inbox text-muted fs-1"></i>
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
             </div>
 
-            <h4 class="fw-bold">
-                No Applications Yet
-            </h4>
+            <h4 class="fw-bold">No Applications Yet</h4>
 
             <p class="text-muted mb-4">
-                No one has applied for this job yet.
+                No one has applied for this job yet. Applications will appear here when candidates apply.
             </p>
 
-            <a
-                href="{% url 'job-detail' job.id %}"
-                class="btn btn-primary"
-            >
+            <a href="{% url 'job-detail' job.id %}"
+               class="btn btn-primary">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Job
             </a>
-
         </div>
 
     {% endif %}

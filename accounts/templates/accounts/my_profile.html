@@ -6,297 +6,819 @@
 {% block extra_css %}
 <style>
     .my-profile-page {
-        --profile-blue: #2563eb;
-        --profile-navy: #10213a;
-        --profile-muted: #64748b;
-        --profile-border: #e5eaf2;
-        padding: 32px 0 60px;
-        color: var(--profile-navy);
+        --mp-ink: #17213b;
+        --mp-muted: #64748b;
+        --mp-border: #e8eaf3;
+        --mp-blue: #4f46e5;
+        --mp-purple: #7c3aed;
+        --mp-surface: #ffffff;
+        padding: 32px 0 64px;
+        color: var(--mp-ink);
+        background:
+            radial-gradient(ellipse at 5% 0%, rgba(99,102,241,.09), transparent 36%),
+            radial-gradient(ellipse at 100% 30%, rgba(168,85,247,.07), transparent 34%);
     }
 
-    .my-profile-page .profile-heading {
+    .my-profile-page *,
+    .my-profile-page *::before,
+    .my-profile-page *::after {
+        box-sizing: border-box;
+    }
+
+    .my-profile-page .mp-heading {
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 18px;
-        margin-bottom: 28px;
-        animation: profileFadeIn .45s ease both;
+        gap: 20px;
+        margin-bottom: 25px;
+        animation: mpEnter .5s ease both;
     }
 
-    .my-profile-page .eyebrow {
-        display: inline-block;
-        color: var(--profile-blue);
-        font-size: .8rem;
+    .my-profile-page .mp-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #5b4ce2;
+        font-size: .75rem;
         font-weight: 800;
-        letter-spacing: 1.2px;
+        letter-spacing: 1.6px;
         text-transform: uppercase;
         margin-bottom: 9px;
     }
 
-    .my-profile-page .page-title {
-        font-size: clamp(1.8rem, 4vw, 2.4rem);
-        font-weight: 800;
-        letter-spacing: -.8px;
-        margin-bottom: 9px;
+    .my-profile-page .mp-eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 3px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #4f46e5, #c084fc);
     }
 
-    .my-profile-page .page-subtitle {
-        color: var(--profile-muted);
+    .my-profile-page .mp-page-title {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 850;
+        letter-spacing: -1.2px;
+        margin: 0 0 8px;
+        color: #17213b;
+    }
+
+    .my-profile-page .mp-subtitle {
+        max-width: 620px;
+        color: var(--mp-muted);
         line-height: 1.7;
         margin: 0;
+        font-size: .94rem;
     }
 
-    .my-profile-page .btn {
-        border-radius: 10px;
-        padding: 11px 16px;
-        font-weight: 700;
-        transition: transform .2s ease, box-shadow .2s ease;
-    }
-
-    .my-profile-page .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .my-profile-page .btn-primary {
-        background: var(--profile-blue);
-        border-color: var(--profile-blue);
-        box-shadow: 0 5px 14px rgba(37, 99, 235, .14);
-    }
-
-    .my-profile-page .profile-shell {
-        overflow: hidden;
-        background: #fff;
-        border: 1px solid var(--profile-border);
-        border-radius: 22px;
-        box-shadow: 0 12px 35px rgba(16, 33, 58, .06);
-        animation: profileFadeIn .55s ease both;
-    }
-
-    .my-profile-page .profile-cover {
-        position: relative;
-        overflow: hidden;
-        padding: 36px;
-        background: linear-gradient(125deg, #10213a 0%, #17438a 55%, #2563eb 100%);
-        color: #fff;
-    }
-
-    .my-profile-page .profile-cover::before,
-    .my-profile-page .profile-cover::after {
-        content: "";
-        position: absolute;
-        border: 1px solid rgba(255,255,255,.12);
-        border-radius: 50%;
-        pointer-events: none;
-    }
-
-    .my-profile-page .profile-cover::before {
-        width: 280px;
-        height: 280px;
-        right: -80px;
-        top: -150px;
-    }
-
-    .my-profile-page .profile-cover::after {
-        width: 190px;
-        height: 190px;
-        right: 55px;
-        bottom: -145px;
-    }
-
-    .my-profile-page .profile-cover-content {
-        position: relative;
-        z-index: 1;
-    }
-
-    .my-profile-page .profile-image,
-    .my-profile-page .default-avatar {
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid rgba(255,255,255,.85);
-        box-shadow: 0 8px 22px rgba(0,0,0,.18);
-    }
-
-    .my-profile-page .default-avatar {
+    .my-profile-page .mp-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255,255,255,.16);
+        gap: 8px;
+        padding: 11px 17px;
+        border-radius: 12px;
+        font-size: .88rem;
+        font-weight: 750;
+        text-decoration: none;
+        transition: transform .2s ease, box-shadow .2s ease,
+                    background .2s ease;
+    }
+
+    .my-profile-page .mp-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .my-profile-page .mp-btn-primary {
         color: #fff;
-        font-size: 2.8rem;
+        border: 1px solid transparent;
+        background: linear-gradient(120deg, #4f46e5, #7c3aed);
+        box-shadow: 0 8px 20px rgba(79,70,229,.23);
     }
 
-    .my-profile-page .profile-name {
-        font-size: clamp(1.6rem, 3vw, 2.15rem);
-        font-weight: 800;
-        letter-spacing: -.5px;
-        overflow-wrap: anywhere;
-        margin-bottom: 8px;
+    .my-profile-page .mp-btn-primary:hover {
+        color: #fff;
+        box-shadow: 0 12px 25px rgba(79,70,229,.3);
     }
 
-    .my-profile-page .profile-username {
-        color: rgba(255,255,255,.8);
+    .my-profile-page .mp-btn-light {
+        color: #fff;
+        background: rgba(255,255,255,.12);
+        border: 1px solid rgba(255,255,255,.3);
+        backdrop-filter: blur(8px);
+    }
+
+    .my-profile-page .mp-btn-light:hover {
+        color: #fff;
+        background: rgba(255,255,255,.22);
+    }
+
+    .my-profile-page .mp-btn-outline {
+        color: #4f46e5;
+        background: #fff;
+        border: 1px solid #dcdfff;
+    }
+
+    .my-profile-page .mp-btn-outline:hover {
+        color: #4338ca;
+        background: #f6f5ff;
+    }
+
+    /* Profile banner */
+
+    .my-profile-page .mp-hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        padding: 34px;
+        color: #fff;
+        border-radius: 25px;
+        background: linear-gradient(118deg, #111a3b 0%, #243779 47%, #6638b8 100%);
+        box-shadow: 0 18px 42px rgba(35,40,100,.17);
+        animation: mpEnter .55s ease both;
+    }
+
+    .my-profile-page .mp-hero::before,
+    .my-profile-page .mp-hero::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+        border-radius: 50%;
+    }
+
+    .my-profile-page .mp-hero::before {
+        width: 360px;
+        height: 360px;
+        right: -100px;
+        top: -225px;
+        border: 1px solid rgba(255,255,255,.18);
+        box-shadow:
+            0 0 0 35px rgba(255,255,255,.035),
+            0 0 0 75px rgba(255,255,255,.025);
+    }
+
+    .my-profile-page .mp-hero::after {
+        width: 230px;
+        height: 230px;
+        right: 22%;
+        bottom: -190px;
+        background: rgba(192,132,252,.14);
+        filter: blur(3px);
+    }
+
+    .my-profile-page .mp-hero-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        flex-wrap: wrap;
+    }
+
+    .my-profile-page .mp-avatar-wrap {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .my-profile-page .mp-avatar,
+    .my-profile-page .mp-avatar-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 116px;
+        height: 116px;
+        border-radius: 27px;
+        border: 3px solid rgba(255,255,255,.85);
+        box-shadow: 0 12px 30px rgba(0,0,0,.22);
+    }
+
+    .my-profile-page .mp-avatar {
+        object-fit: cover;
+        background: #fff;
+    }
+
+    .my-profile-page .mp-avatar-placeholder {
+        color: #fff;
+        font-size: 3rem;
+        background: linear-gradient(145deg, #818cf8, #c084fc);
+    }
+
+    .my-profile-page .mp-avatar-status {
+        position: absolute;
+        right: -6px;
+        bottom: -6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 29px;
+        height: 29px;
+        border: 4px solid #253675;
+        border-radius: 50%;
+        color: #fff;
+        background: #10b981;
+        font-size: .7rem;
+    }
+
+    .my-profile-page .mp-identity {
+        flex: 1 1 260px;
+        min-width: 0;
+    }
+
+    .my-profile-page .mp-member-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
         margin-bottom: 12px;
+        border-radius: 30px;
+        border: 1px solid rgba(255,255,255,.2);
+        color: #f0eaff;
+        background: rgba(255,255,255,.1);
+        font-size: .7rem;
+        font-weight: 750;
+        letter-spacing: .4px;
     }
 
-    .my-profile-page .profile-location {
+    .my-profile-page .mp-name {
+        color: #fff;
+        font-size: clamp(1.7rem, 4vw, 2.4rem);
+        line-height: 1.15;
+        font-weight: 850;
+        letter-spacing: -.9px;
+        overflow-wrap: anywhere;
+        margin: 0 0 9px;
+    }
+
+    .my-profile-page .mp-username {
+        color: rgba(255,255,255,.77);
+        font-size: .9rem;
+        margin: 0 0 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .my-profile-page .mp-hero-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        color: rgba(255,255,255,.91);
+        font-size: .82rem;
+    }
+
+    .my-profile-page .mp-hero-meta span {
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        color: rgba(255,255,255,.94);
-        margin: 0;
     }
 
-    .my-profile-page .profile-content {
-        padding: 32px;
+    .my-profile-page .mp-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
     }
 
-    .my-profile-page .profile-section {
-        padding: 26px 0;
-        border-bottom: 1px solid var(--profile-border);
+    /* Profile overview strip */
+
+    .my-profile-page .mp-overview {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+        margin: 19px 0 24px;
+        animation: mpEnter .65s ease both;
     }
 
-    .my-profile-page .profile-section:first-child {
-        padding-top: 0;
-    }
-
-    .my-profile-page .profile-section:last-child {
-        padding-bottom: 0;
-        border-bottom: 0;
-    }
-
-    .my-profile-page .section-heading {
+    .my-profile-page .mp-overview-card {
         display: flex;
         align-items: center;
-        gap: 11px;
-        font-size: 1.1rem;
-        font-weight: 800;
-        margin-bottom: 18px;
+        gap: 13px;
+        min-width: 0;
+        padding: 18px;
+        border: 1px solid var(--mp-border);
+        border-radius: 17px;
+        background: rgba(255,255,255,.9);
+        box-shadow: 0 5px 18px rgba(31,41,85,.035);
+        transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    .my-profile-page .section-icon {
-        display: inline-flex;
+    .my-profile-page .mp-overview-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(31,41,85,.07);
+    }
+
+    .my-profile-page .mp-overview-icon {
+        display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        background: #edf4ff;
-        color: var(--profile-blue);
+        flex: 0 0 auto;
+        width: 45px;
+        height: 45px;
+        border-radius: 14px;
+        font-size: 1.2rem;
+    }
+
+    .my-profile-page .mp-overview-icon.purple {
+        color: #6d28d9;
+        background: #f0eaff;
+    }
+
+    .my-profile-page .mp-overview-icon.blue {
+        color: #2563eb;
+        background: #e9f2ff;
+    }
+
+    .my-profile-page .mp-overview-icon.teal {
+        color: #0f9488;
+        background: #dcfdf7;
+    }
+
+    .my-profile-page .mp-overview-label {
+        color: var(--mp-muted);
+        font-size: .75rem;
+        margin: 0 0 4px;
+    }
+
+    .my-profile-page .mp-overview-value {
+        color: var(--mp-ink);
+        font-size: .91rem;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+
+    /* Main content layout */
+
+    .my-profile-page .mp-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(275px, .85fr);
+        align-items: start;
+        gap: 22px;
+    }
+
+    .my-profile-page .mp-main,
+    .my-profile-page .mp-sidebar {
+        display: grid;
+        gap: 20px;
+        min-width: 0;
+    }
+
+    .my-profile-page .mp-panel {
+        min-width: 0;
+        padding: 25px;
+        border: 1px solid var(--mp-border);
+        border-radius: 19px;
+        background: var(--mp-surface);
+        box-shadow: 0 8px 25px rgba(31,41,85,.045);
+        animation: mpEnter .7s ease both;
+    }
+
+    .my-profile-page .mp-panel-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .my-profile-page .mp-panel-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        color: #5b4ce2;
+        background: linear-gradient(145deg, #eeedff, #f5eaff);
         font-size: 1.1rem;
     }
 
-    .my-profile-page .about-text {
-        color: #475569;
-        line-height: 1.9;
-        overflow-wrap: anywhere;
+    .my-profile-page .mp-panel-title {
+        color: var(--mp-ink);
+        font-size: 1.02rem;
+        font-weight: 850;
         margin: 0;
     }
 
-    .my-profile-page .information-item {
-        height: 100%;
-        padding: 17px;
-        border: 1px solid var(--profile-border);
-        border-radius: 13px;
-        background: #f8fafc;
-        transition: border-color .2s ease, transform .2s ease;
+    .my-profile-page .mp-panel-subtitle {
+        color: var(--mp-muted);
+        font-size: .78rem;
+        margin: 4px 0 0;
     }
 
-    .my-profile-page .information-item:hover {
-        border-color: #c8d9ff;
-        transform: translateY(-2px);
-    }
-
-    .my-profile-page .information-label {
-        display: block;
-        color: var(--profile-muted);
-        font-size: .82rem;
-        margin-bottom: 8px;
-    }
-
-    .my-profile-page .information-value {
-        color: var(--profile-navy);
-        font-weight: 700;
-        overflow-wrap: anywhere;
-        margin: 0;
-    }
-
-    .my-profile-page .skills-content {
-        color: #475569;
-        line-height: 1.85;
+    .my-profile-page .mp-about {
+        color: #526078;
+        line-height: 1.95;
+        font-size: .91rem;
         white-space: pre-line;
         overflow-wrap: anywhere;
         margin: 0;
     }
 
-    .my-profile-page .professional-links {
+    /* Skill badges */
+
+    .my-profile-page .mp-skills {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 9px;
     }
 
-    .my-profile-page .professional-links .btn {
+    .my-profile-page .mp-skill {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
+        max-width: 100%;
+        padding: 9px 12px;
+        border: 1px solid #e0e7ff;
+        border-radius: 10px;
+        color: #4338ca;
+        background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+        font-size: .79rem;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+        transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    .my-profile-page .empty-text {
-        color: var(--profile-muted);
-        line-height: 1.7;
+    .my-profile-page .mp-skill:nth-child(5n+2) {
+        color: #087f8c;
+        background: linear-gradient(135deg, #e0fbff, #ecfdf5);
+        border-color: #c7f0ed;
+    }
+
+    .my-profile-page .mp-skill:nth-child(5n+3) {
+        color: #a34116;
+        background: linear-gradient(135deg, #fff1e6, #fff7ed);
+        border-color: #fed7aa;
+    }
+
+    .my-profile-page .mp-skill:nth-child(5n+4) {
+        color: #a21caf;
+        background: linear-gradient(135deg, #fae8ff, #fdf2f8);
+        border-color: #f5d0fe;
+    }
+
+    .my-profile-page .mp-skill:nth-child(5n+5) {
+        color: #166534;
+        background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+        border-color: #bbf7d0;
+    }
+
+    .my-profile-page .mp-skill:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(79,70,229,.1);
+    }
+
+    /* Contact information */
+
+    .my-profile-page .mp-contact-list {
+        display: grid;
+        gap: 15px;
+    }
+
+    .my-profile-page .mp-contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .my-profile-page .mp-contact-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        color: #4f46e5;
+        background: #f0efff;
+        font-size: 1rem;
+    }
+
+    .my-profile-page .mp-contact-copy {
+        min-width: 0;
+        padding-top: 2px;
+    }
+
+    .my-profile-page .mp-contact-label {
+        color: var(--mp-muted);
+        font-size: .73rem;
+        margin: 0 0 5px;
+    }
+
+    .my-profile-page .mp-contact-value {
+        color: #24304b;
+        font-size: .84rem;
+        font-weight: 700;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
         margin: 0;
     }
 
-    .my-profile-page .profile-footer {
+    .my-profile-page .mp-divider {
+        height: 1px;
+        background: var(--mp-border);
+        margin: 19px 0;
+    }
+
+    /* Profile completion */
+
+    .my-profile-page .mp-progress-card {
+        position: relative;
+        overflow: hidden;
+        padding: 22px;
+        border: 1px solid #e3defe;
+        border-radius: 18px;
+        background: linear-gradient(140deg, #f4f2ff, #fff 75%);
+    }
+
+    .my-profile-page .mp-progress-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .my-profile-page .mp-progress-title {
+        font-size: .91rem;
+        font-weight: 850;
+        color: #292454;
+        margin: 0;
+    }
+
+    .my-profile-page .mp-progress-percent {
+        color: #5b4ce2;
+        font-size: 1.05rem;
+        font-weight: 900;
+    }
+
+    .my-profile-page .mp-progress-track {
+        height: 9px;
+        overflow: hidden;
+        border-radius: 20px;
+        background: #e5e0ff;
+    }
+
+    .my-profile-page .mp-progress-fill {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #4f46e5, #a855f7);
+        animation: mpProgress .9s ease .2s forwards;
+    }
+
+    .my-profile-page .mp-progress-note {
+        color: #68658a;
+        font-size: .77rem;
+        line-height: 1.7;
+        margin: 12px 0 0;
+    }
+
+    /* Social links */
+
+    .my-profile-page .mp-social-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .my-profile-page .mp-social-link {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px;
+        color: #26324b;
+        text-decoration: none;
+        border: 1px solid var(--mp-border);
+        border-radius: 12px;
+        background: #fff;
+        transition: border-color .2s ease, transform .2s ease,
+                    background .2s ease;
+    }
+
+    .my-profile-page .mp-social-link:hover {
+        color: #4338ca;
+        border-color: #c7c5ff;
+        background: #faf9ff;
+        transform: translateX(3px);
+    }
+
+    .my-profile-page .mp-social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 39px;
+        height: 39px;
+        flex: 0 0 auto;
+        border-radius: 11px;
+        font-size: 1.1rem;
+    }
+
+    .my-profile-page .mp-social-icon.linkedin {
+        color: #0a66c2;
+        background: #e7f2ff;
+    }
+
+    .my-profile-page .mp-social-icon.github {
+        color: #24292f;
+        background: #eef0f3;
+    }
+
+    .my-profile-page .mp-social-copy {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .my-profile-page .mp-social-title {
+        display: block;
+        font-size: .82rem;
+        font-weight: 800;
+    }
+
+    .my-profile-page .mp-social-caption {
+        display: block;
+        color: var(--mp-muted);
+        font-size: .72rem;
+        margin-top: 3px;
+    }
+
+    .my-profile-page .mp-social-arrow {
+        color: #94a3b8;
+        flex: 0 0 auto;
+    }
+
+    .my-profile-page .mp-empty {
+        color: var(--mp-muted);
+        font-size: .85rem;
+        line-height: 1.8;
+        margin: 0;
+    }
+
+    .my-profile-page .mp-empty-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 12px;
+        color: #4f46e5;
+        font-size: .83rem;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .my-profile-page .mp-empty-action:hover {
+        color: #7c3aed;
+        text-decoration: underline;
+    }
+
+    .my-profile-page .mp-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 14px;
-        padding-top: 26px;
-        margin-top: 26px;
-        border-top: 1px solid var(--profile-border);
+        gap: 15px;
+        margin-top: 25px;
+        padding: 21px 0 0;
+        border-top: 1px solid var(--mp-border);
     }
 
-    .my-profile-page .profile-footer-note {
-        color: var(--profile-muted);
-        font-size: .87rem;
+    .my-profile-page .mp-footer-note {
+        color: var(--mp-muted);
+        font-size: .8rem;
+        line-height: 1.6;
         margin: 0;
     }
 
-    @keyframes profileFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+    .my-profile-page .mp-footer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    @keyframes mpEnter {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes mpProgress {
+        to { width: var(--mp-progress-width, 0%); }
+    }
+
+    @media (max-width: 991.98px) {
+        .my-profile-page .mp-layout {
+            grid-template-columns: minmax(0, 1fr);
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        .my-profile-page .mp-sidebar {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+        }
+
+        .my-profile-page .mp-progress-card {
+            grid-column: 1 / -1;
         }
     }
 
     @media (max-width: 767.98px) {
         .my-profile-page {
-            padding-top: 22px;
+            padding: 22px 0 42px;
         }
 
-        .my-profile-page .profile-cover {
-            padding: 27px 20px;
-        }
-
-        .my-profile-page .profile-content {
-            padding: 23px 20px;
-        }
-
-        .my-profile-page .profile-heading {
+        .my-profile-page .mp-heading {
             align-items: flex-start;
         }
 
-        .my-profile-page .profile-heading .btn {
+        .my-profile-page .mp-heading > a {
             width: 100%;
+        }
+
+        .my-profile-page .mp-hero {
+            padding: 25px 20px;
+            border-radius: 20px;
+        }
+
+        .my-profile-page .mp-hero-inner {
+            gap: 19px;
+        }
+
+        .my-profile-page .mp-avatar,
+        .my-profile-page .mp-avatar-placeholder {
+            width: 94px;
+            height: 94px;
+            border-radius: 22px;
+        }
+
+        .my-profile-page .mp-avatar-placeholder {
+            font-size: 2.4rem;
+        }
+
+        .my-profile-page .mp-hero-actions {
+            width: 100%;
+        }
+
+        .my-profile-page .mp-hero-actions .mp-btn {
+            flex: 1;
+        }
+
+        .my-profile-page .mp-overview {
+            gap: 9px;
+        }
+
+        .my-profile-page .mp-overview-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 13px;
+        }
+
+        .my-profile-page .mp-overview-icon {
+            width: 37px;
+            height: 37px;
+            border-radius: 11px;
+        }
+
+        .my-profile-page .mp-overview-value {
+            font-size: .8rem;
+        }
+
+        .my-profile-page .mp-panel {
+            padding: 20px;
+        }
+
+        .my-profile-page .mp-sidebar {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .my-profile-page .mp-progress-card {
+            grid-column: auto;
+        }
+
+        .my-profile-page .mp-footer {
+            align-items: stretch;
+        }
+
+        .my-profile-page .mp-footer-actions {
+            width: 100%;
+        }
+
+        .my-profile-page .mp-footer-actions .mp-btn {
+            flex: 1;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .my-profile-page .mp-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .my-profile-page .mp-overview-card {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .my-profile-page .mp-hero-actions {
+            flex-direction: column;
+        }
+
+        .my-profile-page .mp-footer-actions {
+            flex-direction: column;
         }
     }
 
@@ -304,9 +826,9 @@
         .my-profile-page *,
         .my-profile-page *::before,
         .my-profile-page *::after {
-            animation-duration: .01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: .01ms !important;
+            animation: none !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
         }
     }
 </style>
@@ -316,223 +838,491 @@
 <div class="my-profile-page">
     <div class="container">
 
-        <!-- Page Heading -->
-        <header class="profile-heading">
+        <header class="mp-heading">
             <div>
-                <span class="eyebrow">Your professional presence</span>
-                <h1 class="page-title">My Profile</h1>
-                <p class="page-subtitle">
-                    Showcase your skills, experience, and professional connections.
+                <span class="mp-eyebrow">Your professional presence</span>
+                <h1 class="mp-page-title">My Profile</h1>
+                <p class="mp-subtitle">
+                    Your skills, story and professional connections — all in one place.
                 </p>
             </div>
 
-            <a href="{% url 'profile-edit' %}" class="btn btn-primary">
-                <i class="bi bi-pencil-square me-2"></i>
+            <a href="{% url 'profile-edit' %}" class="mp-btn mp-btn-primary">
+                <i class="bi bi-pencil-square"></i>
                 Edit Profile
             </a>
         </header>
 
-        <article class="profile-shell">
+        {% with first_name=profile.user.first_name last_name=profile.user.last_name %}
+        <section class="mp-hero">
+            <div class="mp-hero-inner">
 
-            <!-- Profile Header -->
-            <section class="profile-cover">
-                <div class="profile-cover-content">
-                    <div class="row align-items-center g-4">
-
-                        <div class="col-md-auto text-center text-md-start">
-                            {% if profile.profile_image %}
-                                <img
-                                    src="{{ profile.profile_image.url }}"
-                                    alt="Profile photo of {{ profile.user.username }}"
-                                    class="profile-image"
-                                >
-                            {% else %}
-                                <div class="default-avatar" aria-label="Default profile avatar">
-                                    <i class="bi bi-person"></i>
-                                </div>
-                            {% endif %}
+                <div class="mp-avatar-wrap">
+                    {% if profile.profile_image %}
+                        <img
+                            src="{{ profile.profile_image.url }}"
+                            alt="Profile photo of {{ profile.user.username }}"
+                            class="mp-avatar"
+                        >
+                    {% else %}
+                        <div class="mp-avatar-placeholder" aria-label="Default profile avatar">
+                            <i class="bi bi-person-fill"></i>
                         </div>
+                    {% endif %}
 
-                        <div class="col-md text-center text-md-start">
-                            <h2 class="profile-name">
-                                {{ profile.user.first_name }}
-                                {{ profile.user.last_name }}
-                            </h2>
+                    <span class="mp-avatar-status" title="JobHub member">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                </div>
 
-                            <p class="profile-username">
-                                <i class="bi bi-at me-1"></i>{{ profile.user.username }}
-                            </p>
+                <div class="mp-identity">
+                    <span class="mp-member-label">
+                        <i class="bi bi-patch-check-fill"></i>
+                        JOBHUB MEMBER
+                    </span>
 
-                            {% if profile.location %}
-                                <p class="profile-location">
-                                    <i class="bi bi-geo-alt-fill"></i>
-                                    {{ profile.location }}
-                                </p>
-                            {% endif %}
-                        </div>
+                    <h2 class="mp-name">
+                        {% if first_name or last_name %}
+                            {{ first_name }} {{ last_name }}
+                        {% else %}
+                            {{ profile.user.username }}
+                        {% endif %}
+                    </h2>
 
+                    <p class="mp-username">
+                        <i class="bi bi-at"></i>{{ profile.user.username }}
+                    </p>
+
+                    <div class="mp-hero-meta">
+                        {% if profile.location %}
+                            <span>
+                                <i class="bi bi-geo-alt-fill"></i>
+                                {{ profile.location }}
+                            </span>
+                        {% endif %}
+
+                        {% if profile.created_at %}
+                            <span>
+                                <i class="bi bi-calendar3"></i>
+                                Joined {{ profile.created_at|date:"M Y" }}
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
-            </section>
 
-            <div class="profile-content">
+                <div class="mp-hero-actions">
+                    <a href="{% url 'profile-edit' %}" class="mp-btn mp-btn-light">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Profile
+                    </a>
+                </div>
 
-                <!-- About Me -->
-                <section class="profile-section">
-                    <h3 class="section-heading">
-                        <span class="section-icon">
+            </div>
+        </section>
+        {% endwith %}
+
+        {% with skill_text=profile.skills|default:"" bio_text=profile.bio|default:"" %}
+        {% with completion=0 %}
+        <div class="mp-overview">
+
+            <div class="mp-overview-card">
+                <span class="mp-overview-icon purple">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </span>
+                <div>
+                    <p class="mp-overview-label">Skills & expertise</p>
+                    <p class="mp-overview-value">
+                        {% if skill_text %}
+                            Skills added
+                        {% else %}
+                            Add your skills
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mp-overview-card">
+                <span class="mp-overview-icon blue">
+                    <i class="bi bi-person-vcard-fill"></i>
+                </span>
+                <div>
+                    <p class="mp-overview-label">Profile introduction</p>
+                    <p class="mp-overview-value">
+                        {% if bio_text %}
+                            About added
+                        {% else %}
+                            Tell your story
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mp-overview-card">
+                <span class="mp-overview-icon teal">
+                    <i class="bi bi-globe2"></i>
+                </span>
+                <div>
+                    <p class="mp-overview-label">Professional network</p>
+                    <p class="mp-overview-value">
+                        {% if profile.linkedin or profile.github %}
+                            Links connected
+                        {% else %}
+                            Add your links
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mp-layout">
+
+            <main class="mp-main">
+
+                <section class="mp-panel">
+                    <div class="mp-panel-heading">
+                        <span class="mp-panel-icon">
                             <i class="bi bi-person-lines-fill"></i>
                         </span>
-                        About Me
-                    </h3>
+                        <div>
+                            <h3 class="mp-panel-title">About Me</h3>
+                            <p class="mp-panel-subtitle">Your story and professional interests</p>
+                        </div>
+                    </div>
 
-                    <p class="about-text">
-                        {{ profile.bio|default:"No bio provided yet. Add a short introduction to tell others about yourself and your professional interests." }}
-                    </p>
+                    {% if bio_text %}
+                        <p class="mp-about">{{ bio_text }}</p>
+                    {% else %}
+                        <p class="mp-empty">
+                            Your professional story starts here. Tell employers about your
+                            background, interests, strengths and the opportunities you're seeking.
+                        </p>
+                        <a href="{% url 'profile-edit' %}" class="mp-empty-action">
+                            Write your introduction <i class="bi bi-arrow-right"></i>
+                        </a>
+                    {% endif %}
                 </section>
 
-                <!-- Personal Information -->
-                <section class="profile-section">
-                    <h3 class="section-heading">
-                        <span class="section-icon">
-                            <i class="bi bi-card-text"></i>
+                <section class="mp-panel">
+                    <div class="mp-panel-heading">
+                        <span class="mp-panel-icon">
+                            <i class="bi bi-stars"></i>
                         </span>
-                        Personal Information
-                    </h3>
+                        <div>
+                            <h3 class="mp-panel-title">Skills & Expertise</h3>
+                            <p class="mp-panel-subtitle">What you bring to the table</p>
+                        </div>
+                    </div>
 
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="information-item">
-                                <span class="information-label">
-                                    <i class="bi bi-person me-1"></i>Username
-                                </span>
-                                <p class="information-value">
-                                    {{ profile.user.username }}
-                                </p>
+                    {% if skill_text %}
+                        <div class="mp-skills">
+                            {% for skill in skill_text.split %}
+                                {% with cleaned_skill=skill|cut:"," %}
+                                    {% if cleaned_skill %}
+                                        <span class="mp-skill">
+                                            <i class="bi bi-check2-circle"></i>
+                                            {{ cleaned_skill }}
+                                        </span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+
+                        <p class="mp-panel-subtitle mt-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Keep your skills current to help employers understand your strengths.
+                        </p>
+                    {% else %}
+                        <p class="mp-empty">
+                            No skills have been added yet. Add your technical and professional
+                            skills to help employers understand what you can do.
+                        </p>
+                        <a href="{% url 'profile-edit' %}" class="mp-empty-action">
+                            Add your skills <i class="bi bi-arrow-right"></i>
+                        </a>
+                    {% endif %}
+                </section>
+
+                <section class="mp-panel">
+                    <div class="mp-panel-heading">
+                        <span class="mp-panel-icon">
+                            <i class="bi bi-person-vcard"></i>
+                        </span>
+                        <div>
+                            <h3 class="mp-panel-title">Personal Information</h3>
+                            <p class="mp-panel-subtitle">Your account and contact details</p>
+                        </div>
+                    </div>
+
+                    <div class="mp-contact-list">
+
+                        <div class="mp-contact-item">
+                            <span class="mp-contact-icon">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <div class="mp-contact-copy">
+                                <p class="mp-contact-label">Username</p>
+                                <p class="mp-contact-value">{{ profile.user.username }}</p>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="information-item">
-                                <span class="information-label">
-                                    <i class="bi bi-envelope me-1"></i>Email Address
-                                </span>
-                                <p class="information-value">
+                        <div class="mp-contact-item">
+                            <span class="mp-contact-icon">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+                            <div class="mp-contact-copy">
+                                <p class="mp-contact-label">Email address</p>
+                                <p class="mp-contact-value">
                                     {{ profile.user.email|default:"Not provided" }}
                                 </p>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="information-item">
-                                <span class="information-label">
-                                    <i class="bi bi-telephone me-1"></i>Phone Number
-                                </span>
-                                <p class="information-value">
+                        <div class="mp-contact-item">
+                            <span class="mp-contact-icon">
+                                <i class="bi bi-telephone"></i>
+                            </span>
+                            <div class="mp-contact-copy">
+                                <p class="mp-contact-label">Phone number</p>
+                                <p class="mp-contact-value">
                                     {{ profile.phone_number|default:"Not provided" }}
                                 </p>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="information-item">
-                                <span class="information-label">
-                                    <i class="bi bi-calendar-check me-1"></i>Member Since
-                                </span>
-                                <p class="information-value">
-                                    {{ profile.created_at|date:"F j, Y" }}
+                        <div class="mp-contact-item">
+                            <span class="mp-contact-icon">
+                                <i class="bi bi-geo-alt"></i>
+                            </span>
+                            <div class="mp-contact-copy">
+                                <p class="mp-contact-label">Location</p>
+                                <p class="mp-contact-value">
+                                    {{ profile.location|default:"Not provided" }}
                                 </p>
                             </div>
                         </div>
+
+                        <div class="mp-contact-item">
+                            <span class="mp-contact-icon">
+                                <i class="bi bi-calendar-check"></i>
+                            </span>
+                            <div class="mp-contact-copy">
+                                <p class="mp-contact-label">Member since</p>
+                                <p class="mp-contact-value">
+                                    {% if profile.created_at %}
+                                        {{ profile.created_at|date:"F j, Y" }}
+                                    {% else %}
+                                        Not available
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
-                <!-- Skills -->
-                <section class="profile-section">
-                    <h3 class="section-heading">
-                        <span class="section-icon">
-                            <i class="bi bi-lightning-charge"></i>
-                        </span>
-                        Skills & Expertise
-                    </h3>
+            </main>
 
-                    {% if profile.skills %}
-                        <div class="information-item">
-                            <p class="skills-content">{{ profile.skills }}</p>
-                        </div>
-                    {% else %}
-                        <p class="empty-text">
-                            No skills added yet. Update your profile to showcase your expertise.
-                        </p>
-                    {% endif %}
+            <aside class="mp-sidebar">
+
+                <section class="mp-progress-card">
+                    <div class="mp-progress-top">
+                        <h3 class="mp-progress-title">Profile overview</h3>
+                        <span class="mp-progress-percent" id="mpCompletionPercent">0%</span>
+                    </div>
+
+                    <div class="mp-progress-track"
+                         role="progressbar"
+                         aria-label="Profile completeness"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         aria-valuenow="0"
+                         id="mpCompletionTrack">
+                        <div class="mp-progress-fill" id="mpCompletionFill"></div>
+                    </div>
+
+                    <p class="mp-progress-note" id="mpCompletionNote">
+                        Add your information to build a stronger professional profile.
+                    </p>
+
+                    <a href="{% url 'profile-edit' %}"
+                       class="mp-empty-action"
+                       id="mpCompletionAction">
+                        Improve your profile <i class="bi bi-arrow-right"></i>
+                    </a>
                 </section>
 
-                <!-- Professional Links -->
-                <section class="profile-section">
-                    <h3 class="section-heading">
-                        <span class="section-icon">
+                <section class="mp-panel">
+                    <div class="mp-panel-heading">
+                        <span class="mp-panel-icon">
                             <i class="bi bi-link-45deg"></i>
                         </span>
-                        Professional Links
-                    </h3>
+                        <div>
+                            <h3 class="mp-panel-title">Professional Links</h3>
+                            <p class="mp-panel-subtitle">Find me around the web</p>
+                        </div>
+                    </div>
 
-                    <div class="professional-links">
+                    <div class="mp-social-list">
+
                         {% if profile.linkedin %}
-                            <a
-                                href="{{ profile.linkedin }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="btn btn-outline-primary"
-                            >
-                                <i class="bi bi-linkedin"></i>
-                                LinkedIn Profile
-                                <i class="bi bi-box-arrow-up-right small"></i>
+                            <a href="{{ profile.linkedin }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="mp-social-link">
+                                <span class="mp-social-icon linkedin">
+                                    <i class="bi bi-linkedin"></i>
+                                </span>
+                                <span class="mp-social-copy">
+                                    <span class="mp-social-title">LinkedIn</span>
+                                    <span class="mp-social-caption">Professional network</span>
+                                </span>
+                                <i class="bi bi-box-arrow-up-right mp-social-arrow"></i>
                             </a>
                         {% endif %}
 
                         {% if profile.github %}
-                            <a
-                                href="{{ profile.github }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="btn btn-outline-dark"
-                            >
-                                <i class="bi bi-github"></i>
-                                GitHub Profile
-                                <i class="bi bi-box-arrow-up-right small"></i>
+                            <a href="{{ profile.github }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="mp-social-link">
+                                <span class="mp-social-icon github">
+                                    <i class="bi bi-github"></i>
+                                </span>
+                                <span class="mp-social-copy">
+                                    <span class="mp-social-title">GitHub</span>
+                                    <span class="mp-social-caption">Projects and code</span>
+                                </span>
+                                <i class="bi bi-box-arrow-up-right mp-social-arrow"></i>
                             </a>
                         {% endif %}
 
                         {% if not profile.linkedin and not profile.github %}
-                            <p class="empty-text">
-                                No professional links added yet. Connect your LinkedIn or GitHub profile.
+                            <p class="mp-empty">
+                                You haven't added professional links yet. Connect your LinkedIn
+                                or GitHub account to help others discover your work.
                             </p>
                         {% endif %}
+
                     </div>
+
+                    <div class="mp-divider"></div>
+
+                    <a href="{% url 'profile-edit' %}" class="mp-btn mp-btn-outline w-100">
+                        <i class="bi bi-plus-circle"></i>
+                        {% if not profile.linkedin and not profile.github %}
+                            Add professional links
+                        {% else %}
+                            Update links
+                        {% endif %}
+                    </a>
                 </section>
 
-                <!-- Footer Actions -->
-                <footer class="profile-footer">
-                    <p class="profile-footer-note">
-                        <i class="bi bi-shield-check me-1"></i>
-                        Keep your professional information up to date.
+                <section class="mp-panel">
+                    <div class="mp-panel-heading">
+                        <span class="mp-panel-icon">
+                            <i class="bi bi-people"></i>
+                        </span>
+                        <div>
+                            <h3 class="mp-panel-title">Explore JobHub</h3>
+                            <p class="mp-panel-subtitle">Discover other professionals</p>
+                        </div>
+                    </div>
+
+                    <p class="mp-empty mb-3">
+                        Explore the JobHub community and discover other people's professional
+                        backgrounds and skills.
                     </p>
 
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{% url 'profile-list' %}" class="btn btn-outline-secondary">
-                            <i class="bi bi-people me-1"></i>
-                            View All Profiles
-                        </a>
+                    <a href="{% url 'profile-list' %}" class="mp-btn mp-btn-outline w-100">
+                        <i class="bi bi-people-fill"></i>
+                        View All Profiles
+                    </a>
+                </section>
 
-                        <a href="{% url 'profile-edit' %}" class="btn btn-primary">
-                            <i class="bi bi-pencil-square me-1"></i>
-                            Update Profile
-                        </a>
-                    </div>
-                </footer>
+            </aside>
+        </div>
 
+        <footer class="mp-footer">
+            <p class="mp-footer-note">
+                <i class="bi bi-shield-check me-1"></i>
+                Keep your professional information accurate and up to date.
+            </p>
+
+            <div class="mp-footer-actions">
+                <a href="{% url 'profile-list' %}" class="mp-btn mp-btn-outline">
+                    <i class="bi bi-people"></i>
+                    Explore Profiles
+                </a>
+                <a href="{% url 'profile-edit' %}" class="mp-btn mp-btn-primary">
+                    <i class="bi bi-pencil-square"></i>
+                    Update Profile
+                </a>
             </div>
-        </article>
+        </footer>
+
+        {% endwith %}
+        {% endwith %}
+
     </div>
 </div>
+
+<script>
+(function () {
+    const page = document.querySelector('.my-profile-page');
+    if (!page) return;
+
+    /*
+     * Completeness is calculated from existing profile values.
+     * No new Django fields or database migrations are required.
+     */
+    const fields = [
+        {% if profile.user.first_name or profile.user.last_name %}true{% else %}false{% endif %},
+        {% if profile.profile_image %}true{% else %}false{% endif %},
+        {% if profile.bio %}true{% else %}false{% endif %},
+        {% if profile.skills %}true{% else %}false{% endif %},
+        {% if profile.location %}true{% else %}false{% endif %},
+        {% if profile.phone_number %}true{% else %}false{% endif %},
+        {% if profile.user.email %}true{% else %}false{% endif %},
+        {% if profile.linkedin %}true{% else %}false{% endif %},
+        {% if profile.github %}true{% else %}false{% endif %}
+    ];
+
+    const percentage = Math.round(
+        (fields.filter(Boolean).length / fields.length) * 100
+    );
+
+    const percentLabel = document.getElementById('mpCompletionPercent');
+    const progressFill = document.getElementById('mpCompletionFill');
+    const progressTrack = document.getElementById('mpCompletionTrack');
+    const progressNote = document.getElementById('mpCompletionNote');
+    const progressAction = document.getElementById('mpCompletionAction');
+
+    if (percentLabel) percentLabel.textContent = percentage + '%';
+
+    if (progressFill) {
+        progressFill.style.setProperty('--mp-progress-width', percentage + '%');
+    }
+
+    if (progressTrack) {
+        progressTrack.setAttribute('aria-valuenow', percentage);
+    }
+
+    if (progressNote) {
+        if (percentage === 100) {
+            progressNote.textContent =
+                'Excellent! All profile information tracked by this indicator is complete.';
+        } else {
+            progressNote.textContent =
+                'Your profile is ' + percentage +
+                '% complete. Add the missing details to give employers a fuller picture of you.';
+        }
+    }
+
+    if (progressAction && percentage === 100) {
+        progressAction.innerHTML =
+            'Keep your profile updated <i class="bi bi-arrow-right"></i>';
+    }
+})();
+</script>
 {% endblock %}
