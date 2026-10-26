@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 
 
     'accounts',
+    'anyemail'
 ]
 
 MIDDLEWARE = [
@@ -168,7 +169,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # }
 
 # Email Notifications
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Email configuration
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend",
+)
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
@@ -181,7 +187,14 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     EMAIL_HOST_USER,
 )
+
 EMAIL_TIMEOUT = 10
+
+# Resend configuration for production
+ANYMAIL = {
+    "RESEND_API_KEY": os.getenv("RESEND_API_KEY", ""),
+}
+
 
 
 
